@@ -1,73 +1,80 @@
 #!/usr/bin/env nextflow
-/*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    nf-core/panoramaseq
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Github : https://github.com/nf-core/panoramaseq
-    Website: https://nf-co.re/panoramaseq
-    Slack  : https://nfcore.slack.com/channels/panoramaseq
-----------------------------------------------------------------------------------------
-*/
+nextflow.enable.dsl=2
 
-/*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    IMPORT FUNCTIONS / MODULES / SUBWORKFLOWS / WORKFLOWS
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*/
+// ==========================================================================
+// 0) Import the CHECK_FASTQS process from your fixed module
+// ==========================================================================
 
-include { PANORAMASEQ  } from './workflows/panoramaseq'
-include { PIPELINE_INITIALISATION } from './subworkflows/local/utils_nfcore_panoramaseq_pipeline'
-include { PIPELINE_COMPLETION     } from './subworkflows/local/utils_nfcore_panoramaseq_pipeline'
-include { getGenomeAttribute      } from './subworkflows/local/utils_nfcore_panoramaseq_pipeline'
+include { CHECK_SAMPLESHEET } from './modules/local/checksamplesheet'
+include { ST_main } from './workflows/ST_main/main' 
+include { PIPELINE_INITIALISATION } from './subworkflows/local/utils_nfcore_panoramaseq_pipeline/main'
+log.info """
+ _____                                                                                      _____ 
+( ___ )------------------------------------------------------------------------------------( ___ )
+ |   |                                                                                      |   | 
+ |   |                                                                                      |   | 
+ |   |                                                                                      |   | 
+ |   |    ______                                                                            |   | 
+ |   |   (_____ \\                                                                           |   | 
+ |   |    _____) )  ____  ____    ___    ____   ____  ____    ____     ___   ____   ____    |   | 
+ |   |   |  ____/  / _  ||  _ \\  / _ \\  / ___) / _  ||    \\  / _  |   /___) / _  ) / _  |   |   | 
+ |   |   | |      ( ( | || | | || |_| || |    ( ( | || | | |( ( | |  |___ |( (/ / | | | |   |   | 
+ |   |   |_|       \\_||_||_| |_| \\___/ |_|     \\_||_||_|_|_| \\_||_|  (___/  \\____) \\_|| |   |   | 
+ |   |                                                                                |_|   |   | 
+ |   |                                                                                      |   | 
+ |   |                                                                                      |   | 
+ |___|                                                                                      |___| 
+(_____)------------------------------------------------------------------------------------(_____)
+                                                                                                                    
+        LIST OF PARAMETERS
+    ================================
+                INPUT
+    Sample Sheet     : $params.input 
+    Results-folder   : $params.outdir
+    ================================
+    
+    ================================
+            UMI-tools
+    extract method  : $params.umitools_extract_method
+    UMI-pattern        : $params.umitools_bc_pattern          
+    ================================   
+            Decoding
+    number of gpus   : $params.gpus
+    ================================       
+                STAR
+    Reference genome : $params.star_genome_dir
+    GTF-file         : $params.star_gtf
+    ================================
+    """.stripIndent()
 
-/*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    GENOME PARAMETER VALUES
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*/
+// ==========================================================================
+// 1) Read the sample sheet and build “data” as a flat 3‐element tuple
+//    ( meta_map, R1_path, R2_path )
+// ==========================================================================
 
-// TODO nf-core: Remove this line if you don't need a FASTA file
-//   This is an example of how to use getGenomeAttribute() to fetch parameters
-//   from igenomes.config using `--genome`
-params.fasta = getGenomeAttribute('fasta')
 
-/*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    NAMED WORKFLOWS FOR PIPELINE
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*/
-
-//
-// WORKFLOW: Run main analysis pipeline depending on type of input
-//
-workflow NFCORE_PANORAMASEQ {
-
+ workflow NFCORE_PANORAMAseq {  
+    
     take:
-    samplesheet // channel: samplesheet read in from --input
-
+    valid_data 
+ 
     main:
 
-    //
-    // WORKFLOW: Run pipeline
-    //
-    PANORAMASEQ (
-        samplesheet
-    )
-    emit:
-    multiqc_report = PANORAMASEQ.out.multiqc_report // channel: /path/to/multiqc_report.html
+    // Run main PANORAMASEQ workflow
+    // This will handle all the steps defined in the PANORAMASEQ process including quality control, alignment, counting, etc.
+    // The PANORAMASEQ process is defined in the workflows/main.nf file
+    ST_main(valid_data) // Pass the samples
+
+    // emit:
+    // multiqc_report = ST_main.out.multiqc_report // channel: /path/to/multi
 }
-/*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    RUN MAIN WORKFLOW
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*/
+
+
+
 
 workflow {
-
     main:
-    //
-    // SUBWORKFLOW: Run initialisation tasks
-    //
+    
     PIPELINE_INITIALISATION (
         params.version,
         params.validate_params,
@@ -76,29 +83,13 @@ workflow {
         params.outdir,
         params.input
     )
+    
+    // Print the output of PIPELINE_INITIALISATION.out.samplesheet
+    PIPELINE_INITIALISATION.out.samplesheet.view { "PIPELINE_INITIALISATION.out.samplesheet: $it" }
 
-    //
-    // WORKFLOW: Run main workflow
-    //
-    NFCORE_PANORAMASEQ (
-        PIPELINE_INITIALISATION.out.samplesheet
-    )
-    //
-    // SUBWORKFLOW: Run completion tasks
-    //
-    PIPELINE_COMPLETION (
-        params.email,
-        params.email_on_fail,
-        params.plaintext_email,
-        params.outdir,
-        params.monochrome_logs,
-        params.hook_url,
-        NFCORE_PANORAMASEQ.out.multiqc_report
+    // Comment out the main workflow for now
+    NFCORE_PANORAMAseq (
+         PIPELINE_INITIALISATION.out.samplesheet
     )
 }
-
-/*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    THE END
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*/
+// ==========================================================================

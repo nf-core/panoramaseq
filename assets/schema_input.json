@@ -26,8 +26,41 @@
                 "exists": true,
                 "pattern": "^\\S+\\.f(ast)?q\\.gz$",
                 "errorMessage": "FastQ file for reads 2 cannot contain spaces and must have extension '.fq.gz' or '.fastq.gz'"
+            },
+            "N_barcodes": {
+                "type": "integer",
+                "description": "Number of barcodes for this sample",
+                "meta": ["N_barcodes"]
+            },
+            "barcode_file": {
+                "type": "string",
+                "format": "file-path",
+                "exists": true,
+                "description": "Path to barcode file for this sample",
+                "meta": ["barcode_file"]
+            },
+            "sample_size": {
+                "type": "integer",
+                "description": "Number of reads to subsample with seqtk for this sample (optional). If not set, SEQTK_SAMPLE will be skipped for this sample.",
+                "minimum": 1,
+                "meta": ["sample_size"]
+            },
+            "len_barcode": {
+                "type": "integer",
+                "description": "Length of barcode for this sample",
+                "meta": ["len_barcode"]
+            },
+            "Nthresh": {
+                "type": "integer",
+                "description": "Threshold Nthresh for this sample",
+                "meta": ["Nthresh"]
+            },
+            "Ntriage": {
+                "type": "integer",
+                "description": "Triage value Ntriage for this sample",
+                "meta": ["Ntriage"]
             }
         },
-        "required": ["sample", "fastq_1"]
+        "required": ["sample", "fastq_1", "N_barcodes", "barcode_file", "sample_size", "len_barcode", "Nthresh", "Ntriage"]
     }
 }

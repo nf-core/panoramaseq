@@ -226,6 +226,46 @@
                     "hidden": true
                 }
             }
+        },
+        "pipeline_options": {
+            "title": "Pipeline-specific options",
+            "type": "object",
+            "fa_icon": "fas fa-cogs",
+            "description": "Pipeline-specific parameters for STAR, UMI-tools, and GPU settings.",
+            "properties": {
+                "star_genome_dir": {
+                    "type": "string",
+                    "description": "Path to the STAR genome index directory."
+                },
+                "star_gtf": {
+                    "type": "string",
+                    "description": "Path to the GTF annotation file for STAR."
+                },
+                "umitools_extract_method": {
+                    "type": "string",
+                    "description": "UMI-tools extract method (e.g. 'regex', 'tagged', 'string')."
+                },
+                "umitools_bc_pattern": {
+                    "type": "string",
+                    "description": "Barcode pattern for UMI-tools."
+                },
+                "extract_umi": {
+                    "type": "boolean",
+                    "description": "Whether to extract UMI (true/false)."
+                },
+                "umitools_bc_pattern2": {
+                    "type": ["string", "null"],
+                    "description": "Second barcode pattern for UMI-tools (optional)."
+                },
+                "umitools_umi_separator": {
+                    "type": ["string", "null"],
+                    "description": "UMI separator for UMI-tools (optional)."
+                },
+                "gpus": {
+                    "type": "integer",
+                    "description": "Number of GPUs to use."
+                }
+            }
         }
     },
     "allOf": [
@@ -240,6 +280,9 @@
         },
         {
             "$ref": "#/$defs/generic_options"
+        },
+        {
+            "$ref": "#/$defs/pipeline_options"
         }
     ]
 }

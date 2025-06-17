@@ -1,0 +1,6 @@
+name: cutadapt_adv_pipe
+channels:
+  - bioconda
+  - conda-forge
+dependencies:
+  - cutadapt

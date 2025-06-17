@@ -1,0 +1,1 @@
+nextflow run main.nf -profile singularity --input /user/gent/446/vsc44685/ScratchVO_dir/ST_transcriptomics_local/test/Test_CSV.csv --outdir /user/gent/446/vsc44685/ScratchVO_dir/test_nf_core2
