@@ -1,0 +1,26 @@
+{
+    "decode batch stub test": {
+        "content": [
+            [
+                "versions.yml:md5,449ef8004e3b7c713d514a3610a680ad"
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.2"
+        },
+        "timestamp": "2025-06-24T10:26:19.771131009"
+    },
+    "versions_real": {
+        "content": [
+            [
+                
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.2"
+        },
+        "timestamp": "2025-06-24T12:57:59.848474355"
+    }
+}

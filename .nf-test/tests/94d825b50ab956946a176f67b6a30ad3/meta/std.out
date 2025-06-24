@@ -1,0 +1,4 @@
+N E X T F L O W  ~  version 24.10.2
+Launching `/kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/.nf-test-94d825b50ab956946a176f67b6a30ad3.nf` [golden_newton] DSL2 - revision: 7a8170463e
+[bc/504de1] Submitted process > PREPARE_GENOME:STAR_GENOMEGENERATE (genome.fasta)
+WARN: Process `PREPARE_GENOME:STAR_GENOMEGENERATE` publishDir path contains a variable with a null value

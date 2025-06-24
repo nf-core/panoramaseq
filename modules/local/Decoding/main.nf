@@ -8,9 +8,11 @@ process Decode_batch {
     
     input:
     tuple val(meta), path(reads)
+    path barcode_file
     
     output:
     tuple val(meta), path("*.fastq.gz"), emit: reads
+    path "versions.yml", emit: versions
     
     when:
     task.ext.when == null || task.ext.when
@@ -27,7 +29,7 @@ process Decode_batch {
     def cmds = []
     for (int i = 1; i <= gpus; i++) {
         int cuda = (i-1) % gpus
-        cmds << "Demux2_batch.py -R1 ${reads[0]} -R2 ${reads[1]} -N ${meta.N_barcodes} -M ${meta.len_barcode} -B ${meta.barcode_file} --Ntriage ${meta.Ntriage} --Nthresh ${meta.Nthresh} --out-prefix ${meta.id} -C ${cuda} --Seg_id ${i}/${gpus} &"
+        cmds << "Demux2_batch.py -R1 ${reads[0]} -R2 ${reads[1]} -N ${meta.N_barcodes} -M ${meta.len_barcode} -B ${barcode_file} --Ntriage ${meta.Ntriage} --Nthresh ${meta.Nthresh} --out-prefix ${meta.id} -C ${cuda} --Seg_id ${i}/${gpus} &"
         cmds << "pid${i-1}=\$!"
     }
     def waits = (0..<gpus).collect { "wait \$pid${it}" }.join("\n")
@@ -42,5 +44,25 @@ process Decode_batch {
     ${catR1}
     ${catR2}
     ${rm}
+    
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        python: \$(python --version | sed 's/Python //')
+        torch: \$(python -c "import torch; print(torch.__version__)")
+END_VERSIONS
+    """
+
+    stub:
+    def prefix = task.ext.prefix ?: "${meta.id}"
+    """
+    # Create stub output files for testing
+    touch ${prefix}.R1.fastq.gz
+    touch ${prefix}.R2.fastq.gz
+    
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        python: "stub-version"
+        torch: "stub-version"
+END_VERSIONS
     """
 }

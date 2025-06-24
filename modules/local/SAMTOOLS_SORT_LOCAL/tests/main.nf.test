@@ -1,0 +1,63 @@
+nextflow_process {
+
+    name "Test Process SAMTOOLS_SORT_LOCAL"
+    script "../main.nf"
+    process "SAMTOOLS_SORT_LOCAL"
+    config "./nextflow.config"
+    tag "modules"
+    tag "modules_local"
+    tag "samtools"
+    tag "samtools_sort_local"
+
+    test("bam") {
+
+        when {
+            process {
+                """
+                input[0] = Channel.of([
+                    [ id:'test', single_end:false ], // meta map
+                    file(params.modules_testdata_base_path + 'genomics/sarscov2/illumina/bam/test.paired_end.bam', checkIfExists: true)
+                ])
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert process.out.bam },
+                { assert process.out.bai },
+                { assert process.out.versions },
+                { assert process.out.bam.get(0).get(1) ==~ ".*\\.bam" },
+                { assert process.out.bai.get(0).get(1) ==~ ".*\\.bai" }
+            )
+        }
+    }
+
+    test("bam - stub") {
+
+        options "-stub"
+
+        when {
+            process {
+                """
+                input[0] = Channel.of([
+                    [ id:'test', single_end:false ], // meta map
+                    file(params.modules_testdata_base_path + 'genomics/sarscov2/illumina/bam/test.paired_end.bam', checkIfExists: true)
+                ])
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert process.out.bam },
+                { assert process.out.bai },
+                { assert process.out.versions },
+                { assert process.out.bam.get(0).get(1) ==~ ".*\\.bam" },
+                { assert process.out.bai.get(0).get(1) ==~ ".*\\.bai" }
+            )
+        }
+    }
+}

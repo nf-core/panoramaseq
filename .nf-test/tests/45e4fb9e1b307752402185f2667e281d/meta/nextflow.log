@@ -1,0 +1,231 @@
+Jun-24 15:32:20.799 [main] DEBUG nextflow.cli.Launcher - $> nextflow -quiet -log /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/.nf-test/tests/45e4fb9e1b307752402185f2667e281d/meta/nextflow.log run /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/.nf-test-45e4fb9e1b307752402185f2667e281d.nf -c /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/nextflow.config -c /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/tests/nextflow.config -c /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/modules/nf-core/samtools/sort/tests/./nextflow.config -params-file /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/.nf-test/tests/45e4fb9e1b307752402185f2667e281d/meta/params.json -ansi-log false -profile test -with-trace /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/.nf-test/tests/45e4fb9e1b307752402185f2667e281d/meta/trace.csv -w /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/.nf-test/tests/45e4fb9e1b307752402185f2667e281d/work
+Jun-24 15:32:20.876 [main] INFO  nextflow.cli.CmdRun - N E X T F L O W  ~  version 24.10.2
+Jun-24 15:32:20.899 [main] DEBUG nextflow.plugin.PluginsFacade - Setting up plugin manager > mode=prod; embedded=false; plugins-dir=/user/gent/446/vsc44685/.nextflow/plugins; core-plugins: nf-amazon@2.9.2,nf-azure@1.10.2,nf-cloudcache@0.4.2,nf-codecommit@0.2.2,nf-console@1.1.4,nf-google@1.15.2,nf-tower@1.9.3,nf-wave@1.7.4
+Jun-24 15:32:20.932 [main] INFO  o.pf4j.DefaultPluginStatusProvider - Enabled plugins: []
+Jun-24 15:32:20.933 [main] INFO  o.pf4j.DefaultPluginStatusProvider - Disabled plugins: []
+Jun-24 15:32:20.937 [main] INFO  org.pf4j.DefaultPluginManager - PF4J version 3.12.0 in 'deployment' mode
+Jun-24 15:32:20.949 [main] INFO  org.pf4j.AbstractPluginManager - No plugins
+Jun-24 15:32:20.972 [main] DEBUG nextflow.config.ConfigBuilder - Found config base: /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/nextflow.config
+Jun-24 15:32:20.977 [main] DEBUG nextflow.config.ConfigBuilder - User config file: /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/nextflow.config
+Jun-24 15:32:20.977 [main] DEBUG nextflow.config.ConfigBuilder - User config file: /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/tests/nextflow.config
+Jun-24 15:32:20.977 [main] DEBUG nextflow.config.ConfigBuilder - User config file: /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/modules/nf-core/samtools/sort/tests/./nextflow.config
+Jun-24 15:32:20.979 [main] DEBUG nextflow.config.ConfigBuilder - Parsing config file: /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/nextflow.config
+Jun-24 15:32:20.979 [main] DEBUG nextflow.config.ConfigBuilder - Parsing config file: /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/nextflow.config
+Jun-24 15:32:20.980 [main] DEBUG nextflow.config.ConfigBuilder - Parsing config file: /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/tests/nextflow.config
+Jun-24 15:32:20.980 [main] DEBUG nextflow.config.ConfigBuilder - Parsing config file: /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/modules/nf-core/samtools/sort/tests/nextflow.config
+Jun-24 15:32:21.024 [main] DEBUG n.secret.LocalSecretsProvider - Secrets store: /user/gent/446/vsc44685/.nextflow/secrets/store.json
+Jun-24 15:32:21.028 [main] DEBUG nextflow.secret.SecretsLoader - Discovered secrets providers: [nextflow.secret.LocalSecretsProvider@41a6d121] - activable => nextflow.secret.LocalSecretsProvider@41a6d121
+Jun-24 15:32:21.049 [main] DEBUG nextflow.config.ConfigBuilder - Applying config profile: `test`
+Jun-24 15:32:23.038 [main] DEBUG nextflow.config.ConfigBuilder - Applying config profile: `test`
+Jun-24 15:32:23.519 [main] DEBUG nextflow.config.ConfigBuilder - Applying config profile: `test`
+Jun-24 15:32:23.556 [main] DEBUG nextflow.config.ConfigBuilder - Applying config profile: `test`
+Jun-24 15:32:23.571 [main] DEBUG nextflow.config.ConfigBuilder - Available config profiles: [bih, cfc_dev, uzl_omics, ifb_core, embl_hd, denbi_qbic, alice, mjolnir_globe, uppmax, giga, incliva, ilifu, ki_luria, uge, icr_alma, rosalind_uge, lugh, mccleary, unibe_ibu, vai, czbiohub_aws, jax, roslin, tes, scw, unc_longleaf, tigem, tubingen_apg, google, apollo, ipop_up, vsc_calcua, pdc_kth, googlels, ceci_nic5, ccga_cau, humantechnopole, stjude, daisybio, eddie, medair, biowulf, apptainer, bi, bigpurple, adcra, cedars, pawsey_setonix, vsc_kul_uhasselt, pawsey_nimbus, ucl_myriad, utd_ganymede, charliecloud, fred_hutch, seattlechildrens, icr_davros, ceres, arm, munin, rosalind, hasta, cfc, uzh, shu_bmrc, ebi_codon_slurm, ebc, ccga_dx, crick, ku_sund_danhead, marvin, shifter, biohpc_gen, mana, mamba, york_viking, unc_lccc, wehi, awsbatch, wustl_htcf, arcc, ceci_dragon2, imperial, maestro, test_local, software_license, cannon, genotoul, nci_gadi, abims, janelia, nu_genomics, googlebatch, oist, sahmri, kaust, alliance_canada, mpcdf, leicester, vsc_ugent, create, sage, cambridge, jex, podman, ebi_codon, cheaha, xanadu, nyu_hpc, test, marjorie, computerome, ucd_sonic, seg_globe, mssm, sanger, dkfz, bluebear, pasteur, einstein, ethz_euler, m3c, test_full, imb, ucl_cscluster, tuos_stanage, azurebatch, hki, seadragon, crukmi, csiro_petrichor, qmul_apocrita, wave, docker, engaging, gis, hypatia, psmn, eva, unity, cropdiversityhpc, nygc, fgcz, conda, crg, singularity, test_s3, mpcdf_viper, pe2, self_hosted_runner, tufts, uw_hyak_pedslabs, binac2, debug, genouest, cbe, unsw_katana, utd_juno, gitpod, phoenix, seawulf, uod_hpc, fub_curta, uct_hpc, aws_tower, binac, fsu_draco]
+Jun-24 15:32:23.613 [main] DEBUG nextflow.cli.CmdRun - Applied DSL=2 from script declaration
+Jun-24 15:32:23.628 [main] INFO  nextflow.cli.CmdRun - Launching `/kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/.nf-test-45e4fb9e1b307752402185f2667e281d.nf` [special_brahmagupta] DSL2 - revision: 93132de53c
+Jun-24 15:32:23.630 [main] DEBUG nextflow.plugin.PluginsFacade - Plugins declared=[nf-schema@2.2.0]
+Jun-24 15:32:23.630 [main] DEBUG nextflow.plugin.PluginsFacade - Plugins default=[]
+Jun-24 15:32:23.631 [main] DEBUG nextflow.plugin.PluginsFacade - Plugins resolved requirement=[nf-schema@2.2.0]
+Jun-24 15:32:23.631 [main] DEBUG nextflow.plugin.PluginUpdater - Installing plugin nf-schema version: 2.2.0
+Jun-24 15:32:23.638 [main] INFO  org.pf4j.AbstractPluginManager - Plugin 'nf-schema@2.2.0' resolved
+Jun-24 15:32:23.638 [main] INFO  org.pf4j.AbstractPluginManager - Start plugin 'nf-schema@2.2.0'
+Jun-24 15:32:23.644 [main] DEBUG nextflow.plugin.BasePlugin - Plugin started nf-schema@2.2.0
+Jun-24 15:32:23.693 [main] DEBUG nextflow.Session - Session UUID: de8accbb-ecdb-45bf-9f26-b17eeb414b79
+Jun-24 15:32:23.694 [main] DEBUG nextflow.Session - Run name: special_brahmagupta
+Jun-24 15:32:23.694 [main] DEBUG nextflow.Session - Executor pool size: 6
+Jun-24 15:32:23.721 [main] DEBUG nextflow.file.FilePorter - File porter settings maxRetries=3; maxTransfers=50; pollTimeout=null
+Jun-24 15:32:23.726 [main] DEBUG nextflow.util.ThreadPoolBuilder - Creating thread pool 'FileTransfer' minSize=10; maxSize=18; workQueue=LinkedBlockingQueue[10000]; allowCoreThreadTimeout=false
+Jun-24 15:32:23.744 [main] DEBUG nextflow.cli.CmdRun - 
+  Version: 24.10.2 build 5932
+  Created: 27-11-2024 21:23 UTC (22:23 CEST)
+  System: Linux 5.14.0-427.66.1.el9_4.x86_64
+  Runtime: Groovy 4.0.23 on OpenJDK 64-Bit Server VM 21.0.5+11-LTS
+  Encoding: UTF-8 (UTF-8)
+  Process: 3004464@node3514.doduo.os [10.141.5.14]
+  CPUs: 6 - Mem: 251.2 GB (212.4 GB) - Swap: 20 GB (18.8 GB)
+Jun-24 15:32:23.770 [main] DEBUG nextflow.Session - Work-dir: /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/.nf-test/tests/45e4fb9e1b307752402185f2667e281d/work [gpfs]
+Jun-24 15:32:23.824 [main] DEBUG nextflow.executor.ExecutorFactory - Extension executors providers=[]
+Jun-24 15:32:23.847 [main] DEBUG nextflow.Session - Observer factory: DefaultObserverFactory
+Jun-24 15:32:23.919 [main] DEBUG nextflow.cache.CacheFactory - Using Nextflow cache factory: nextflow.cache.DefaultCacheFactory
+Jun-24 15:32:23.933 [main] DEBUG nextflow.util.CustomThreadPool - Creating default thread pool > poolSize: 7; maxThreads: 1000
+Jun-24 15:32:24.012 [main] DEBUG nextflow.Session - Session start
+Jun-24 15:32:24.014 [main] DEBUG nextflow.trace.TraceFileObserver - Workflow started -- trace file: /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/.nf-test/tests/45e4fb9e1b307752402185f2667e281d/meta/trace.csv
+Jun-24 15:32:24.253 [main] DEBUG nextflow.script.ScriptRunner - > Launching execution
+Jun-24 15:32:25.210 [main] DEBUG nextflow.script.ScriptRunner - Parsed script files:
+  Script_b2f5f8a8e8312a7b: /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/modules/nf-core/samtools/sort/tests/../main.nf
+  Script_e6ae4090e7ed3d0f: /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/.nf-test-45e4fb9e1b307752402185f2667e281d.nf
+Jun-24 15:32:25.212 [main] DEBUG nextflow.Session - Session aborted -- Cause: No such property: optional for class: nextflow.script.params.FileInParam
+Possible solutions: options
+Jun-24 15:32:25.218 [main] DEBUG nextflow.Session - 
+Thread[#9,Reference Handler,10,system]
+  java.base@21.0.5/java.lang.ref.Reference.waitForReferencePendingList(Native Method)
+  java.base@21.0.5/java.lang.ref.Reference.processPendingReferences(Reference.java:246)
+  java.base@21.0.5/java.lang.ref.Reference$ReferenceHandler.run(Reference.java:208)
+
+Thread[#28,Keep-Alive-Timer,8,InnocuousThreadGroup]
+  java.base@21.0.5/java.lang.Thread.sleep0(Native Method)
+  java.base@21.0.5/java.lang.Thread.sleep(Thread.java:509)
+  java.base@21.0.5/sun.net.www.http.KeepAliveCache.run(KeepAliveCache.java:238)
+  java.base@21.0.5/java.lang.Thread.runWith(Thread.java:1596)
+  java.base@21.0.5/java.lang.Thread.run(Thread.java:1583)
+  java.base@21.0.5/jdk.internal.misc.InnocuousThread.run(InnocuousThread.java:186)
+
+Thread[#30,Thread-1,5,main]
+  java.base@21.0.5/jdk.internal.misc.Unsafe.park(Native Method)
+  java.base@21.0.5/java.util.concurrent.locks.LockSupport.parkNanos(LockSupport.java:269)
+  java.base@21.0.5/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.awaitNanos(AbstractQueuedSynchronizer.java:1763)
+  java.base@21.0.5/java.util.concurrent.LinkedBlockingDeque.pollFirst(LinkedBlockingDeque.java:515)
+  java.base@21.0.5/java.util.concurrent.LinkedBlockingDeque.poll(LinkedBlockingDeque.java:677)
+  app//nextflow.util.SimpleAgent.run(SimpleAgent.groovy:89)
+  java.base@21.0.5/java.lang.invoke.LambdaForm$DMH/0x0000154ab019bc00.invokeVirtual(LambdaForm$DMH)
+  java.base@21.0.5/java.lang.invoke.LambdaForm$MH/0x0000154ab0494000.invoke(LambdaForm$MH)
+  java.base@21.0.5/java.lang.invoke.Invokers$Holder.invokeExact_MT(Invokers$Holder)
+  java.base@21.0.5/jdk.internal.reflect.DirectMethodHandleAccessor.invokeImpl(DirectMethodHandleAccessor.java:153)
+  java.base@21.0.5/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+  java.base@21.0.5/java.lang.reflect.Method.invoke(Method.java:580)
+  app//org.codehaus.groovy.reflection.CachedMethod.invoke(CachedMethod.java:343)
+  app//groovy.lang.MetaMethod.doMethodInvoke(MetaMethod.java:328)
+  app//groovy.lang.MetaClassImpl.doInvokeMethod(MetaClassImpl.java:1333)
+  app//groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:1088)
+  app//groovy.lang.MetaClassImpl.invokeMethodClosure(MetaClassImpl.java:1017)
+  app//groovy.lang.MetaClassImpl.doInvokeMethod(MetaClassImpl.java:1207)
+  app//groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:1088)
+  app//groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:1007)
+  app//groovy.lang.Closure.call(Closure.java:433)
+  app//groovy.lang.Closure.call(Closure.java:412)
+  app//groovy.lang.Closure.run(Closure.java:505)
+  java.base@21.0.5/java.lang.Thread.runWith(Thread.java:1596)
+  java.base@21.0.5/java.lang.Thread.run(Thread.java:1583)
+
+Thread[#29,process reaper,10,InnocuousThreadGroup]
+  java.base@21.0.5/jdk.internal.misc.Unsafe.park(Native Method)
+  java.base@21.0.5/java.util.concurrent.locks.LockSupport.parkNanos(LockSupport.java:410)
+  java.base@21.0.5/java.util.concurrent.LinkedTransferQueue$DualNode.await(LinkedTransferQueue.java:452)
+  java.base@21.0.5/java.util.concurrent.SynchronousQueue$Transferer.xferLifo(SynchronousQueue.java:194)
+  java.base@21.0.5/java.util.concurrent.SynchronousQueue.xfer(SynchronousQueue.java:235)
+  java.base@21.0.5/java.util.concurrent.SynchronousQueue.poll(SynchronousQueue.java:338)
+  java.base@21.0.5/java.util.concurrent.ThreadPoolExecutor.getTask(ThreadPoolExecutor.java:1069)
+  java.base@21.0.5/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1130)
+  java.base@21.0.5/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+  java.base@21.0.5/java.lang.Thread.runWith(Thread.java:1596)
+  java.base@21.0.5/java.lang.Thread.run(Thread.java:1583)
+  java.base@21.0.5/jdk.internal.misc.InnocuousThread.run(InnocuousThread.java:186)
+
+Thread[#17,Common-Cleaner,8,InnocuousThreadGroup]
+  java.base@21.0.5/jdk.internal.misc.Unsafe.park(Native Method)
+  java.base@21.0.5/java.util.concurrent.locks.LockSupport.parkNanos(LockSupport.java:269)
+  java.base@21.0.5/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1852)
+  java.base@21.0.5/java.lang.ref.ReferenceQueue.await(ReferenceQueue.java:71)
+  java.base@21.0.5/java.lang.ref.ReferenceQueue.remove0(ReferenceQueue.java:143)
+  java.base@21.0.5/java.lang.ref.ReferenceQueue.remove(ReferenceQueue.java:218)
+  java.base@21.0.5/jdk.internal.ref.CleanerImpl.run(CleanerImpl.java:140)
+  java.base@21.0.5/java.lang.Thread.runWith(Thread.java:1596)
+  java.base@21.0.5/java.lang.Thread.run(Thread.java:1583)
+  java.base@21.0.5/jdk.internal.misc.InnocuousThread.run(InnocuousThread.java:186)
+
+Thread[#10,Finalizer,8,system]
+  java.base@21.0.5/java.lang.Object.wait0(Native Method)
+  java.base@21.0.5/java.lang.Object.wait(Object.java:366)
+  java.base@21.0.5/java.lang.Object.wait(Object.java:339)
+  java.base@21.0.5/java.lang.ref.NativeReferenceQueue.await(NativeReferenceQueue.java:48)
+  java.base@21.0.5/java.lang.ref.ReferenceQueue.remove0(ReferenceQueue.java:158)
+  java.base@21.0.5/java.lang.ref.NativeReferenceQueue.remove(NativeReferenceQueue.java:89)
+  java.base@21.0.5/java.lang.ref.Finalizer$FinalizerThread.run(Finalizer.java:173)
+
+Thread[#31,Actor Thread 1,5,main]
+  java.base@21.0.5/jdk.internal.misc.Unsafe.park(Native Method)
+  java.base@21.0.5/java.util.concurrent.locks.LockSupport.park(LockSupport.java:371)
+  java.base@21.0.5/java.util.concurrent.LinkedTransferQueue$DualNode.await(LinkedTransferQueue.java:458)
+  java.base@21.0.5/java.util.concurrent.SynchronousQueue$Transferer.xferLifo(SynchronousQueue.java:194)
+  java.base@21.0.5/java.util.concurrent.SynchronousQueue.xfer(SynchronousQueue.java:235)
+  java.base@21.0.5/java.util.concurrent.SynchronousQueue.take(SynchronousQueue.java:318)
+  java.base@21.0.5/java.util.concurrent.ThreadPoolExecutor.getTask(ThreadPoolExecutor.java:1070)
+  java.base@21.0.5/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1130)
+  java.base@21.0.5/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+  java.base@21.0.5/java.lang.Thread.runWith(Thread.java:1596)
+  java.base@21.0.5/java.lang.Thread.run(Thread.java:1583)
+
+Thread[#1,main,5,main]
+  java.base@21.0.5/java.lang.Thread.dumpThreads(Native Method)
+  java.base@21.0.5/java.lang.Thread.getAllStackTraces(Thread.java:2522)
+  app//nextflow.util.SysHelper.dumpThreads(SysHelper.groovy:188)
+  app//nextflow.Session.abort(Session.groovy:800)
+  app//nextflow.script.ScriptRunner.execute(ScriptRunner.groovy:149)
+  app//nextflow.cli.CmdRun.run(CmdRun.groovy:376)
+  app//nextflow.cli.Launcher.run(Launcher.groovy:503)
+  app//nextflow.cli.Launcher.main(Launcher.groovy:658)
+
+Thread[#11,Signal Dispatcher,9,system]
+
+Thread[#18,Notification Thread,9,system]
+
+Jun-24 15:32:25.225 [main] ERROR nextflow.cli.Launcher - @unknown
+groovy.lang.MissingPropertyException: No such property: optional for class: nextflow.script.params.FileInParam
+Possible solutions: options
+	at org.codehaus.groovy.runtime.ScriptBytecodeAdapter.unwrap(ScriptBytecodeAdapter.java:67)
+	at org.codehaus.groovy.vmplugin.v8.IndyGuardsFiltersAndSignatures.unwrap(IndyGuardsFiltersAndSignatures.java:163)
+	at org.codehaus.groovy.vmplugin.v8.IndyInterface.fromCache(IndyInterface.java:321)
+	at nextflow.script.params.BaseParam.setOptions(BaseParam.groovy:136)
+	at nextflow.script.params.FileInParam.super$2$setOptions(FileInParam.groovy)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.codehaus.groovy.reflection.CachedMethod.invoke(CachedMethod.java:343)
+	at groovy.lang.MetaMethod.doMethodInvoke(MetaMethod.java:328)
+	at groovy.lang.MetaClassImpl.doInvokeMethod(MetaClassImpl.java:1333)
+	at groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:1088)
+	at org.codehaus.groovy.runtime.ScriptBytecodeAdapter.invokeMethodOnSuperN(ScriptBytecodeAdapter.java:146)
+	at nextflow.script.params.FileInParam.setOptions(FileInParam.groovy:127)
+	at org.codehaus.groovy.vmplugin.v8.IndyInterface.selectMethod(IndyInterface.java:355)
+	at org.codehaus.groovy.vmplugin.v8.IndyInterface.fromCache(IndyInterface.java:321)
+	at nextflow.script.params.TupleInParam.bind(TupleInParam.groovy:65)
+	at org.codehaus.groovy.vmplugin.v8.IndyInterface.fromCache(IndyInterface.java:321)
+	at nextflow.script.ProcessConfig._in_tuple(ProcessConfig.groovy:558)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.codehaus.groovy.reflection.CachedMethod.invoke(CachedMethod.java:343)
+	at groovy.lang.MetaMethod.doMethodInvoke(MetaMethod.java:328)
+	at org.codehaus.groovy.runtime.metaclass.ClosureMetaClass.invokeMethod(ClosureMetaClass.java:342)
+	at groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:1007)
+	at org.codehaus.groovy.vmplugin.v8.IndyInterface.fromCache(IndyInterface.java:321)
+	at Script_b2f5f8a8e8312a7b$_runScript_closure1.doCall(Script_b2f5f8a8e8312a7b:12)
+	at Script_b2f5f8a8e8312a7b$_runScript_closure1.doCall(Script_b2f5f8a8e8312a7b)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.codehaus.groovy.reflection.CachedMethod.invoke(CachedMethod.java:343)
+	at groovy.lang.MetaMethod.doMethodInvoke(MetaMethod.java:328)
+	at org.codehaus.groovy.runtime.metaclass.ClosureMetaClass.invokeMethod(ClosureMetaClass.java:279)
+	at groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:1007)
+	at groovy.lang.Closure.call(Closure.java:433)
+	at groovy.lang.Closure.call(Closure.java:412)
+	at nextflow.script.ProcessDef.initialize(ProcessDef.groovy:110)
+	at nextflow.script.ProcessDef.run(ProcessDef.groovy:168)
+	at nextflow.script.BindableDef.invoke_a(BindableDef.groovy:51)
+	at nextflow.script.ComponentDef.invoke_o(ComponentDef.groovy:40)
+	at nextflow.script.WorkflowBinding.invokeMethod(WorkflowBinding.groovy:103)
+	at org.codehaus.groovy.runtime.InvokerHelper.invokePogoMethod(InvokerHelper.java:651)
+	at org.codehaus.groovy.runtime.InvokerHelper.invokeMethod(InvokerHelper.java:628)
+	at org.codehaus.groovy.runtime.metaclass.ClosureMetaClass.invokeOnDelegationObjects(ClosureMetaClass.java:391)
+	at org.codehaus.groovy.runtime.metaclass.ClosureMetaClass.invokeMethod(ClosureMetaClass.java:330)
+	at groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:1007)
+	at org.codehaus.groovy.vmplugin.v8.IndyInterface.fromCache(IndyInterface.java:321)
+	at Script_e6ae4090e7ed3d0f$_runScript_closure4$_closure6.doCall(Script_e6ae4090e7ed3d0f:47)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.codehaus.groovy.reflection.CachedMethod.invoke(CachedMethod.java:343)
+	at groovy.lang.MetaMethod.doMethodInvoke(MetaMethod.java:328)
+	at org.codehaus.groovy.runtime.metaclass.ClosureMetaClass.invokeMethod(ClosureMetaClass.java:279)
+	at groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:1007)
+	at groovy.lang.Closure.call(Closure.java:433)
+	at groovy.lang.Closure.call(Closure.java:412)
+	at nextflow.script.WorkflowDef.run0(WorkflowDef.groovy:204)
+	at nextflow.script.WorkflowDef.run(WorkflowDef.groovy:188)
+	at nextflow.script.BindableDef.invoke_a(BindableDef.groovy:51)
+	at org.codehaus.groovy.vmplugin.v8.IndyInterface.fromCache(IndyInterface.java:321)
+	at nextflow.script.BaseScript.run0(BaseScript.groovy:198)
+	at org.codehaus.groovy.vmplugin.v8.IndyInterface.fromCache(IndyInterface.java:321)
+	at nextflow.script.BaseScript.run(BaseScript.groovy:209)
+	at nextflow.script.ScriptParser.runScript(ScriptParser.groovy:236)
+	at nextflow.script.ScriptRunner.run(ScriptRunner.groovy:243)
+	at nextflow.script.ScriptRunner.execute(ScriptRunner.groovy:138)
+	at nextflow.cli.CmdRun.run(CmdRun.groovy:376)
+	at nextflow.cli.Launcher.run(Launcher.groovy:503)
+	at nextflow.cli.Launcher.main(Launcher.groovy:658)

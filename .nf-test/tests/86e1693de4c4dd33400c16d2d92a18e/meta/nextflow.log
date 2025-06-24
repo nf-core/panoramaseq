@@ -1,0 +1,47 @@
+Jun-24 15:39:43.642 [main] DEBUG nextflow.cli.Launcher - $> nextflow -log /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/.nf-test/tests/86e1693de4c4dd33400c16d2d92a18e/meta/nextflow.log run /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/.nf-test-86e1693de4c4dd33400c16d2d92a18e.nf -c /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/nextflow.config -c /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/tests/nextflow.config -c /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/modules/local/SAMTOOLS_SORT_LOCAL/tests/./nextflow.config -params-file /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/.nf-test/tests/86e1693de4c4dd33400c16d2d92a18e/meta/params.json -ansi-log false -profile test -with-trace /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/.nf-test/tests/86e1693de4c4dd33400c16d2d92a18e/meta/trace.csv -w /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/.nf-test/tests/86e1693de4c4dd33400c16d2d92a18e/work
+Jun-24 15:39:43.716 [main] INFO  nextflow.cli.CmdRun - N E X T F L O W  ~  version 24.10.2
+Jun-24 15:39:43.740 [main] DEBUG nextflow.plugin.PluginsFacade - Setting up plugin manager > mode=prod; embedded=false; plugins-dir=/user/gent/446/vsc44685/.nextflow/plugins; core-plugins: nf-amazon@2.9.2,nf-azure@1.10.2,nf-cloudcache@0.4.2,nf-codecommit@0.2.2,nf-console@1.1.4,nf-google@1.15.2,nf-tower@1.9.3,nf-wave@1.7.4
+Jun-24 15:39:43.772 [main] INFO  o.pf4j.DefaultPluginStatusProvider - Enabled plugins: []
+Jun-24 15:39:43.773 [main] INFO  o.pf4j.DefaultPluginStatusProvider - Disabled plugins: []
+Jun-24 15:39:43.776 [main] INFO  org.pf4j.DefaultPluginManager - PF4J version 3.12.0 in 'deployment' mode
+Jun-24 15:39:43.789 [main] INFO  org.pf4j.AbstractPluginManager - No plugins
+Jun-24 15:39:43.812 [main] DEBUG nextflow.config.ConfigBuilder - Found config base: /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/nextflow.config
+Jun-24 15:39:43.817 [main] DEBUG nextflow.config.ConfigBuilder - User config file: /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/nextflow.config
+Jun-24 15:39:43.817 [main] DEBUG nextflow.config.ConfigBuilder - User config file: /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/tests/nextflow.config
+Jun-24 15:39:43.817 [main] DEBUG nextflow.config.ConfigBuilder - User config file: /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/modules/local/SAMTOOLS_SORT_LOCAL/tests/./nextflow.config
+Jun-24 15:39:43.819 [main] DEBUG nextflow.config.ConfigBuilder - Parsing config file: /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/nextflow.config
+Jun-24 15:39:43.820 [main] DEBUG nextflow.config.ConfigBuilder - Parsing config file: /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/nextflow.config
+Jun-24 15:39:43.820 [main] DEBUG nextflow.config.ConfigBuilder - Parsing config file: /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/tests/nextflow.config
+Jun-24 15:39:43.820 [main] DEBUG nextflow.config.ConfigBuilder - Parsing config file: /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/modules/local/SAMTOOLS_SORT_LOCAL/tests/nextflow.config
+Jun-24 15:39:43.864 [main] DEBUG n.secret.LocalSecretsProvider - Secrets store: /user/gent/446/vsc44685/.nextflow/secrets/store.json
+Jun-24 15:39:43.868 [main] DEBUG nextflow.secret.SecretsLoader - Discovered secrets providers: [nextflow.secret.LocalSecretsProvider@6e28bb87] - activable => nextflow.secret.LocalSecretsProvider@6e28bb87
+Jun-24 15:39:43.889 [main] DEBUG nextflow.config.ConfigBuilder - Applying config profile: `test`
+Jun-24 15:39:45.965 [main] DEBUG nextflow.config.ConfigBuilder - Applying config profile: `test`
+Jun-24 15:39:46.495 [main] DEBUG nextflow.config.ConfigBuilder - Applying config profile: `test`
+Jun-24 15:39:46.535 [main] DEBUG nextflow.config.ConfigBuilder - Applying config profile: `test`
+Jun-24 15:39:46.567 [main] DEBUG nextflow.config.ConfigBuilder - In the following config snippet the attribute `params.test_name` is empty:
+  nf_test_output='/kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/.nf-test/tests/86e1693de4c4dd33400c16d2d92a18e/meta'
+
+Jun-24 15:39:46.570 [main] ERROR nextflow.cli.Launcher - Unknown config attribute `params.test_name` -- check config file: /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/modules/local/SAMTOOLS_SORT_LOCAL/tests/./nextflow.config
+nextflow.exception.ConfigParseException: Unknown config attribute `params.test_name` -- check config file: /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/modules/local/SAMTOOLS_SORT_LOCAL/tests/./nextflow.config
+	at org.codehaus.groovy.vmplugin.v8.IndyInterface.fromCache(IndyInterface.java:321)
+	at nextflow.config.ConfigBuilder.validate(ConfigBuilder.groovy:465)
+	at org.codehaus.groovy.vmplugin.v8.IndyInterface.selectMethod(IndyInterface.java:355)
+	at org.codehaus.groovy.vmplugin.v8.IndyInterface.fromCache(IndyInterface.java:321)
+	at nextflow.config.ConfigBuilder.validate(ConfigBuilder.groovy:472)
+	at nextflow.config.ConfigBuilder.validate(ConfigBuilder.groovy:452)
+	at org.codehaus.groovy.vmplugin.v8.IndyInterface.selectMethod(IndyInterface.java:355)
+	at org.codehaus.groovy.vmplugin.v8.IndyInterface.fromCache(IndyInterface.java:321)
+	at nextflow.config.ConfigBuilder.merge0(ConfigBuilder.groovy:426)
+	at org.codehaus.groovy.vmplugin.v8.IndyInterface.selectMethod(IndyInterface.java:355)
+	at org.codehaus.groovy.vmplugin.v8.IndyInterface.fromCache(IndyInterface.java:321)
+	at nextflow.config.ConfigBuilder.buildConfig0(ConfigBuilder.groovy:375)
+	at org.codehaus.groovy.vmplugin.v8.IndyInterface.fromCache(IndyInterface.java:321)
+	at nextflow.config.ConfigBuilder.buildGivenFiles(ConfigBuilder.groovy:320)
+	at org.codehaus.groovy.vmplugin.v8.IndyInterface.fromCache(IndyInterface.java:321)
+	at nextflow.config.ConfigBuilder.buildConfigObject(ConfigBuilder.groovy:818)
+	at org.codehaus.groovy.vmplugin.v8.IndyInterface.fromCache(IndyInterface.java:321)
+	at nextflow.config.ConfigBuilder.build(ConfigBuilder.groovy:831)
+	at nextflow.cli.CmdRun.run(CmdRun.groovy:332)
+	at nextflow.cli.Launcher.run(Launcher.groovy:503)
+	at nextflow.cli.Launcher.main(Launcher.groovy:658)

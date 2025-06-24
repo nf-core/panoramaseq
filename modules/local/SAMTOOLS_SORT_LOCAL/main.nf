@@ -11,10 +11,8 @@ process SAMTOOLS_SORT_LOCAL {
     tuple val(meta), path(bam)
 
     output:
-    tuple val(meta), path("*.bam"),  emit: bam,  optional: true
-    tuple val(meta), path("*.cram"), emit: cram, optional: true
-    tuple val(meta), path("*.crai"), emit: crai, optional: true
-    tuple val(meta), path("*.csi"),  emit: csi,  optional: true
+    tuple val(meta), path("*.bam"),  emit: bam
+    tuple val(meta), path("*.bai"),  emit: bai
     path  "versions.yml",            emit: versions
 
     when:
@@ -23,47 +21,33 @@ process SAMTOOLS_SORT_LOCAL {
     script:
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}"
-    def extension = args.contains("--output-fmt sam") ? "sam" :
-                    args.contains("--output-fmt cram") ? "cram" :
-                    "bam"
     if ("$bam" == "${prefix}.bam") error "Input and output names are the same, use \"task.ext.prefix\" to disambiguate!"
 
     """
-    samtools cat \
-        ${bam} \
-    | \
-    samtools sort \
-        $args \
-        -T ${prefix} \
-        --threads $task.cpus \
-        -o ${prefix}.${extension} \
-        -
+    samtools sort \\
+        $args \\
+        -T ${prefix} \\
+        --threads $task.cpus \\
+        -o ${prefix}.bam \\
+        ${bam}
+
+    samtools index ${prefix}.bam
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         samtools: \$(echo \$(samtools --version 2>&1) | sed 's/^.*samtools //; s/Using.*\$//')
-    END_VERSIONS
+END_VERSIONS
     """
 
     stub:
-    def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}"
-    def extension = args.contains("--output-fmt sam") ? "sam" :
-                    args.contains("--output-fmt cram") ? "cram" :
-                    "bam"
     """
-    touch ${prefix}.${extension}
-    if [ "${extension}" == "bam" ];
-    then
-        touch ${prefix}.${extension}.csi
-    elif [ "${extension}" == "cram" ];
-    then
-        touch ${prefix}.${extension}.crai
-    fi
+    touch ${prefix}.bam
+    touch ${prefix}.bam.bai
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         samtools: \$(echo \$(samtools --version 2>&1) | sed 's/^.*samtools //; s/Using.*\$//')
-    END_VERSIONS
+END_VERSIONS
     """
 }

@@ -19,7 +19,8 @@ process CUTADAPT_ADV_PIPE {
     | cutadapt -m 20 -O 3 -a "r1polyA=A{18}" - \
     | cutadapt -m 20 -O 20 -g "r1adapter=AGATCGGAAGAGCACACGTCTGAACTCCAGTCAC;min_overlap=20" --discard-trimmed -o ${prefix}.trim2.R2.fastq.gz -
     cat <<-END_VERSIONS > versions.yml
-    "CUTADAPT_ADV_PIPE": \$(cutadapt --version)
-    END_VERSIONS
+    "${task.process}":
+        cutadapt: \$(cutadapt --version)
+END_VERSIONS
     """
 }

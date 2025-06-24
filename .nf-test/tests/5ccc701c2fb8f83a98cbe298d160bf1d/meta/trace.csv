@@ -1,0 +1,2 @@
+task_id	hash	native_id	name	status	exit	submit	duration	realtime	%cpu	peak_rss	peak_vmem	rchar	wchar
+1	f6/6aa9ef	501485	FEATURECOUNTS_CUSTOM (test)	COMPLETED	0	2025-06-24 16:07:58.729	235ms	0ms	59.0%	11.7 MB	314.2 MB	218 KB	28 KB

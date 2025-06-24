@@ -1,0 +1,55 @@
+nextflow_workflow {
+
+    name "Test PANORAMA_SEQ workflow"
+    script "workflows/panorama_seq/main.nf"
+    workflow "panorama_seq"
+
+    tag "workflow"
+    tag "workflow_panoramaseq"
+
+    test("panoramaseq workflow - test profile") {
+
+        when {
+            params {
+                outdir = "$outputDir"
+                
+                // Test data
+                star_genome_dir = params.pipelines_testdata_base_path + 'reference/star_index'
+                star_gtf = params.pipelines_testdata_base_path + 'reference/genes.gtf'
+                mergecounts = false
+                validate_h5ad = true
+            }
+            
+            workflow {
+                """
+                input[0] = Channel.fromList([
+                    [
+                        [ 
+                            id: 'sample1',
+                            N_barcodes: 1000,
+                            barcode_file: params.pipelines_testdata_base_path + 'reference/barcodes_coords_test.csv',
+                            sample_size: 100,
+                            len_barcode: 25,
+                            Nthresh: 5,
+                            Ntriage: 50,
+                            single_end: false
+                        ],
+                        [
+                            params.pipelines_testdata_base_path + 'fastq/sample1_R1.fastq.gz',
+                            params.pipelines_testdata_base_path + 'fastq/sample1_R2.fastq.gz'
+                        ]
+                    ]
+                ])
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert snapshot(workflow.out.multiqc_report).match("multiqc") },
+                { assert snapshot(workflow.out.versions).match("versions") }
+            )
+        }
+    }
+}

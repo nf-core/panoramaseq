@@ -1,0 +1,2 @@
+task_id	hash	native_id	name	status	exit	submit	duration	realtime	%cpu	peak_rss	peak_vmem	rchar	wchar
+1	fb/f620df	512004	UMI_count (S09)	COMPLETED	0	2025-06-24 16:37:30.449	197ms	0ms	109.9%	2.6 MB	4.3 MB	95.9 KB	322 B

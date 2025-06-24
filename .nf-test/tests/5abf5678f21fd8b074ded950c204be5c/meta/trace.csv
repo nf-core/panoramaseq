@@ -1,0 +1,2 @@
+task_id	hash	native_id	name	status	exit	submit	duration	realtime	%cpu	peak_rss	peak_vmem	rchar	wchar
+1	16/6c840c	2811534	CUTADAPT_ADV_PIPE (test)	COMPLETED	0	2025-06-24 10:38:49.363	1.7s	839ms	58.9%	23.2 MB	56.8 MB	14.1 MB	114.1 KB

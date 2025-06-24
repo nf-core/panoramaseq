@@ -1,0 +1,2 @@
+task_id	hash	native_id	name	status	exit	submit	duration	realtime	%cpu	peak_rss	peak_vmem	rchar	wchar
+1	3d/a7fc10	621678	PREPARE_GENOME:STAR_GENOMEGENERATE (genome.fasta)	COMPLETED	0	2025-06-24 11:54:48.552	773ms	283ms	68.3%	3 MB	4.6 MB	4.8 MB	6 MB

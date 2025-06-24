@@ -14,11 +14,29 @@ process UMI_count {
     output:
     tuple val(meta), path("*.tsv.gz"), emit: umi_counts
     path('logs_umi/*.{txt,log}'), emit: log_files
+    path "versions.yml", emit: versions
 
     script:
     """
     mkdir logs_umi
     umi_tools count --per-gene --gene-tag=XT --assigned-status-tag=XS --per-cell -I ${bam} -S ${meta.id}_counts.tsv.gz --log=logs_umi/${meta.id}_umiCounts.log
+    
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        umi_tools: \$(umi_tools --version | sed '/version:/!d; s/.*: //')
+END_VERSIONS
+    """
+
+    stub:
+    """
+    mkdir logs_umi
+    touch ${meta.id}_counts.tsv.gz
+    touch logs_umi/${meta.id}_umiCounts.log
+    
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        umi_tools: "stub-version"
+END_VERSIONS
     """
 
 }

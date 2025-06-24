@@ -2,7 +2,7 @@ process STAR_ALIGN_LOCAL {
     tag "$meta.id"
     label 'process_high'
 
-    conda "${moduleDir}/../nf-core/star/align/environment.yml"
+    conda "${moduleDir}/../nf-core/star/genomegenerate/environment.yml"
     container "community.wave.seqera.io/library/htslib_samtools_star_gawk:ae438e9a604351a4"
 
     input:
@@ -22,30 +22,34 @@ process STAR_ALIGN_LOCAL {
     publishDir "${params.outdir}/star", mode: 'copy', overwrite: true
 
     script:
+    def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
-    STAR \
-        --runThreadN ${task.cpus} \
-        --readFilesCommand zcat \
-        --genomeDir $genome_dir \
-        --readFilesIn $fastq2 \
-        --outFilterType BySJout \
-        --outSAMunmapped Within \
-        --outFilterMultimapNmax 200 \
-        --alignSJoverhangMin 8 \
-        --alignSJDBoverhangMin 1 \
-        --outFilterMismatchNmax 999 \
-        --outFilterMismatchNoverLmax 0.6 \
-        --alignIntronMin 20 \
-        --alignIntronMax 1000000 \
-        --alignMatesGapMax 1000000 \
-        --limitOutSJcollapsed 5000000 \
-        --limitIObufferSize 200000000 200000000 \
-        --outSAMattributes NH HI NM MD \
-        --outSAMtype BAM SortedByCoordinate \
-        --outFileNamePrefix ${prefix}_ \
-        --limitBAMsortRAM 2000000000
+    STAR \\
+        --runThreadN ${task.cpus} \\
+        --readFilesCommand zcat \\
+        --genomeDir $genome_dir \\
+        --readFilesIn $fastq2 \\
+        --outFileNamePrefix ${prefix}_ \\
+        $args
 
-    STAR --version | head -n 1 | sed 's/STAR_//' > versions.yml
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        star: \$(STAR --version | head -n 1 | sed 's/STAR_//')
+END_VERSIONS
+    """
+
+    stub:
+    def prefix = task.ext.prefix ?: "${meta.id}"
+    """
+    touch ${prefix}_Aligned.sortedByCoord.out.bam
+    touch ${prefix}_Log.final.out
+    touch ${prefix}_Log.out
+    touch ${prefix}_Log.progress.out
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        star: \$(STAR --version | head -n 1 | sed 's/STAR_//')
+END_VERSIONS
     """
 }

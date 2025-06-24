@@ -65,6 +65,16 @@
                     "help_text": "This parameter is *mandatory* if `--genome` is not specified. If you don't have a BWA index available this will be generated for you automatically. Combine with `--save_reference` to save BWA index for future runs.",
                     "fa_icon": "far fa-file-code"
                 },
+                "additional_fasta": {
+                    "type": "string",
+                    "format": "file-path",
+                    "exists": true,
+                    "mimetype": "text/plain",
+                    "pattern": "^\\S+\\.fn?a(sta)?(\\.gz)?$",
+                    "description": "Path to additional FASTA file to concatenate with main genome (optional).",
+                    "help_text": "This parameter is optional. If provided, the additional FASTA sequences will be concatenated with the main genome FASTA before STAR index generation.",
+                    "fa_icon": "far fa-file-code"
+                },
                 "igenomes_ignore": {
                     "type": "boolean",
                     "description": "Do not load the iGenomes reference config.",
@@ -204,6 +214,29 @@
                     "type": "string",
                     "description": "Custom MultiQC yaml file containing HTML including a methods description.",
                     "fa_icon": "fas fa-cog"
+                },
+                "mergecounts": {
+                    "type": "boolean",
+                    "description": "Merge all count TSV files into a single H5AD file with spatial coordinates.",
+                    "fa_icon": "fas fa-layer-group"
+                },
+                "coords_csv": {
+                    "type": "string",
+                    "format": "file-path",
+                    "description": "CSV file with spatial coordinates (cell, x, y) for merging count data.",
+                    "help_text": "Required when mergecounts is enabled. Should contain columns: cell, x, y",
+                    "fa_icon": "fas fa-map-marker-alt"
+                },
+                "validate_h5ad": {
+                    "type": "boolean",
+                    "description": "Validate the structure of the merged H5AD file.",
+                    "help_text": "Run validation checks on the merged H5AD file to ensure proper structure and data integrity",
+                    "fa_icon": "fas fa-check-circle"
+                },
+                "skip_multiqc": {
+                    "type": "boolean",
+                    "description": "Skip MultiQC report generation.",
+                    "fa_icon": "fas fa-fast-forward"
                 },
                 "validate_params": {
                     "type": "boolean",

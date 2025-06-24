@@ -1,0 +1,4 @@
+N E X T F L O W  ~  version 24.10.2
+Launching `/kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/.nf-test-dd2de2d4ab79535abc2b42b95721b482.nf` [boring_bardeen] DSL2 - revision: 2eaaf8146a
+[4e/f83428] Submitted process > STAR_ALIGN_LOCAL (S09)
+WARN: Process `STAR_ALIGN_LOCAL` publishDir path contains a variable with a null value

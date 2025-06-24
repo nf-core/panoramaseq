@@ -1,0 +1,2 @@
+task_id	hash	native_id	name	status	exit	submit	duration	realtime	%cpu	peak_rss	peak_vmem	rchar	wchar
+1	a7/8fc933	3003403	SAMTOOLS_INDEX (test)	COMPLETED	0	2025-06-24 15:31:17.813	249ms	1s	23.5%	4.5 MB	17.1 MB	139.3 KB	4.7 KB

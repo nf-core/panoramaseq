@@ -1,0 +1,97 @@
+{
+    "paired_end_versions": {
+        "content": [
+            [
+                "versions.yml:md5,c0b9bed7072a083075975b75ac9036a6"
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.2"
+        },
+        "timestamp": "2025-06-24T15:25:00.874973924"
+    },
+    "sarscov2 [bam] - stub": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "test",
+                            "single_end": true
+                        },
+                        "test.featureCounts.tsv:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "1": [
+                    [
+                        {
+                            "id": "test",
+                            "single_end": true
+                        },
+                        "test.featureCounts.tsv.summary:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "2": [
+                    [
+                        {
+                            "id": "test",
+                            "single_end": true
+                        },
+                        "test.featureCounts.bam:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "3": [
+                    "versions.yml:md5,c0b9bed7072a083075975b75ac9036a6"
+                ],
+                "annotated_bam": [
+                    [
+                        {
+                            "id": "test",
+                            "single_end": true
+                        },
+                        "test.featureCounts.bam:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "counts": [
+                    [
+                        {
+                            "id": "test",
+                            "single_end": true
+                        },
+                        "test.featureCounts.tsv:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "summary": [
+                    [
+                        {
+                            "id": "test",
+                            "single_end": true
+                        },
+                        "test.featureCounts.tsv.summary:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "versions": [
+                    "versions.yml:md5,c0b9bed7072a083075975b75ac9036a6"
+                ]
+            }
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.2"
+        },
+        "timestamp": "2025-06-24T15:11:33.661958876"
+    },
+    "single_end_versions": {
+        "content": [
+            [
+                "versions.yml:md5,c0b9bed7072a083075975b75ac9036a6"
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.2"
+        },
+        "timestamp": "2025-06-24T15:24:54.318535623"
+    }
+}

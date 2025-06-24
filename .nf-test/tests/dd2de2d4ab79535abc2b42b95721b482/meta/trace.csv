@@ -1,0 +1,2 @@
+task_id	hash	native_id	name	status	exit	submit	duration	realtime	%cpu	peak_rss	peak_vmem	rchar	wchar
+1	4e/f83428	2804660	STAR_ALIGN_LOCAL (S09)	COMPLETED	0	2025-06-24 13:43:34.829	222ms	50ms	50.1%	2.2 MB	4.6 MB	161.1 KB	378 B

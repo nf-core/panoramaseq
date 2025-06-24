@@ -1,0 +1,2 @@
+task_id	hash	native_id	name	status	exit	submit	duration	realtime	%cpu	peak_rss	peak_vmem	rchar	wchar
+1	c8/7593a6	1464192	CUTADAPT_PANORAMA (test)	COMPLETED	0	2025-06-24 14:50:37.626	1.6s	911ms	19.5%	4.5 MB	17.1 MB	5.8 MB	81.7 KB

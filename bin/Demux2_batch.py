@@ -5,6 +5,7 @@ import argparse
 import subprocess
 import re
 import gzip
+import csv
 
 def fastq_iter(handle):
     while True:
@@ -224,8 +225,14 @@ cudano = args.Cuda
 segmentid = args.segmentid
 
 
-with open(filename) as IN: 
-    codes=IN.readlines() # have \n EOL
+# Read barcodes from CSV file
+codes = []
+with open(filename, 'r') as csvfile:
+    reader = csv.DictReader(csvfile)
+    for row in reader:
+        # Extract barcode from 'cell' column and convert to lowercase, add newline for compatibility
+        codes.append(row['cell'].lower() + '\n')
+
 assert N == len(codes)
 assert M == len(codes[0][:-1])
 allseqs = []

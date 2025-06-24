@@ -13,3 +13,45 @@ report_section_order:
 export_plots: true
 
 disable_version_detection: true
+
+# Configure FastQC to handle multiple runs per sample
+fastqc:
+  # Use directory names to distinguish different FastQC stages
+  fn_clean_exts:
+    - ".fastq"
+    - ".fq"
+    - "_fastqc"
+
+# Sample name cleaning to preserve stage information
+sample_names_ignore:
+  - "_fastqc"
+
+# Use directory names in sample names to distinguish stages
+use_filename_as_sample_name: true
+
+# Custom sample name patterns to organize FastQC results by stage
+sample_names_replace_regex:
+  - ["raw_(.+)", "\\1 (Raw reads)"]
+  - ["cutadapt_(.+)", "\\1 (After trimming)"] 
+  - ["cutadapt2_(.+)", "\\1 (After advanced trimming)"]
+
+# Order FastQC sections by processing stage
+module_order:
+  - fastqc:
+      name: "FastQC - Raw reads"
+      anchor: "fastqc_raw"
+      info: "Quality control metrics for raw sequencing reads"
+      path_filters:
+        - "*raw_*fastqc.zip"
+  - fastqc:
+      name: "FastQC - After trimming"
+      anchor: "fastqc_cutadapt"
+      info: "Quality control metrics after initial trimming"
+      path_filters:
+        - "*cutadapt_*fastqc.zip"
+  - fastqc:
+      name: "FastQC - After advanced trimming"
+      anchor: "fastqc_cutadapt2"
+      info: "Quality control metrics after advanced trimming"
+      path_filters:
+        - "*cutadapt2_*fastqc.zip"

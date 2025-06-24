@@ -1,0 +1,142 @@
+{
+    "stub": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "S09"
+                        },
+                        "S09.star_Aligned.sortedByCoord.out.bam:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "1": [
+                    
+                ],
+                "2": [
+                    
+                ],
+                "3": [
+                    
+                ],
+                "4": [
+                    
+                ],
+                "5": [
+                    "S09.star_Log.final.out:md5,d41d8cd98f00b204e9800998ecf8427e"
+                ],
+                "6": [
+                    "S09.star_Log.out:md5,d41d8cd98f00b204e9800998ecf8427e"
+                ],
+                "7": [
+                    "S09.star_Log.progress.out:md5,d41d8cd98f00b204e9800998ecf8427e"
+                ],
+                "8": [
+                    "versions.yml:md5,17e5956c5d53aa9485212a66adb000fe"
+                ],
+                "bai": [
+                    
+                ],
+                "bam": [
+                    [
+                        {
+                            "id": "S09"
+                        },
+                        "S09.star_Aligned.sortedByCoord.out.bam:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "crai": [
+                    
+                ],
+                "cram": [
+                    
+                ],
+                "csi": [
+                    
+                ],
+                "log_final": [
+                    "S09.star_Log.final.out:md5,d41d8cd98f00b204e9800998ecf8427e"
+                ],
+                "log_out": [
+                    "S09.star_Log.out:md5,d41d8cd98f00b204e9800998ecf8427e"
+                ],
+                "log_progress": [
+                    "S09.star_Log.progress.out:md5,d41d8cd98f00b204e9800998ecf8427e"
+                ],
+                "versions": [
+                    "versions.yml:md5,17e5956c5d53aa9485212a66adb000fe"
+                ]
+            }
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.2"
+        },
+        "timestamp": "2025-06-24T13:19:23.538032405"
+    },
+    "star_align_local - with genome generation": {
+        "content": [
+            {
+                "0": [
+                    
+                ],
+                "1": [
+                    
+                ],
+                "2": [
+                    
+                ],
+                "3": [
+                    
+                ],
+                "4": [
+                    
+                ],
+                "5": [
+                    
+                ],
+                "6": [
+                    
+                ],
+                "7": [
+                    
+                ],
+                "8": [
+                    
+                ],
+                "bai": [
+                    
+                ],
+                "bam": [
+                    
+                ],
+                "crai": [
+                    
+                ],
+                "cram": [
+                    
+                ],
+                "csi": [
+                    
+                ],
+                "log_final": [
+                    
+                ],
+                "log_out": [
+                    
+                ],
+                "log_progress": [
+                    
+                ],
+                "versions": [
+                    
+                ]
+            }
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.2"
+        },
+        "timestamp": "2025-06-24T13:20:30.596820879"
+    }
+}
