@@ -1,0 +1,74 @@
+{
+    "custom_prefix": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "custom_test"
+                    },
+                    "custom_test.h5ad:md5,dc890a21299938872612b8c59a8bd22d"
+                ]
+            ],
+            [
+                "versions.yml:md5,7e3208653f573e1a481b9d8597ccc89e"
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.2"
+        },
+        "timestamp": "2025-07-02T10:50:57.451360719"
+    },
+    "S09_sample": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "S09"
+                    },
+                    "S09.h5ad:md5,a112afc616b277bbc1410b31e2e31a3a"
+                ]
+            ],
+            [
+                "versions.yml:md5,7e3208653f573e1a481b9d8597ccc89e"
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.2"
+        },
+        "timestamp": "2025-07-02T10:50:42.119431078"
+    },
+    "tsv_to_h5ad_single - stub": {
+        "content": [
+            [
+                "versions.yml:md5,7e3208653f573e1a481b9d8597ccc89e"
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.2"
+        },
+        "timestamp": "2025-07-02T10:50:34.484590348"
+    },
+    "S10_sample": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "S10"
+                    },
+                    "S10.h5ad:md5,5524b7e2a395dd408df60caee7e1bc61"
+                ]
+            ],
+            [
+                "versions.yml:md5,7e3208653f573e1a481b9d8597ccc89e"
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.2"
+        },
+        "timestamp": "2025-07-02T10:50:49.677500891"
+    }
+}

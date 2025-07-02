@@ -1,0 +1,2 @@
+task_id	hash	native_id	name	status	exit	submit	duration	realtime	%cpu	peak_rss	peak_vmem	rchar	wchar
+1	95/19d87c	642981	tsv_to_h5ad (multi_h5ad)	COMPLETED	0	2025-07-02 10:42:29.727	7s	5.7s	59.7%	72.4 MB	913.1 MB	50.8 MB	1.4 MB

@@ -1,7 +1,7 @@
 nextflow_workflow {
 
     name "Test Integration PREPARE_GENOME + STAR_ALIGN"
-    script "../../../../subworkflows/local/prepare_genome/main.nf"
+    script "../subworkflows/local/prepare_genome/main.nf"
     workflow "PREPARE_GENOME"
 
     tag "integration"

@@ -1,87 +1,87 @@
-Jun-24 16:07:48.733 [main] DEBUG nextflow.cli.Launcher - $> nextflow -quiet -log /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/.nf-test/tests/9a439e5a79bcbcf8535dfb5c78fc6047/meta/nextflow.log run /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/.nf-test-9a439e5a79bcbcf8535dfb5c78fc6047.nf -c /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/nextflow.config -c /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/tests/nextflow.config -c /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/modules/local/FeatCounts/tests/./nextflow.config -params-file /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/.nf-test/tests/9a439e5a79bcbcf8535dfb5c78fc6047/meta/params.json -ansi-log false -profile test -with-trace /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/.nf-test/tests/9a439e5a79bcbcf8535dfb5c78fc6047/meta/trace.csv -w /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/.nf-test/tests/9a439e5a79bcbcf8535dfb5c78fc6047/work
-Jun-24 16:07:48.796 [main] INFO  nextflow.cli.CmdRun - N E X T F L O W  ~  version 24.10.2
-Jun-24 16:07:48.814 [main] DEBUG nextflow.plugin.PluginsFacade - Setting up plugin manager > mode=prod; embedded=false; plugins-dir=/user/gent/446/vsc44685/.nextflow/plugins; core-plugins: nf-amazon@2.9.2,nf-azure@1.10.2,nf-cloudcache@0.4.2,nf-codecommit@0.2.2,nf-console@1.1.4,nf-google@1.15.2,nf-tower@1.9.3,nf-wave@1.7.4
-Jun-24 16:07:48.841 [main] INFO  o.pf4j.DefaultPluginStatusProvider - Enabled plugins: []
-Jun-24 16:07:48.842 [main] INFO  o.pf4j.DefaultPluginStatusProvider - Disabled plugins: []
-Jun-24 16:07:48.844 [main] INFO  org.pf4j.DefaultPluginManager - PF4J version 3.12.0 in 'deployment' mode
-Jun-24 16:07:48.855 [main] INFO  org.pf4j.AbstractPluginManager - No plugins
-Jun-24 16:07:48.873 [main] DEBUG nextflow.config.ConfigBuilder - Found config base: /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/nextflow.config
-Jun-24 16:07:48.877 [main] DEBUG nextflow.config.ConfigBuilder - User config file: /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/nextflow.config
-Jun-24 16:07:48.878 [main] DEBUG nextflow.config.ConfigBuilder - User config file: /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/tests/nextflow.config
-Jun-24 16:07:48.878 [main] DEBUG nextflow.config.ConfigBuilder - User config file: /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/modules/local/FeatCounts/tests/./nextflow.config
-Jun-24 16:07:48.880 [main] DEBUG nextflow.config.ConfigBuilder - Parsing config file: /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/nextflow.config
-Jun-24 16:07:48.880 [main] DEBUG nextflow.config.ConfigBuilder - Parsing config file: /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/nextflow.config
-Jun-24 16:07:48.880 [main] DEBUG nextflow.config.ConfigBuilder - Parsing config file: /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/tests/nextflow.config
-Jun-24 16:07:48.880 [main] DEBUG nextflow.config.ConfigBuilder - Parsing config file: /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/modules/local/FeatCounts/tests/nextflow.config
-Jun-24 16:07:48.924 [main] DEBUG n.secret.LocalSecretsProvider - Secrets store: /user/gent/446/vsc44685/.nextflow/secrets/store.json
-Jun-24 16:07:48.928 [main] DEBUG nextflow.secret.SecretsLoader - Discovered secrets providers: [nextflow.secret.LocalSecretsProvider@41a6d121] - activable => nextflow.secret.LocalSecretsProvider@41a6d121
-Jun-24 16:07:48.947 [main] DEBUG nextflow.config.ConfigBuilder - Applying config profile: `test`
-Jun-24 16:07:50.743 [main] DEBUG nextflow.config.ConfigBuilder - Applying config profile: `test`
-Jun-24 16:07:51.162 [main] DEBUG nextflow.config.ConfigBuilder - Applying config profile: `test`
-Jun-24 16:07:51.196 [main] DEBUG nextflow.config.ConfigBuilder - Applying config profile: `test`
-Jun-24 16:07:51.214 [main] DEBUG nextflow.config.ConfigBuilder - Available config profiles: [bih, cfc_dev, uzl_omics, ifb_core, embl_hd, denbi_qbic, alice, mjolnir_globe, uppmax, giga, incliva, ilifu, ki_luria, uge, icr_alma, rosalind_uge, lugh, mccleary, unibe_ibu, vai, czbiohub_aws, jax, roslin, tes, scw, unc_longleaf, tigem, tubingen_apg, google, apollo, ipop_up, vsc_calcua, pdc_kth, googlels, ceci_nic5, ccga_cau, humantechnopole, stjude, daisybio, eddie, medair, biowulf, apptainer, bi, bigpurple, adcra, cedars, pawsey_setonix, vsc_kul_uhasselt, pawsey_nimbus, ucl_myriad, utd_ganymede, charliecloud, fred_hutch, seattlechildrens, icr_davros, ceres, arm, munin, rosalind, hasta, cfc, uzh, shu_bmrc, ebi_codon_slurm, ebc, ccga_dx, crick, ku_sund_danhead, marvin, shifter, biohpc_gen, mana, mamba, york_viking, unc_lccc, wehi, awsbatch, wustl_htcf, arcc, ceci_dragon2, imperial, maestro, test_local, software_license, cannon, genotoul, nci_gadi, abims, janelia, nu_genomics, googlebatch, oist, sahmri, kaust, alliance_canada, mpcdf, leicester, vsc_ugent, create, sage, cambridge, jex, podman, ebi_codon, cheaha, xanadu, nyu_hpc, test, marjorie, computerome, ucd_sonic, seg_globe, mssm, sanger, dkfz, bluebear, pasteur, einstein, ethz_euler, m3c, test_full, imb, ucl_cscluster, tuos_stanage, azurebatch, hki, seadragon, crukmi, csiro_petrichor, qmul_apocrita, wave, docker, engaging, gis, hypatia, psmn, eva, unity, cropdiversityhpc, nygc, fgcz, conda, crg, singularity, test_s3, mpcdf_viper, pe2, self_hosted_runner, tufts, uw_hyak_pedslabs, binac2, debug, genouest, cbe, unsw_katana, utd_juno, gitpod, phoenix, seawulf, uod_hpc, fub_curta, uct_hpc, aws_tower, binac, fsu_draco]
-Jun-24 16:07:51.249 [main] DEBUG nextflow.cli.CmdRun - Applied DSL=2 from script declaration
-Jun-24 16:07:51.264 [main] INFO  nextflow.cli.CmdRun - Launching `/kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/.nf-test-9a439e5a79bcbcf8535dfb5c78fc6047.nf` [zen_cori] DSL2 - revision: c29d04c5ab
-Jun-24 16:07:51.265 [main] DEBUG nextflow.plugin.PluginsFacade - Plugins declared=[nf-schema@2.2.0]
-Jun-24 16:07:51.265 [main] DEBUG nextflow.plugin.PluginsFacade - Plugins default=[]
-Jun-24 16:07:51.265 [main] DEBUG nextflow.plugin.PluginsFacade - Plugins resolved requirement=[nf-schema@2.2.0]
-Jun-24 16:07:51.266 [main] DEBUG nextflow.plugin.PluginUpdater - Installing plugin nf-schema version: 2.2.0
-Jun-24 16:07:51.317 [main] INFO  org.pf4j.AbstractPluginManager - Plugin 'nf-schema@2.2.0' resolved
-Jun-24 16:07:51.317 [main] INFO  org.pf4j.AbstractPluginManager - Start plugin 'nf-schema@2.2.0'
-Jun-24 16:07:51.387 [main] DEBUG nextflow.plugin.BasePlugin - Plugin started nf-schema@2.2.0
-Jun-24 16:07:51.445 [main] DEBUG nextflow.Session - Session UUID: a8d14213-693b-49a1-a621-cf2cfe47fc70
-Jun-24 16:07:51.445 [main] DEBUG nextflow.Session - Run name: zen_cori
-Jun-24 16:07:51.445 [main] DEBUG nextflow.Session - Executor pool size: 6
-Jun-24 16:07:51.451 [main] DEBUG nextflow.file.FilePorter - File porter settings maxRetries=3; maxTransfers=50; pollTimeout=null
-Jun-24 16:07:51.455 [main] DEBUG nextflow.util.ThreadPoolBuilder - Creating thread pool 'FileTransfer' minSize=10; maxSize=18; workQueue=LinkedBlockingQueue[10000]; allowCoreThreadTimeout=false
-Jun-24 16:07:51.528 [main] DEBUG nextflow.cli.CmdRun - 
+Jul-02 10:11:48.124 [main] DEBUG nextflow.cli.Launcher - $> nextflow -quiet -log /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/.nf-test/tests/9a439e5a79bcbcf8535dfb5c78fc6047/meta/nextflow.log run /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/.nf-test-9a439e5a79bcbcf8535dfb5c78fc6047.nf -c /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/nextflow.config -c /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/tests/nextflow.config -c /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/modules/local/FeatCounts/tests/./nextflow.config -params-file /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/.nf-test/tests/9a439e5a79bcbcf8535dfb5c78fc6047/meta/params.json -ansi-log false -profile test -with-trace /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/.nf-test/tests/9a439e5a79bcbcf8535dfb5c78fc6047/meta/trace.csv -w /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/.nf-test/tests/9a439e5a79bcbcf8535dfb5c78fc6047/work
+Jul-02 10:11:48.183 [main] INFO  nextflow.cli.CmdRun - N E X T F L O W  ~  version 24.10.2
+Jul-02 10:11:48.199 [main] DEBUG nextflow.plugin.PluginsFacade - Setting up plugin manager > mode=prod; embedded=false; plugins-dir=/user/gent/446/vsc44685/.nextflow/plugins; core-plugins: nf-amazon@2.9.2,nf-azure@1.10.2,nf-cloudcache@0.4.2,nf-codecommit@0.2.2,nf-console@1.1.4,nf-google@1.15.2,nf-tower@1.9.3,nf-wave@1.7.4
+Jul-02 10:11:48.225 [main] INFO  o.pf4j.DefaultPluginStatusProvider - Enabled plugins: []
+Jul-02 10:11:48.226 [main] INFO  o.pf4j.DefaultPluginStatusProvider - Disabled plugins: []
+Jul-02 10:11:48.228 [main] INFO  org.pf4j.DefaultPluginManager - PF4J version 3.12.0 in 'deployment' mode
+Jul-02 10:11:48.238 [main] INFO  org.pf4j.AbstractPluginManager - No plugins
+Jul-02 10:11:48.255 [main] DEBUG nextflow.config.ConfigBuilder - Found config base: /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/nextflow.config
+Jul-02 10:11:48.259 [main] DEBUG nextflow.config.ConfigBuilder - User config file: /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/nextflow.config
+Jul-02 10:11:48.260 [main] DEBUG nextflow.config.ConfigBuilder - User config file: /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/tests/nextflow.config
+Jul-02 10:11:48.260 [main] DEBUG nextflow.config.ConfigBuilder - User config file: /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/modules/local/FeatCounts/tests/./nextflow.config
+Jul-02 10:11:48.261 [main] DEBUG nextflow.config.ConfigBuilder - Parsing config file: /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/nextflow.config
+Jul-02 10:11:48.262 [main] DEBUG nextflow.config.ConfigBuilder - Parsing config file: /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/nextflow.config
+Jul-02 10:11:48.262 [main] DEBUG nextflow.config.ConfigBuilder - Parsing config file: /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/tests/nextflow.config
+Jul-02 10:11:48.262 [main] DEBUG nextflow.config.ConfigBuilder - Parsing config file: /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/modules/local/FeatCounts/tests/nextflow.config
+Jul-02 10:11:48.299 [main] DEBUG n.secret.LocalSecretsProvider - Secrets store: /user/gent/446/vsc44685/.nextflow/secrets/store.json
+Jul-02 10:11:48.302 [main] DEBUG nextflow.secret.SecretsLoader - Discovered secrets providers: [nextflow.secret.LocalSecretsProvider@2375b321] - activable => nextflow.secret.LocalSecretsProvider@2375b321
+Jul-02 10:11:48.319 [main] DEBUG nextflow.config.ConfigBuilder - Applying config profile: `test`
+Jul-02 10:11:50.279 [main] DEBUG nextflow.config.ConfigBuilder - Applying config profile: `test`
+Jul-02 10:11:50.680 [main] DEBUG nextflow.config.ConfigBuilder - Applying config profile: `test`
+Jul-02 10:11:50.709 [main] DEBUG nextflow.config.ConfigBuilder - Applying config profile: `test`
+Jul-02 10:11:50.737 [main] DEBUG nextflow.config.ConfigBuilder - Available config profiles: [bih, cfc_dev, uzl_omics, ifb_core, embl_hd, denbi_qbic, alice, mjolnir_globe, uppmax, giga, incliva, ilifu, ki_luria, uge, icr_alma, rosalind_uge, lugh, mccleary, unibe_ibu, vai, czbiohub_aws, jax, roslin, tes, scw, unc_longleaf, tigem, tubingen_apg, google, apollo, ipop_up, vsc_calcua, pdc_kth, googlels, ceci_nic5, ccga_cau, humantechnopole, stjude, daisybio, eddie, medair, biowulf, apptainer, bi, bigpurple, adcra, cedars, pawsey_setonix, vsc_kul_uhasselt, pawsey_nimbus, ucl_myriad, utd_ganymede, charliecloud, fred_hutch, seattlechildrens, icr_davros, ceres, arm, munin, rosalind, hasta, cfc, uzh, shu_bmrc, ebi_codon_slurm, ebc, ccga_dx, crick, ku_sund_danhead, marvin, shifter, biohpc_gen, mana, mamba, york_viking, unc_lccc, wehi, awsbatch, wustl_htcf, arcc, ceci_dragon2, imperial, maestro, test_local, software_license, cannon, genotoul, nci_gadi, abims, eva_grace, janelia, nu_genomics, googlebatch, oist, sahmri, kaust, alliance_canada, mpcdf, leicester, vsc_ugent, create, sage, cambridge, jex, podman, ebi_codon, cheaha, xanadu, nyu_hpc, test, marjorie, computerome, ucd_sonic, seg_globe, mssm, sanger, dkfz, bluebear, pasteur, einstein, ethz_euler, m3c, test_full, imb, ucl_cscluster, tuos_stanage, azurebatch, hki, seadragon, crukmi, csiro_petrichor, qmul_apocrita, wave, docker, engaging, gis, hypatia, psmn, eva, unity, cropdiversityhpc, nygc, fgcz, conda, crg, singularity, test_s3, mpcdf_viper, pe2, self_hosted_runner, tufts, uw_hyak_pedslabs, binac2, debug, genouest, cbe, unsw_katana, utd_juno, gitpod, phoenix, seawulf, uod_hpc, fub_curta, uct_hpc, aws_tower, binac, fsu_draco]
+Jul-02 10:11:50.769 [main] DEBUG nextflow.cli.CmdRun - Applied DSL=2 from script declaration
+Jul-02 10:11:50.782 [main] INFO  nextflow.cli.CmdRun - Launching `/kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/.nf-test-9a439e5a79bcbcf8535dfb5c78fc6047.nf` [sleepy_poisson] DSL2 - revision: c29d04c5ab
+Jul-02 10:11:50.782 [main] DEBUG nextflow.plugin.PluginsFacade - Plugins declared=[nf-schema@2.2.0]
+Jul-02 10:11:50.783 [main] DEBUG nextflow.plugin.PluginsFacade - Plugins default=[]
+Jul-02 10:11:50.783 [main] DEBUG nextflow.plugin.PluginsFacade - Plugins resolved requirement=[nf-schema@2.2.0]
+Jul-02 10:11:50.783 [main] DEBUG nextflow.plugin.PluginUpdater - Installing plugin nf-schema version: 2.2.0
+Jul-02 10:11:50.827 [main] INFO  org.pf4j.AbstractPluginManager - Plugin 'nf-schema@2.2.0' resolved
+Jul-02 10:11:50.828 [main] INFO  org.pf4j.AbstractPluginManager - Start plugin 'nf-schema@2.2.0'
+Jul-02 10:11:50.934 [main] DEBUG nextflow.plugin.BasePlugin - Plugin started nf-schema@2.2.0
+Jul-02 10:11:50.976 [main] DEBUG nextflow.Session - Session UUID: 4decafd6-4c70-4eb9-b706-82cb981c5359
+Jul-02 10:11:50.977 [main] DEBUG nextflow.Session - Run name: sleepy_poisson
+Jul-02 10:11:50.977 [main] DEBUG nextflow.Session - Executor pool size: 6
+Jul-02 10:11:50.983 [main] DEBUG nextflow.file.FilePorter - File porter settings maxRetries=3; maxTransfers=50; pollTimeout=null
+Jul-02 10:11:50.986 [main] DEBUG nextflow.util.ThreadPoolBuilder - Creating thread pool 'FileTransfer' minSize=10; maxSize=18; workQueue=LinkedBlockingQueue[10000]; allowCoreThreadTimeout=false
+Jul-02 10:11:51.047 [main] DEBUG nextflow.cli.CmdRun - 
   Version: 24.10.2 build 5932
   Created: 27-11-2024 21:23 UTC (22:23 CEST)
   System: Linux 5.14.0-427.66.1.el9_4.x86_64
-  Runtime: Groovy 4.0.23 on OpenJDK 64-Bit Server VM 21.0.5+11-LTS
+  Runtime: Groovy 4.0.23 on OpenJDK 64-Bit Server VM 21.0.7+6-LTS
   Encoding: UTF-8 (UTF-8)
-  Process: 501061@node3901.accelgor.os [10.141.9.131]
-  CPUs: 6 - Mem: 503 GB (400.5 GB) - Swap: 20 GB (19.4 GB)
-Jun-24 16:07:51.568 [main] DEBUG nextflow.Session - Work-dir: /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/.nf-test/tests/9a439e5a79bcbcf8535dfb5c78fc6047/work [gpfs]
-Jun-24 16:07:51.617 [main] DEBUG nextflow.executor.ExecutorFactory - Extension executors providers=[]
-Jun-24 16:07:51.624 [main] DEBUG nextflow.Session - Observer factory: DefaultObserverFactory
-Jun-24 16:07:51.657 [main] DEBUG nextflow.cache.CacheFactory - Using Nextflow cache factory: nextflow.cache.DefaultCacheFactory
-Jun-24 16:07:51.665 [main] DEBUG nextflow.util.CustomThreadPool - Creating default thread pool > poolSize: 7; maxThreads: 1000
-Jun-24 16:07:51.733 [main] DEBUG nextflow.Session - Session start
-Jun-24 16:07:51.735 [main] DEBUG nextflow.trace.TraceFileObserver - Workflow started -- trace file: /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/.nf-test/tests/9a439e5a79bcbcf8535dfb5c78fc6047/meta/trace.csv
-Jun-24 16:07:51.906 [main] DEBUG nextflow.script.ScriptRunner - > Launching execution
-Jun-24 16:07:52.562 [main] DEBUG nextflow.script.ProcessConfig - Config settings `withLabel:process_medium` matches labels `process_medium` for process with name FEATURECOUNTS_CUSTOM
-Jun-24 16:07:52.565 [main] DEBUG nextflow.script.ProcessConfig - Config settings `withName:FEATURECOUNTS_CUSTOM` matches process FEATURECOUNTS_CUSTOM
-Jun-24 16:07:52.584 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
-Jun-24 16:07:52.584 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
-Jun-24 16:07:52.589 [main] DEBUG nextflow.executor.Executor - [warm up] executor > local
-Jun-24 16:07:52.594 [main] DEBUG n.processor.LocalPollingMonitor - Creating local task monitor for executor 'local' > cpus=6; memory=503 GB; capacity=6; pollInterval=100ms; dumpInterval=5m
-Jun-24 16:07:52.596 [main] DEBUG n.processor.TaskPollingMonitor - >>> barrier register (monitor: local)
-Jun-24 16:07:52.663 [main] DEBUG nextflow.Session - Config process names validation disabled as requested
-Jun-24 16:07:52.664 [main] DEBUG nextflow.Session - Igniting dataflow network (1)
-Jun-24 16:07:52.664 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > FEATURECOUNTS_CUSTOM
-Jun-24 16:07:52.665 [main] DEBUG nextflow.script.ScriptRunner - Parsed script files:
+  Process: 456302@node3900.accelgor.os [10.141.9.130]
+  CPUs: 6 - Mem: 503 GB (379.7 GB) - Swap: 20 GB (19.4 GB)
+Jul-02 10:11:51.112 [main] DEBUG nextflow.Session - Work-dir: /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/.nf-test/tests/9a439e5a79bcbcf8535dfb5c78fc6047/work [gpfs]
+Jul-02 10:11:51.196 [main] DEBUG nextflow.executor.ExecutorFactory - Extension executors providers=[]
+Jul-02 10:11:51.205 [main] DEBUG nextflow.Session - Observer factory: DefaultObserverFactory
+Jul-02 10:11:51.242 [main] DEBUG nextflow.cache.CacheFactory - Using Nextflow cache factory: nextflow.cache.DefaultCacheFactory
+Jul-02 10:11:51.250 [main] DEBUG nextflow.util.CustomThreadPool - Creating default thread pool > poolSize: 7; maxThreads: 1000
+Jul-02 10:11:51.322 [main] DEBUG nextflow.Session - Session start
+Jul-02 10:11:51.324 [main] DEBUG nextflow.trace.TraceFileObserver - Workflow started -- trace file: /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/.nf-test/tests/9a439e5a79bcbcf8535dfb5c78fc6047/meta/trace.csv
+Jul-02 10:11:51.501 [main] DEBUG nextflow.script.ScriptRunner - > Launching execution
+Jul-02 10:11:52.151 [main] DEBUG nextflow.script.ProcessConfig - Config settings `withLabel:process_medium` matches labels `process_medium` for process with name FEATURECOUNTS_CUSTOM
+Jul-02 10:11:52.154 [main] DEBUG nextflow.script.ProcessConfig - Config settings `withName:FEATURECOUNTS_CUSTOM` matches process FEATURECOUNTS_CUSTOM
+Jul-02 10:11:52.177 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Jul-02 10:11:52.178 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Jul-02 10:11:52.183 [main] DEBUG nextflow.executor.Executor - [warm up] executor > local
+Jul-02 10:11:52.190 [main] DEBUG n.processor.LocalPollingMonitor - Creating local task monitor for executor 'local' > cpus=6; memory=503 GB; capacity=6; pollInterval=100ms; dumpInterval=5m
+Jul-02 10:11:52.192 [main] DEBUG n.processor.TaskPollingMonitor - >>> barrier register (monitor: local)
+Jul-02 10:11:52.274 [main] DEBUG nextflow.Session - Config process names validation disabled as requested
+Jul-02 10:11:52.275 [main] DEBUG nextflow.Session - Igniting dataflow network (1)
+Jul-02 10:11:52.275 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > FEATURECOUNTS_CUSTOM
+Jul-02 10:11:52.276 [main] DEBUG nextflow.script.ScriptRunner - Parsed script files:
   Script_eb83ed8cdb1ed3ec: /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/.nf-test-9a439e5a79bcbcf8535dfb5c78fc6047.nf
   Script_fef94cf14e8982fd: /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/modules/local/FeatCounts/tests/../main.nf
-Jun-24 16:07:52.665 [main] DEBUG nextflow.script.ScriptRunner - > Awaiting termination 
-Jun-24 16:07:52.665 [main] DEBUG nextflow.Session - Session await
-Jun-24 16:07:52.769 [FileTransfer-1] DEBUG nextflow.file.FilePorter - Copying foreign file https://raw.githubusercontent.com/nf-core/test-datasets/modules/data/genomics/sarscov2/illumina/bam/test.single_end.bam to work dir: /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/.nf-test/tests/9a439e5a79bcbcf8535dfb5c78fc6047/work/stage-a8d14213-693b-49a1-a621-cf2cfe47fc70/d2/241d865d9029a0b8c18cb7b8abde8b/test.single_end.bam
-Jun-24 16:07:52.769 [FileTransfer-2] DEBUG nextflow.file.FilePorter - Copying foreign file https://raw.githubusercontent.com/nf-core/test-datasets/modules/data/genomics/sarscov2/genome/genome.gtf to work dir: /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/.nf-test/tests/9a439e5a79bcbcf8535dfb5c78fc6047/work/stage-a8d14213-693b-49a1-a621-cf2cfe47fc70/c7/b0b5a9c170b687e96e46e7281ab5cb/genome.gtf
-Jun-24 16:07:52.864 [Actor Thread 5] DEBUG nextflow.container.SingularityCache - Singularity found local store for image=https://depot.galaxyproject.org/singularity/subread:2.0.6--he4a0461_2; path=/user/gent/446/vsc44685/ScratchVO_dir/apptainer_cache/depot.galaxyproject.org-singularity-subread-2.0.6--he4a0461_2.img
-Jun-24 16:07:52.944 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
-Jun-24 16:07:52.946 [Task submitter] INFO  nextflow.Session - [4b/b0bd9a] Submitted process > FEATURECOUNTS_CUSTOM (test)
-Jun-24 16:07:53.400 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 1; name: FEATURECOUNTS_CUSTOM (test); status: COMPLETED; exit: 0; error: -; workDir: /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/.nf-test/tests/9a439e5a79bcbcf8535dfb5c78fc6047/work/4b/b0bd9aeb26fd6653f0c2730758573d]
-Jun-24 16:07:53.402 [Task monitor] DEBUG nextflow.util.ThreadPoolBuilder - Creating thread pool 'TaskFinalizer' minSize=10; maxSize=18; workQueue=LinkedBlockingQueue[10000]; allowCoreThreadTimeout=false
-Jun-24 16:07:53.448 [main] DEBUG nextflow.Session - Session await > all processes finished
-Jun-24 16:07:53.499 [Task monitor] DEBUG n.processor.TaskPollingMonitor - <<< barrier arrives (monitor: local) - terminating tasks monitor poll loop
-Jun-24 16:07:53.499 [main] DEBUG nextflow.Session - Session await > all barriers passed
-Jun-24 16:07:53.501 [main] DEBUG nextflow.util.ThreadPoolManager - Thread pool 'TaskFinalizer' shutdown completed (hard=false)
-Jun-24 16:07:53.510 [main] DEBUG n.trace.WorkflowStatsObserver - Workflow completed > WorkflowStats[succeededCount=1; failedCount=0; ignoredCount=0; cachedCount=0; pendingCount=0; submittedCount=0; runningCount=0; retriesCount=0; abortedCount=0; succeedDuration=0ms; failedDuration=0ms; cachedDuration=0ms;loadCpus=0; loadMemory=0; peakRunning=1; peakCpus=2; peakMemory=3 GB; ]
-Jun-24 16:07:53.510 [main] DEBUG nextflow.trace.TraceFileObserver - Workflow completed -- saving trace file
-Jun-24 16:07:53.510 [main] DEBUG nextflow.trace.ReportObserver - Workflow completed -- rendering execution report
-Jun-24 16:07:53.886 [main] DEBUG nextflow.trace.TimelineObserver - Workflow completed -- rendering execution timeline
-Jun-24 16:07:53.956 [main] DEBUG nextflow.cache.CacheDB - Closing CacheDB done
-Jun-24 16:07:53.968 [main] INFO  org.pf4j.AbstractPluginManager - Stop plugin 'nf-schema@2.2.0'
-Jun-24 16:07:53.968 [main] DEBUG nextflow.plugin.BasePlugin - Plugin stopped nf-schema
-Jun-24 16:07:53.969 [main] DEBUG nextflow.util.ThreadPoolManager - Thread pool 'FileTransfer' shutdown completed (hard=false)
-Jun-24 16:07:53.969 [main] DEBUG nextflow.script.ScriptRunner - > Execution complete -- Goodbye
+Jul-02 10:11:52.276 [main] DEBUG nextflow.script.ScriptRunner - > Awaiting termination 
+Jul-02 10:11:52.276 [main] DEBUG nextflow.Session - Session await
+Jul-02 10:11:52.378 [FileTransfer-2] DEBUG nextflow.file.FilePorter - Copying foreign file https://raw.githubusercontent.com/nf-core/test-datasets/modules/data/genomics/sarscov2/genome/genome.gtf to work dir: /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/.nf-test/tests/9a439e5a79bcbcf8535dfb5c78fc6047/work/stage-4decafd6-4c70-4eb9-b706-82cb981c5359/90/838789d8288cd5f886b7172e03e301/genome.gtf
+Jul-02 10:11:52.378 [FileTransfer-1] DEBUG nextflow.file.FilePorter - Copying foreign file https://raw.githubusercontent.com/nf-core/test-datasets/modules/data/genomics/sarscov2/illumina/bam/test.single_end.bam to work dir: /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/.nf-test/tests/9a439e5a79bcbcf8535dfb5c78fc6047/work/stage-4decafd6-4c70-4eb9-b706-82cb981c5359/28/b8307bde8a037503701abf897a51cf/test.single_end.bam
+Jul-02 10:11:52.457 [Actor Thread 5] DEBUG nextflow.container.SingularityCache - Singularity found local store for image=https://depot.galaxyproject.org/singularity/subread:2.0.6--he4a0461_2; path=/user/gent/446/vsc44685/ScratchVO_dir/apptainer_cache/depot.galaxyproject.org-singularity-subread-2.0.6--he4a0461_2.img
+Jul-02 10:11:52.521 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Jul-02 10:11:52.522 [Task submitter] INFO  nextflow.Session - [7b/4d1494] Submitted process > FEATURECOUNTS_CUSTOM (test)
+Jul-02 10:11:53.091 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 1; name: FEATURECOUNTS_CUSTOM (test); status: COMPLETED; exit: 0; error: -; workDir: /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/.nf-test/tests/9a439e5a79bcbcf8535dfb5c78fc6047/work/7b/4d149421824d390a95f18f3c6f721a]
+Jul-02 10:11:53.092 [Task monitor] DEBUG nextflow.util.ThreadPoolBuilder - Creating thread pool 'TaskFinalizer' minSize=10; maxSize=18; workQueue=LinkedBlockingQueue[10000]; allowCoreThreadTimeout=false
+Jul-02 10:11:53.146 [main] DEBUG nextflow.Session - Session await > all processes finished
+Jul-02 10:11:53.189 [Task monitor] DEBUG n.processor.TaskPollingMonitor - <<< barrier arrives (monitor: local) - terminating tasks monitor poll loop
+Jul-02 10:11:53.190 [main] DEBUG nextflow.Session - Session await > all barriers passed
+Jul-02 10:11:53.194 [main] DEBUG nextflow.util.ThreadPoolManager - Thread pool 'TaskFinalizer' shutdown completed (hard=false)
+Jul-02 10:11:53.206 [main] DEBUG n.trace.WorkflowStatsObserver - Workflow completed > WorkflowStats[succeededCount=1; failedCount=0; ignoredCount=0; cachedCount=0; pendingCount=0; submittedCount=0; runningCount=0; retriesCount=0; abortedCount=0; succeedDuration=0ms; failedDuration=0ms; cachedDuration=0ms;loadCpus=0; loadMemory=0; peakRunning=1; peakCpus=2; peakMemory=3 GB; ]
+Jul-02 10:11:53.206 [main] DEBUG nextflow.trace.TraceFileObserver - Workflow completed -- saving trace file
+Jul-02 10:11:53.207 [main] DEBUG nextflow.trace.ReportObserver - Workflow completed -- rendering execution report
+Jul-02 10:11:53.601 [main] DEBUG nextflow.trace.TimelineObserver - Workflow completed -- rendering execution timeline
+Jul-02 10:11:53.669 [main] DEBUG nextflow.cache.CacheDB - Closing CacheDB done
+Jul-02 10:11:53.683 [main] INFO  org.pf4j.AbstractPluginManager - Stop plugin 'nf-schema@2.2.0'
+Jul-02 10:11:53.683 [main] DEBUG nextflow.plugin.BasePlugin - Plugin stopped nf-schema
+Jul-02 10:11:53.684 [main] DEBUG nextflow.util.ThreadPoolManager - Thread pool 'FileTransfer' shutdown completed (hard=false)
+Jul-02 10:11:53.684 [main] DEBUG nextflow.script.ScriptRunner - > Execution complete -- Goodbye
