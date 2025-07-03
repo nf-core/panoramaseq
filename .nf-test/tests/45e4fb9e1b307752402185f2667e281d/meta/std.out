@@ -1,0 +1,3 @@
+ERROR ~ No such variable: optional
+
+ -- Check script '/kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/modules/nf-core/samtools/sort/tests/../main.nf' at line: 12 or see '/kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/.nf-test/tests/45e4fb9e1b307752402185f2667e281d/meta/nextflow.log' file for more details

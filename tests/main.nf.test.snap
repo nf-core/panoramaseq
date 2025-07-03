@@ -1,0 +1,36 @@
+{
+  "panoramaseq - minimal test profile": {
+    "content": [
+      {
+        "0": "pipeline_info",
+        "1": "h5ad_files", 
+        "2": "multiqc_outputs"
+      }
+    ],
+    "meta": {
+      "nextflow": "24.04.2",
+      "nf-test": "0.9.2"
+    },
+    "timestamp": "2025-06-20T10:00:00.000000000"
+  },
+  "panoramaseq - minimal test with merging": {
+    "content": [
+      {
+        "0": "merged_h5ad_count"
+      }
+    ],
+    "meta": {
+      "nextflow": "24.04.2", 
+      "nf-test": "0.9.2"
+    },
+    "timestamp": "2025-06-20T10:00:00.000000000"
+  },
+  "panoramaseq - stub test": {
+    "content": [],
+    "meta": {
+      "nextflow": "24.04.2",
+      "nf-test": "0.9.2"  
+    },
+    "timestamp": "2025-06-20T10:00:00.000000000"
+  }
+}

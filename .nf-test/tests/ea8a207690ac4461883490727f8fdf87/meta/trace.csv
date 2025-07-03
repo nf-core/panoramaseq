@@ -1,0 +1,2 @@
+task_id	hash	native_id	name	status	exit	submit	duration	realtime	%cpu	peak_rss	peak_vmem	rchar	wchar
+1	85/4f0c38	502652	SAMTOOLS_SORT_LOCAL (test)	COMPLETED	0	2025-06-24 16:09:15.814	277ms	1s	40.6%	2.6 MB	4.3 MB	138.9 KB	4.8 KB

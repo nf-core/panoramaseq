@@ -1,0 +1,4 @@
+N E X T F L O W  ~  version 24.10.2
+ERROR ~ Unknown config attribute `params.test_name` -- check config file: /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/modules/local/SAMTOOLS_SORT_LOCAL/tests/./nextflow.config
+
+ -- Check '/kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/.nf-test/tests/86e1693de4c4dd33400c16d2d92a18e/meta/nextflow.log' file for details

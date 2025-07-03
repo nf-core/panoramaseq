@@ -1,0 +1,121 @@
+nextflow_pipeline {
+
+    name "Test Workflow main.nf"
+    script "main.nf"
+
+    tag "pipeline"
+    tag "pipeline_panoramaseq"
+
+    test("panoramaseq - minimal test profile") {
+
+        when {
+            params {
+                outdir = "$outputDir"
+                
+                // Use test profile parameters
+                input = params.pipelines_testdata_base_path + 'samplesheet/samplesheet_test.csv'
+                star_genome_dir = params.pipelines_testdata_base_path + 'reference/star_index'
+                star_gtf = params.pipelines_testdata_base_path + 'reference/genes.gtf'
+                
+                // Test-specific parameters
+                mergecounts = false
+                validate_h5ad = true
+                skip_multiqc = false
+                
+                // Resource limits for fast testing
+                max_cpus = 2
+                max_memory = '6.GB'
+                max_time = '6.h'
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert workflow.stdout.contains("Pipeline completed successfully") },
+                
+                // Check main output channels
+                { assert snapshot(
+                    path("$outputDir/pipeline_info/execution_report.html").name,
+                    path("$outputDir/pipeline_info/execution_timeline.html").name,
+                    path("$outputDir/pipeline_info/execution_trace.txt").name,
+                    path("$outputDir/pipeline_info/pipeline_dag.html").name
+                ).match("pipeline_info") },
+                
+                // Check for H5AD outputs
+                { assert snapshot(
+                    path("$outputDir/anndata/").list().findAll { it.toString().endsWith('.h5ad') }.sort()
+                ).match("h5ad_files") },
+                
+                // Check for MultiQC report
+                { assert snapshot(
+                    path("$outputDir/multiqc/").list().findAll { it.toString().contains('multiqc_report') }
+                ).match("multiqc_outputs") },
+                
+                // Verify key workflow outputs exist
+                { assert path("$outputDir/anndata/").exists() },
+                { assert path("$outputDir/multiqc/multiqc_report.html").exists() }
+            )
+        }
+    }
+
+    test("panoramaseq - minimal test with merging") {
+
+        when {
+            params {
+                outdir = "$outputDir"
+                
+                // Use test profile parameters  
+                input = params.pipelines_testdata_base_path + 'samplesheet/samplesheet_test.csv'
+                star_genome_dir = params.pipelines_testdata_base_path + 'reference/star_index'
+                star_gtf = params.pipelines_testdata_base_path + 'reference/genes.gtf'
+                
+                // Enable merging for this test
+                mergecounts = true
+                validate_h5ad = true
+                skip_multiqc = false
+                
+                // Resource limits
+                max_cpus = 2
+                max_memory = '6.GB'
+                max_time = '6.h'
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert workflow.stdout.contains("Pipeline completed successfully") },
+                
+                // Should produce a single merged H5AD file
+                { assert snapshot(
+                    path("$outputDir/anndata/").list().findAll { it.toString().endsWith('.h5ad') }.size()
+                ).match("merged_h5ad_count") },
+                
+                // Check that merged file exists
+                { assert path("$outputDir/anndata/merged_counts.h5ad").exists() }
+            )
+        }
+    }
+
+    test("panoramaseq - stub test") {
+
+        options "-stub"
+
+        when {
+            params {
+                outdir = "$outputDir"
+                input = params.pipelines_testdata_base_path + 'samplesheet/samplesheet_test.csv'
+                star_genome_dir = params.pipelines_testdata_base_path + 'reference/star_index'
+                star_gtf = params.pipelines_testdata_base_path + 'reference/genes.gtf'
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert snapshot(workflow.out).match() }
+            )
+        }
+    }
+}

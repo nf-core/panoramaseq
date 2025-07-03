@@ -1,0 +1,90 @@
+N E X T F L O W  ~  version 24.10.2
+Launching `/kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/.nf-test-7f7afc5ad754304c7a086a3d183c3606.nf` [nice_blackwell] DSL2 - revision: 3a3713a948
+[Decode_batch] meta.id: S09_real, N_barcodes: 34500, sample_size: null
+[b5/910a6e] Submitted process > Decode_batch (S09_real)
+ERROR ~ Error executing process > 'Decode_batch (S09_real)'
+
+Caused by:
+  Process `Decode_batch (S09_real)` terminated with an error exit status (1)
+
+
+Command executed:
+
+  echo CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES:-}
+      python -c "import torch; print('torch.cuda.is_available():', torch.cuda.is_available())"
+      Demux2_batch.py -R1 S09.umi_extract_1.fastq.gz -R2 S09.umi_extract_2.fastq.gz -N 34500 -M 36 -B barcodes_coords.csv --Ntriage 100 --Nthresh 9 --out-prefix S09_real -C 0 --Seg_id 1/2 &
+  pid0=$!
+  Demux2_batch.py -R1 S09.umi_extract_1.fastq.gz -R2 S09.umi_extract_2.fastq.gz -N 34500 -M 36 -B barcodes_coords.csv --Ntriage 100 --Nthresh 9 --out-prefix S09_real -C 1 --Seg_id 2/2 &
+  pid1=$!
+      wait $pid0
+  wait $pid1
+      cat *2_R1.fastq.gz > S09_real.decode.R1.fastq.gz
+      cat *2_R2.fastq.gz > S09_real.decode.R2.fastq.gz
+      rm -f *2_R1.fastq.gz *2_R2.fastq.gz
+      
+      cat <<-END_VERSIONS > versions.yml
+      "Decode_batch":
+          python: $(python --version | sed 's/Python //')
+          torch: $(python -c "import torch; print(torch.__version__)")
+  END_VERSIONS
+
+Command exit status:
+  1
+
+Command output:
+  CUDA_VISIBLE_DEVICES=
+  torch.cuda.is_available(): False
+  Defining Functions
+  popcll_torch not found, so using slower popcount
+  all functions now defined.
+  all functions now defined.
+  arguments parsed
+  finished making code auxilliary tables, now pickling
+  moving to CUDA device
+  Defining Functions
+  popcll_torch not found, so using slower popcount
+  all functions now defined.
+  all functions now defined.
+  arguments parsed
+  finished making code auxilliary tables, now pickling
+  moving to CUDA device
+
+Command error:
+  INFO:    Environment variable SINGULARITYENV_TMPDIR is set, but APPTAINERENV_TMPDIR is preferred
+  INFO:    Environment variable SINGULARITYENV_NXF_TASK_WORKDIR is set, but APPTAINERENV_NXF_TASK_WORKDIR is preferred
+  INFO:    Environment variable SINGULARITYENV_NXF_DEBUG is set, but APPTAINERENV_NXF_DEBUG is preferred
+  CUDA_VISIBLE_DEVICES=
+  torch.cuda.is_available(): False
+  Defining Functions
+  popcll_torch not found, so using slower popcount
+  all functions now defined.
+  all functions now defined.
+  arguments parsed
+  finished making code auxilliary tables, now pickling
+  moving to CUDA device
+  Traceback (most recent call last):
+    File "/kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/bin/Demux2_batch.py", line 269, in <module>
+      raise RuntimeError("Required GPU not found! Exiting.")
+  RuntimeError: Required GPU not found! Exiting.
+  Defining Functions
+  popcll_torch not found, so using slower popcount
+  all functions now defined.
+  all functions now defined.
+  arguments parsed
+  finished making code auxilliary tables, now pickling
+  moving to CUDA device
+  Traceback (most recent call last):
+    File "/kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/bin/Demux2_batch.py", line 269, in <module>
+      raise RuntimeError("Required GPU not found! Exiting.")
+  RuntimeError: Required GPU not found! Exiting.
+
+Work dir:
+  /kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/.nf-test/tests/7f7afc5ad754304c7a086a3d183c3606/work/b5/910a6ee60ce02b50afd12bff2a3219
+
+Container:
+  /user/gent/446/vsc44685/ScratchVO_dir/apptainer_cache/pytorch-pytorch-2.7.1-cuda11.8-cudnn9-runtime.img
+
+Tip: view the complete command output by changing to the process work dir and entering the command `cat .command.out`
+
+ -- Check '/kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/.nf-test/tests/7f7afc5ad754304c7a086a3d183c3606/meta/nextflow.log' file for details
+Execution cancelled -- Finishing pending tasks before exit

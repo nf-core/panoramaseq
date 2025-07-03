@@ -1,0 +1,149 @@
+{
+    "panoramaseq [bam] - S09": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "S09",
+                            "N_barcodes": 34500,
+                            "sample_size": 10000,
+                            "len_barcode": 36,
+                            "Nthresh": 9,
+                            "Ntriage": 1000
+                        },
+                        "S09_counts.tsv.gz:md5,5f1f7122a243a38d9e177f0836cf46cf"
+                    ]
+                ],
+                "1": [
+                    "S09_umiCounts.log:md5,4774d4f545cb793b38daf25197d6ba9d"
+                ],
+                "2": [
+                    "versions.yml:md5,1e4c6449d6ecada2d47a94b0ecdaf8b3"
+                ],
+                "log_files": [
+                    "S09_umiCounts.log:md5,4774d4f545cb793b38daf25197d6ba9d"
+                ],
+                "umi_counts": [
+                    [
+                        {
+                            "id": "S09",
+                            "N_barcodes": 34500,
+                            "sample_size": 10000,
+                            "len_barcode": 36,
+                            "Nthresh": 9,
+                            "Ntriage": 1000
+                        },
+                        "S09_counts.tsv.gz:md5,5f1f7122a243a38d9e177f0836cf46cf"
+                    ]
+                ],
+                "versions": [
+                    "versions.yml:md5,1e4c6449d6ecada2d47a94b0ecdaf8b3"
+                ]
+            }
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.2"
+        },
+        "timestamp": "2025-06-24T16:37:15.51068879"
+    },
+    "panoramaseq [bam] - S09 - stub": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "S09",
+                            "N_barcodes": 34500,
+                            "sample_size": 10000,
+                            "len_barcode": 36,
+                            "Nthresh": 9,
+                            "Ntriage": 1000
+                        },
+                        "/kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/.nf-test/tests/ed4300186a8d5bb05d295f3e64563ea6/work/fb/f620df6e36c97d3447c508d86cf9da/S09_counts.tsv.gz"
+                    ]
+                ],
+                "1": [
+                    "S09_umiCounts.log:md5,d41d8cd98f00b204e9800998ecf8427e"
+                ],
+                "2": [
+                    "versions.yml:md5,d07c692167ea33064616e3dd2d41bd69"
+                ],
+                "log_files": [
+                    "S09_umiCounts.log:md5,d41d8cd98f00b204e9800998ecf8427e"
+                ],
+                "umi_counts": [
+                    [
+                        {
+                            "id": "S09",
+                            "N_barcodes": 34500,
+                            "sample_size": 10000,
+                            "len_barcode": 36,
+                            "Nthresh": 9,
+                            "Ntriage": 1000
+                        },
+                        "/kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/.nf-test/tests/ed4300186a8d5bb05d295f3e64563ea6/work/fb/f620df6e36c97d3447c508d86cf9da/S09_counts.tsv.gz"
+                    ]
+                ],
+                "versions": [
+                    "versions.yml:md5,d07c692167ea33064616e3dd2d41bd69"
+                ]
+            }
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.2"
+        },
+        "timestamp": "2025-06-24T16:37:31.275951746"
+    },
+    "panoramaseq [bam] - S10": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "S10",
+                            "N_barcodes": 34500,
+                            "sample_size": 10000,
+                            "len_barcode": 36,
+                            "Nthresh": 9,
+                            "Ntriage": 1000
+                        },
+                        "S10_counts.tsv.gz:md5,2a406a1644cc927b06bc27b5e1704e83"
+                    ]
+                ],
+                "1": [
+                    "S10_umiCounts.log:md5,ddb22a7d689a54fe52641e9e1a86eda4"
+                ],
+                "2": [
+                    "versions.yml:md5,1e4c6449d6ecada2d47a94b0ecdaf8b3"
+                ],
+                "log_files": [
+                    "S10_umiCounts.log:md5,ddb22a7d689a54fe52641e9e1a86eda4"
+                ],
+                "umi_counts": [
+                    [
+                        {
+                            "id": "S10",
+                            "N_barcodes": 34500,
+                            "sample_size": 10000,
+                            "len_barcode": 36,
+                            "Nthresh": 9,
+                            "Ntriage": 1000
+                        },
+                        "S10_counts.tsv.gz:md5,2a406a1644cc927b06bc27b5e1704e83"
+                    ]
+                ],
+                "versions": [
+                    "versions.yml:md5,1e4c6449d6ecada2d47a94b0ecdaf8b3"
+                ]
+            }
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.2"
+        },
+        "timestamp": "2025-06-24T16:37:25.778164385"
+    }
+}

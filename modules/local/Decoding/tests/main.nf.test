@@ -1,0 +1,49 @@
+nextflow_process {
+
+    name "Test Process Decode_batch"
+    script "../main.nf"
+    process "Decode_batch"
+    tag "modules"
+    tag "modules_local"
+    tag "decode_batch"
+
+    test("decode batch stub test") {
+
+        options "-stub"
+
+        when {
+            params {
+                outdir = "$outputDir"
+                panoramaseq_testdata_base_path = "https://raw.githubusercontent.com/francops1722/test-datasets/panoramaseq/testdata/"
+            }
+            process {
+                """
+                input[0] = [
+                    [ 
+                        id: 'test_decode', 
+                        single_end: false,
+                        N_barcodes: 5,
+                        len_barcode: 36,
+                        Ntriage: 3,
+                        Nthresh: 2
+                    ],
+                    [
+                        file(params.panoramaseq_testdata_base_path + 'decode/S09.umi_extract_1.fastq.gz', checkIfExists: true),
+                        file(params.panoramaseq_testdata_base_path + 'decode/S09.umi_extract_2.fastq.gz', checkIfExists: true)
+                    ]
+                ]
+                input[1] = file(params.panoramaseq_testdata_base_path + 'barcodes_coords.csv', checkIfExists: true)
+                """
+            }
+        }
+
+        then {
+            assertAll (
+                { assert process.success },
+                { assert process.out.reads != null },
+                { assert process.out.reads.get(0).get(1).size() == 2 },
+                { assert snapshot(process.out.versions).match() }
+            )
+        }
+    }
+}

@@ -1,0 +1,5 @@
+N E X T F L O W  ~  version 24.10.2
+Launching `/kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/.nf-test-19fd476cbc9ca7d6f91c45fdb0510234.nf` [pensive_curran] DSL2 - revision: 21a1926c44
+ERROR ~ No such file or directory: https://raw.githubusercontent.com/francops1722/test-datasets/panoramaseq/testdata/../reference/genome.fasta
+
+ -- Check script '/kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/.nf-test-19fd476cbc9ca7d6f91c45fdb0510234.nf' at line: 33 or see '/kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/.nf-test/tests/19fd476cbc9ca7d6f91c45fdb0510234/meta/nextflow.log' file for more details

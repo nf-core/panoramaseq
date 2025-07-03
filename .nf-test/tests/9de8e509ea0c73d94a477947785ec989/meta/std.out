@@ -1,0 +1,7 @@
+N E X T F L O W  ~  version 24.10.2
+Launching `/kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/.nf-test-9de8e509ea0c73d94a477947785ec989.nf` [condescending_gates] DSL2 - revision: 9f24925f4a
+Pulling Singularity image https://community-cr-prod.seqera.io/docker/registry/v2/blobs/sha256/52/52ccce28d2ab928ab862e25aae26314d69c8e38bd41ca9431c67ef05221348aa/data [cache /user/gent/446/vsc44685/ScratchVO_dir/apptainer_cache/community-cr-prod.seqera.io-docker-registry-v2-blobs-sha256-52-52ccce28d2ab928ab862e25aae26314d69c8e38bd41ca9431c67ef05221348aa-data.img]
+[17/f9bbbf] Submitted process > PREPARE_GENOME:GUNZIP_FASTA (genome.fasta.gz)
+WARN: Process `PREPARE_GENOME:GUNZIP_FASTA` publishDir path contains a variable with a null value
+[1d/78c118] Submitted process > PREPARE_GENOME:STAR_GENOMEGENERATE (genome.fasta)
+WARN: Process `PREPARE_GENOME:STAR_GENOMEGENERATE` publishDir path contains a variable with a null value

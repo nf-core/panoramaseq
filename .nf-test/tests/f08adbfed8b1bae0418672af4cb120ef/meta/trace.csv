@@ -1,0 +1,2 @@
+task_id	hash	native_id	name	status	exit	submit	duration	realtime	%cpu	peak_rss	peak_vmem	rchar	wchar
+1	ac/04b8eb	510589	UMI_count (S09)	COMPLETED	0	2025-06-24 16:37:09.064	5.8s	5s	87.4%	114.9 MB	837.4 MB	66 MB	314.7 KB

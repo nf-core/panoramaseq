@@ -1,0 +1,2 @@
+task_id	hash	native_id	name	status	exit	submit	duration	realtime	%cpu	peak_rss	peak_vmem	rchar	wchar
+1	62/026a0e	1475444	UMITOOLS_EXTRACT (test)	COMPLETED	0	2025-06-24 14:55:50.621	2.2s	2s	97.8%	63.4 MB	781.1 MB	31.1 MB	390 B

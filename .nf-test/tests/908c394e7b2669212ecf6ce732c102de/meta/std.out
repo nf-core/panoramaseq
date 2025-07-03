@@ -1,0 +1,6 @@
+N E X T F L O W  ~  version 24.10.2
+Launching `/kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/.nf-test-908c394e7b2669212ecf6ce732c102de.nf` [amazing_banach] DSL2 - revision: 76b54c943f
+[17/1f85a8] Submitted process > PREPARE_GENOME:GUNZIP_GTF (genes.gtf.gz)
+WARN: Process `PREPARE_GENOME:GUNZIP_GTF` publishDir path contains a variable with a null value
+[d2/712a32] Submitted process > PREPARE_GENOME:STAR_GENOMEGENERATE (genome.fasta)
+WARN: Process `PREPARE_GENOME:STAR_GENOMEGENERATE` publishDir path contains a variable with a null value

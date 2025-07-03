@@ -1,0 +1,107 @@
+nextflow_process {
+
+    name "Test Process tsv_to_h5ad"
+    script "../main.nf"
+    process "tsv_to_h5ad"
+    tag "modules"
+    tag "modules_local"
+    tag "tsv_to_h5ad"
+    tag "make_h5ad"
+
+    test("tsv_to_h5ad - stub") {
+
+        options "-stub"
+
+        when {
+            params {
+                outdir = "$outputDir"
+                panoramaseq_testdata_base_path = "https://raw.githubusercontent.com/francops1722/test-datasets/panoramaseq/testdata/"
+            }
+            process {
+                """
+                input[0] = [
+                    [ id: 'test_h5ad' ],
+                    [
+                        file(params.panoramaseq_testdata_base_path + 'counts/S09_counts.tsv.gz', checkIfExists: true),
+                        file(params.panoramaseq_testdata_base_path + 'counts/S10_counts.tsv.gz', checkIfExists: true)
+                    ],
+                    file(params.panoramaseq_testdata_base_path + 'barcodes_coords.csv', checkIfExists: true)
+                ]
+                """
+            }
+        }
+
+        then {
+            assertAll (
+                { assert process.success },
+                { assert process.out.h5ad != null },
+                { assert process.out.h5ad.get(0).get(1) ==~ ".*\\.h5ad" },
+                { assert process.out.versions != null },
+                { assert snapshot(process.out.versions).match() }
+            )
+        }
+    }
+
+    test("tsv_to_h5ad - single file") {
+
+        when {
+            params {
+                outdir = "$outputDir"
+                panoramaseq_testdata_base_path = "https://raw.githubusercontent.com/francops1722/test-datasets/panoramaseq/testdata/"
+            }
+            process {
+                """
+                input[0] = [
+                    [ id: 'single_h5ad' ],
+                    file(params.panoramaseq_testdata_base_path + 'counts/S09_counts.tsv.gz', checkIfExists: true),
+                    file(params.panoramaseq_testdata_base_path + 'barcodes_coords.csv', checkIfExists: true)
+                ]
+                """
+            }
+        }
+
+        then {
+            assertAll (
+                { assert process.success },
+                { assert process.out.h5ad != null },
+                { assert process.out.h5ad.get(0).get(1) ==~ ".*\\.h5ad" },
+                { assert file(process.out.h5ad.get(0).get(1)).exists() },
+                { assert process.out.versions != null },
+                { assert snapshot(process.out.h5ad, process.out.versions).match("single_file") }
+            )
+        }
+    }
+
+    test("tsv_to_h5ad - multiple files") {
+
+        when {
+            params {
+                outdir = "$outputDir"
+                panoramaseq_testdata_base_path = "https://raw.githubusercontent.com/francops1722/test-datasets/panoramaseq/testdata/"
+            }
+            process {
+                """
+                input[0] = [
+                    [ id: 'multi_h5ad' ],
+                    [
+                        file(params.panoramaseq_testdata_base_path + 'counts/S09_counts.tsv.gz', checkIfExists: true),
+                        file(params.panoramaseq_testdata_base_path + 'counts/S10_counts.tsv.gz', checkIfExists: true)
+                    ],
+                    file(params.panoramaseq_testdata_base_path + 'barcodes_coords.csv', checkIfExists: true)
+                ]
+                """
+            }
+        }
+
+        then {
+            assertAll (
+                { assert process.success },
+                { assert process.out.h5ad != null },
+                { assert process.out.h5ad.get(0).get(1) ==~ ".*\\.h5ad" },
+                { assert file(process.out.h5ad.get(0).get(1)).exists() },
+                { assert process.out.versions != null },
+                { assert snapshot(process.out.h5ad, process.out.versions).match("multiple_files") }
+            )
+        }
+    }
+}

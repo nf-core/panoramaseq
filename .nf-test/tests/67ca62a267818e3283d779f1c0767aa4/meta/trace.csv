@@ -1,0 +1,2 @@
+task_id	hash	native_id	name	status	exit	submit	duration	realtime	%cpu	peak_rss	peak_vmem	rchar	wchar
+1	8b/945971	1465777	SEQTK_SAMPLE (test)	COMPLETED	0	2025-06-24 14:51:25.502	274ms	0ms	107.7%	1.5 MB	5.4 MB	157.3 KB	46 KB

@@ -1,0 +1,119 @@
+{
+    "sarscov2_sample_singlend_fqgz_stub": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "test",
+                            "single_end": true,
+                            "sample_size": 50
+                        },
+                        "test.sampled.fastq.gz:md5,68b329da9893e34099c7d8ad5cb9c940"
+                    ]
+                ],
+                "1": [
+                    "versions.yml:md5,0529f2d163df9e2cd2ae8254dfb63806"
+                ],
+                "reads": [
+                    [
+                        {
+                            "id": "test",
+                            "single_end": true,
+                            "sample_size": 50
+                        },
+                        "test.sampled.fastq.gz:md5,68b329da9893e34099c7d8ad5cb9c940"
+                    ]
+                ],
+                "versions": [
+                    "versions.yml:md5,0529f2d163df9e2cd2ae8254dfb63806"
+                ]
+            }
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.2"
+        },
+        "timestamp": "2025-06-20T12:54:32.569666487"
+    },
+    "sarscov2_sample_pairedend_fqgz": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "test",
+                            "single_end": false,
+                            "sample_size": 50
+                        },
+                        [
+                            "test.sampled_test_1.fastq.gz:md5,e5f44fafd7351c5abb9925a075132941",
+                            "test.sampled_test_2.fastq.gz:md5,b8e8bdabeac41e066052d1ea3abcf68e"
+                        ]
+                    ]
+                ],
+                "1": [
+                    "versions.yml:md5,0529f2d163df9e2cd2ae8254dfb63806"
+                ],
+                "reads": [
+                    [
+                        {
+                            "id": "test",
+                            "single_end": false,
+                            "sample_size": 50
+                        },
+                        [
+                            "test.sampled_test_1.fastq.gz:md5,e5f44fafd7351c5abb9925a075132941",
+                            "test.sampled_test_2.fastq.gz:md5,b8e8bdabeac41e066052d1ea3abcf68e"
+                        ]
+                    ]
+                ],
+                "versions": [
+                    "versions.yml:md5,0529f2d163df9e2cd2ae8254dfb63806"
+                ]
+            }
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.2"
+        },
+        "timestamp": "2025-06-20T12:54:26.883321073"
+    },
+    "sarscov2_sample_singleend_fqgz": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "test",
+                            "single_end": true,
+                            "sample_size": 50
+                        },
+                        "test.sampled_test_1.fastq.gz:md5,e5f44fafd7351c5abb9925a075132941"
+                    ]
+                ],
+                "1": [
+                    "versions.yml:md5,0529f2d163df9e2cd2ae8254dfb63806"
+                ],
+                "reads": [
+                    [
+                        {
+                            "id": "test",
+                            "single_end": true,
+                            "sample_size": 50
+                        },
+                        "test.sampled_test_1.fastq.gz:md5,e5f44fafd7351c5abb9925a075132941"
+                    ]
+                ],
+                "versions": [
+                    "versions.yml:md5,0529f2d163df9e2cd2ae8254dfb63806"
+                ]
+            }
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.2"
+        },
+        "timestamp": "2025-06-20T12:54:21.119225479"
+    }
+}

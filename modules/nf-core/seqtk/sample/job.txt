@@ -1,0 +1,33 @@
+export APPTAINER_CACHEDIR=/user/gent/446/vsc44685/ScratchVO_dir/singularity
+export SINGULARITY_CACHEDIR=/user/gent/446/vsc44685/ScratchVO_dir/singularity
+export NXF_SINGULARITY_CACHEDIR=/user/gent/446/vsc44685/ScratchVO_dir/apptainer_cache
+export CONDA_PKGS_DIRS=/user/gent/446/vsc44685/ScratchVO_dir/conda_pkgs
+
+conda activate /user/gent/446/vsc44685/DataVO_dir/miniconda2/envs/nf-core
+ml Nextflow/24.10.2
+cd /user/gent/446/vsc44685/ScratchVO_dir/panoramaseq/nf-core-panoramaseq
+
+nextflow run main.nf --input assets/samplesheet.csv \
+  --email francoalexander.pomasoto@ugent.be \
+  --email_on_fail francoalexander.pomasoto@ugent.be \
+  --plaintext_email false \
+  -profile singularity \
+  --outdir /user/gent/446/vsc44685/ScratchVO_dir/test_nf_core2
+
+
+  nextflow run main.nf --input assets/samplesheet.csv \
+  -profile singularity \
+  --outdir /user/gent/446/vsc44685/ScratchVO_dir/test_nf_core_2
+
+nextflow run main.nf --input /user/gent/446/vsc44685/Scratch_dir/testdata_subs/samplesheet.csv \
+  -profile singularity \
+  --outdir /user/gent/446/vsc44685/ScratchVO_dir/test_nf_core_2
+
+
+  git clone git@github.com:OncoRNALab/test-datasets.git --single-branch --branch pipeline/modules/panoramaseq
+git clone https://github.com/OncoRNALab/test-datasets.git --single-branch --branch panoramaseq
+
+git clone \
+  --branch panoramaseq \
+  --single-branch \
+  https://github.com/francops1722/test-datasets.git

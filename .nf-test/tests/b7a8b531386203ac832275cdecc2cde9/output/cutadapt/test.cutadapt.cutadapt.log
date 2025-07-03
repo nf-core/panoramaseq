@@ -1,0 +1,20 @@
+This is cutadapt 5.0 with Python 3.12.8
+Command line parameters: -Z --cores 2 -q 10 -a T{16} --minimum-length 25 --overlap 8 -e 0.1 -o test.cutadapt.trim.fastq.gz test_1.fastq.gz
+Processing single-end reads on 2 cores ...
+
+=== Summary ===
+
+Total reads processed:                     100
+Reads with adapters:                         0 (0.0%)
+
+== Read fate breakdown ==
+Reads that were too short:                   0 (0.0%)
+Reads written (passing filters):           100 (100.0%)
+
+Total basepairs processed:        13,897 bp
+Quality-trimmed:                       0 bp (0.0%)
+Total written (filtered):         13,897 bp (100.0%)
+
+=== Adapter 1 ===
+
+Sequence: TTTTTTTTTTTTTTTT; Type: regular 3'; Length: 16; Trimmed: 0 times

@@ -1,0 +1,5 @@
+N E X T F L O W  ~  version 24.10.2
+Launching `/kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/.nf-test-689d3369e4fe6732e35a77e20846ece9.nf` [marvelous_lorenz] DSL2 - revision: 990329bc5d
+ERROR ~ Unexpected error [StackOverflowError]
+
+ -- Check '/kyukon/scratch/gent/vo/000/gvo00027/vsc44685/panoramaseq/nf-core-panoramaseq/.nf-test/tests/689d3369e4fe6732e35a77e20846ece9/meta/nextflow.log' file for details

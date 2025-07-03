@@ -1,73 +1,105 @@
 #!/usr/bin/env nextflow
-/*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    nf-core/panoramaseq
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Github : https://github.com/nf-core/panoramaseq
-    Website: https://nf-co.re/panoramaseq
-    Slack  : https://nfcore.slack.com/channels/panoramaseq
-----------------------------------------------------------------------------------------
-*/
+nextflow.enable.dsl=2
 
-/*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    IMPORT FUNCTIONS / MODULES / SUBWORKFLOWS / WORKFLOWS
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*/
+// ==========================================================================
+// 0) Import the CHECK_FASTQS process from your fixed module
+// ==========================================================================
 
-include { PANORAMASEQ  } from './workflows/panoramaseq'
-include { PIPELINE_INITIALISATION } from './subworkflows/local/utils_nfcore_panoramaseq_pipeline'
-include { PIPELINE_COMPLETION     } from './subworkflows/local/utils_nfcore_panoramaseq_pipeline'
-include { getGenomeAttribute      } from './subworkflows/local/utils_nfcore_panoramaseq_pipeline'
+include { panorama_seq } from './workflows/panorama_seq/main' 
+include { PREPARE_GENOME } from './subworkflows/local/prepare_genome/main'
+include { PIPELINE_INITIALISATION; PIPELINE_COMPLETION } from './subworkflows/local/utils_nfcore_panoramaseq_pipeline/main'
 
-/*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    GENOME PARAMETER VALUES
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*/
+log.info """
+\033[1;34m _____                                                                                      _____ 
+\033[1;34m( ___ )------------------------------------------------------------------------------------( ___ )
+\033[1;34m |   |                                                                                      |   | 
+\033[1;34m |   |                                                                                      |   | 
+\033[1;34m |   |                                                                                      |   | 
+\033[1;34m |   |    ______                                                                            |   | 
+\033[1;34m |   |   (_____ \\                                                                           |   | 
+\033[1;34m |   |    _____) )  ____  ____    ___    ____   ____  ____    ____     ___   ____   ____    |   | 
+\033[1;34m |   |   |  ____/  / _  ||  _ \\  / _ \\  / ___) / _  ||    \\  / _  |   /___) / _  ) / _  |   |   | 
+\033[1;34m |   |   | |      ( ( | || | | || |_| || |    ( ( | || | | |( ( | |  |___ |( (/ / | | | |   |   | 
+\033[1;34m |   |   |_|       \\_||_||_| |_| \\___/ |_|     \\_||_||_|_|_| \\_||_|  (___/  \\____) \\_|| |   |   | 
+\033[1;34m |   |                                                                                |_|   |   | 
+\033[1;34m |   |                                                                                      |   | 
+\033[1;34m |   |                              Spatial Transcriptomics                                 |   | 
+\033[1;34m |___|                                                                                      |___| 
+\033[1;34m(_____)------------------------------------------------------------------------------------(_____)
+                                                                                                                     
+   \033[1;34m ================================       
+   \033[1;34m             Author:
+   \033[1;34m Franco Alexander Poma Soto
+   \033[1;34m OncoRNA Lab
+   \033[1;34m Ghent University
+   \033[1;34m ================================
+    """.stripIndent()
 
-// TODO nf-core: Remove this line if you don't need a FASTA file
-//   This is an example of how to use getGenomeAttribute() to fetch parameters
-//   from igenomes.config using `--genome`
-params.fasta = getGenomeAttribute('fasta')
+// ==========================================================================
+// 1) Read the sample sheet and build “data” as a flat 3‐element tuple
+//    ( meta_map, R1_path, R2_path )
+// ==========================================================================
 
-/*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    NAMED WORKFLOWS FOR PIPELINE
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*/
 
-//
-// WORKFLOW: Run main analysis pipeline depending on type of input
-//
-workflow NFCORE_PANORAMASEQ {
-
+ workflow NFCORE_PANORAMAseq {  
+    
     take:
-    samplesheet // channel: samplesheet read in from --input
-
+    valid_data 
+ 
     main:
+    ch_versions = Channel.empty()
 
     //
-    // WORKFLOW: Run pipeline
+    // SUBWORKFLOW: Prepare genome files and generate STAR index
     //
-    PANORAMASEQ (
-        samplesheet
-    )
+    // Use params.fasta and params.star_gtf if provided to build STAR index
+    // Otherwise, rely on params.star_genome_dir (backward compatibility)
+    //
+    if (params.fasta && params.star_gtf) {
+        ch_fasta = file(params.fasta, checkIfExists: true)
+        ch_gtf = file(params.star_gtf, checkIfExists: true)
+        ch_additional_fasta = params.additional_fasta ? file(params.additional_fasta, checkIfExists: true) : null
+
+        PREPARE_GENOME(
+            ch_fasta,
+            ch_gtf,
+            ch_additional_fasta
+        )
+        ch_versions = ch_versions.mix(PREPARE_GENOME.out.versions)
+        
+        // Use the generated STAR index
+        ch_star_index = PREPARE_GENOME.out.index
+        ch_gtf_file = PREPARE_GENOME.out.gtf
+        
+    } else if (params.star_genome_dir && params.star_gtf) {
+        // Use pre-built STAR index (backward compatibility)
+        ch_star_index = Channel.value(file(params.star_genome_dir, checkIfExists: true))
+        ch_gtf_file = Channel.value(file(params.star_gtf, checkIfExists: true))
+        
+    } else {
+        error "ERROR: Either provide --fasta and --star_gtf to build STAR index, or --star_genome_dir and --star_gtf to use existing index"
+    }
+
+    // Run main PANORAMASEQ workflow
+    // This will handle all the steps defined in the PANORAMASEQ process including quality control, alignment, counting, etc.
+    // The PANORAMASEQ process is defined in the workflows/main.nf file
+    panorama_seq(
+        valid_data,
+        ch_star_index,
+        ch_gtf_file
+    ) // Pass the samples and genome references
+
     emit:
-    multiqc_report = PANORAMASEQ.out.multiqc_report // channel: /path/to/multiqc_report.html
+    multiqc_report = panorama_seq.out.multiqc_report // channel: /path/to/multi
+    versions       = ch_versions.mix(panorama_seq.out.versions)
 }
-/*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    RUN MAIN WORKFLOW
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*/
+
+
+
 
 workflow {
-
     main:
-    //
-    // SUBWORKFLOW: Run initialisation tasks
-    //
+    
     PIPELINE_INITIALISATION (
         params.version,
         params.validate_params,
@@ -76,16 +108,15 @@ workflow {
         params.outdir,
         params.input
     )
+    
+    // Print the output of PIPELINE_INITIALISATION.out.samplesheet
+    PIPELINE_INITIALISATION.out.samplesheet.view { "PIPELINE_INITIALISATION.out.samplesheet: $it" }
 
-    //
-    // WORKFLOW: Run main workflow
-    //
-    NFCORE_PANORAMASEQ (
-        PIPELINE_INITIALISATION.out.samplesheet
+    // main PANORAMASEQ workflow
+    NFCORE_PANORAMAseq (
+         PIPELINE_INITIALISATION.out.samplesheet
     )
-    //
-    // SUBWORKFLOW: Run completion tasks
-    //
+    // SUBWORKFLOW: Pipeline completion tasks
     PIPELINE_COMPLETION (
         params.email,
         params.email_on_fail,
@@ -93,12 +124,9 @@ workflow {
         params.outdir,
         params.monochrome_logs,
         params.hook_url,
-        NFCORE_PANORAMASEQ.out.multiqc_report
+        NFCORE_PANORAMAseq.out.multiqc_report
     )
-}
 
-/*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    THE END
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*/
+
+}
+// ==========================================================================
