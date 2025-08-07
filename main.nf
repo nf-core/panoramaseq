@@ -16,7 +16,7 @@ include { PIPELINE_INITIALISATION; PIPELINE_COMPLETION } from './subworkflows/lo
 // ==========================================================================
 
 
- workflow NFCORE_PANORAMAseq {  
+ workflow NFCORE_PANORAMASEQ {  
     
     take:
     valid_data 
