@@ -57,7 +57,7 @@ ch_multiqc_logo          = params.multiqc_logo   ? Channel.fromPath( params.mult
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-workflow panorama_seq {
+workflow PANORAMASSEQ {
     
     take:
     valid_data    // channel: samplesheet read in from checked samplesheet process
