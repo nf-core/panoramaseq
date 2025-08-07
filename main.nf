@@ -5,7 +5,7 @@ nextflow.enable.dsl=2
 // 0) Import the CHECK_FASTQS process from your fixed module
 // ==========================================================================
 
-include { panorama_seq } from './workflows/panorama_seq/main' 
+include { PANORAMASEQ } from './workflows/panorama_seq/main' 
 include { PREPARE_GENOME } from './subworkflows/local/prepare_genome/main'
 include { PIPELINE_INITIALISATION; PIPELINE_COMPLETION } from './subworkflows/local/utils_nfcore_panoramaseq_pipeline/main'
 
