@@ -98,8 +98,7 @@ workflow PANORAMASSEQ {
 
     // 6a. FastQC on reads after first trimming (cutadapt_results stage)
     fastqc_cutadapt_input = CUTADAPT.out.reads.map { meta, reads ->
-        def new_meta = meta.clone()
-        new_meta.id = "cutadapt_${meta.id}"
+        def new_meta = meta + [id: "cutadapt_${meta.id}"]
         [new_meta, reads]
     }
     FASTQC_CUTADAPT(fastqc_cutadapt_input)
