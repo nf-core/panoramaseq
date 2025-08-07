@@ -70,8 +70,7 @@ workflow PANORAMASSEQ {
     
     // 1. FastQC on raw input reads (valid_data stage)
     fastqc_raw_input = valid_data.map { meta, reads ->
-        def new_meta = meta.clone()
-        new_meta.id = "raw_${meta.id}"
+        def new_meta = meta + [id:"raw_${meta.id}"]
         [new_meta, reads]
     }
     FASTQC(fastqc_raw_input)
