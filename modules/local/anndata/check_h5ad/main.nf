@@ -1,4 +1,4 @@
-process CHECK_H5AD {
+process ANNDATA_CHECKH5AD {
     tag "$meta.id"
     label 'process_single'
 
