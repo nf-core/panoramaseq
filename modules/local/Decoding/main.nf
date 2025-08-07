@@ -1,5 +1,5 @@
 //decode Using 2 gpus and high resolution array
-process Decode_batch {
+process DECODE_BATCH {
     tag "$meta.id" 
     label "gpu_process"
     conda "${moduleDir}/environment.yml"
