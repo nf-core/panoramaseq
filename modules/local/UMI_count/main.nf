@@ -1,4 +1,4 @@
-process UMI_count {
+process UMICOUNT {
     tag "$meta.id"
     label "process_long"
 
