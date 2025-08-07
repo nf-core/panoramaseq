@@ -1,4 +1,4 @@
-process tsv_to_h5ad {
+process ANNDATA_MAKEH5AD {
     tag "$meta.id"
     label 'process_single'
 
