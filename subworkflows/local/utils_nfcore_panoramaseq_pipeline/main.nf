@@ -74,10 +74,7 @@ workflow PIPELINE_INITIALISATION {
 
     Channel
         .fromList(samplesheetToList(params.input, "${projectDir}/assets/schema_input.json"))
-        .map { row ->
-            def meta = row[0]
-            def R1 = row[1]
-            def R2 = row[2]
+        .map { meta, R1, R2 ->
             if (!R2 || R2 == "" || R2 == "null") {
                 meta.single_end = true
                 return tuple(meta, [R1])
