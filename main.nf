@@ -65,8 +65,8 @@ include { PIPELINE_INITIALISATION; PIPELINE_COMPLETION } from './subworkflows/lo
     ) // Pass the samples and genome references
 
     emit:
-    multiqc_report = panorama_seq.out.multiqc_report // channel: /path/to/multi
-    versions       = ch_versions.mix(panorama_seq.out.versions)
+    multiqc_report = PANORAMASEQ.out.multiqc_report // channel: /path/to/multi
+    versions       = ch_versions.mix(PANORAMASEQ.out.versions)
 }
 
 
