@@ -143,8 +143,7 @@ workflow PANORAMASSEQ {
     //     Uses the provided GTF annotation file
     //     First update metadata to reflect single-end nature after R2-only alignment
     star_bam_corrected_meta = STAR_ALIGN_LOCAL.out.bam.map { meta, bam ->
-        def new_meta = meta.clone()
-        new_meta.single_end = true  // Update to single_end since we only aligned R2
+        def new_meta = meta + [single_end: true]  // Update to single_end since we only aligned R2
         tuple(new_meta, bam)
     }
     //     Then prepare input as tuple of meta, bam, and annotation file
