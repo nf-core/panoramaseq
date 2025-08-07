@@ -86,7 +86,7 @@ workflow PANORAMASSEQ {
 
     // 4. Combine both channels for downstream processing
     // Use concat instead of mix to avoid multi-channel operator issues
-    umitools_input = SEQTK_SAMPLE.out.reads.concat(passthrough)
+    umitools_input = SEQTK_SAMPLE.out.reads.mix(passthrough)
 
     // 5. Extract UMIs using UMITOOLS_EXTRACT
     umi_extract = UMITOOLS_EXTRACT(umitools_input)
