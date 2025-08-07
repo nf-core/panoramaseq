@@ -88,7 +88,7 @@ workflow {
     PIPELINE_INITIALISATION.out.samplesheet.view { "PIPELINE_INITIALISATION.out.samplesheet: $it" }
 
     // main PANORAMASEQ workflow
-    NFCORE_PANORAMAseq (
+    NFCORE_PANORAMASEQ (
          PIPELINE_INITIALISATION.out.samplesheet
     )
     // SUBWORKFLOW: Pipeline completion tasks
