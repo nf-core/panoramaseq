@@ -1,4 +1,4 @@
-name: subread_featurecounts
+name: featurecounts_custom
 description: Count reads that map to genomic features
 keywords:
   - counts
