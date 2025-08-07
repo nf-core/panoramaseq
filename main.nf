@@ -58,7 +58,7 @@ include { PIPELINE_INITIALISATION; PIPELINE_COMPLETION } from './subworkflows/lo
     // Run main PANORAMASEQ workflow
     // This will handle all the steps defined in the PANORAMASEQ process including quality control, alignment, counting, etc.
     // The PANORAMASEQ process is defined in the workflows/main.nf file
-    panorama_seq(
+    PANORAMASEQ(
         valid_data,
         ch_star_index,
         ch_gtf_file
