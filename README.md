@@ -18,7 +18,6 @@
 [![Get help on Slack](http://img.shields.io/badge/slack-nf--core%20%23panoramaseq-4A154B?labelColor=000000&logo=slack)](https://nfcore.slack.com/channels/panoramaseq)[![Follow on Twitter](http://img.shields.io/badge/twitter-%40nf__core-1DA1F2?labelColor=000000&logo=twitter)](https://twitter.com/nf_core)[![Follow on Mastodon](https://img.shields.io/badge/mastodon-nf__core-6364ff?labelColor=FFFFFF&logo=mastodon)](https://mstdn.science/@nf_core)[![Watch on YouTube](http://img.shields.io/badge/youtube-nf--core-FF0000?labelColor=000000&logo=youtube)](https://www.youtube.com/c/nf-core)
 
 ## Introduction
-
 **nf-core/panoramaseq** is a bioinformatics pipeline that ...
 
 <!-- TODO nf-core:
@@ -31,6 +30,9 @@
      workflows use the "tube map" design for that. See https://nf-co.re/docs/contributing/design_guidelines#examples for examples.   -->
 <!-- TODO nf-core: Fill in short bullet-pointed list of the default steps in the pipeline -->1. Read QC ([`FastQC`](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/))2. Present QC for raw reads ([`MultiQC`](http://multiqc.info/))
 
+## Pipeline Summary 
+
+![](PanoramaSeqv1.jpg)
 ## Usage
 
 > [!NOTE]

@@ -9,7 +9,7 @@ process SAMTOOLS_SORT {
 
     input:
     tuple val(meta) , path(bam)
-    tuple val(meta2), path(fasta, optional: true)
+    tuple val(meta2), path(fasta)
 
     output:
     tuple val(meta), path("*.bam"),  emit: bam,  optional: true

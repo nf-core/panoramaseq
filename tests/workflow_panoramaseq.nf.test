@@ -1,8 +1,8 @@
 nextflow_workflow {
 
     name "Test PANORAMA_SEQ workflow"
-    script "workflows/panorama_seq/main.nf"
-    workflow "panorama_seq"
+    script "workflows/panoramaseq.nf"
+    workflow "PANORAMASEQ"
 
     tag "workflow"
     tag "workflow_panoramaseq"

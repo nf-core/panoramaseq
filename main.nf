@@ -5,9 +5,11 @@ nextflow.enable.dsl=2
 // 0) Import the CHECK_FASTQS process from your fixed module
 // ==========================================================================
 
-include { PANORAMASEQ } from './workflows/panorama_seq/main' 
+include { PANORAMASEQ } from './workflows/panoramaseq' 
 include { PREPARE_GENOME } from './subworkflows/local/prepare_genome/main'
-include { PIPELINE_INITIALISATION; PIPELINE_COMPLETION } from './subworkflows/local/utils_nfcore_panoramaseq_pipeline/main'
+include { STAR_GENOMEGENERATE } from './modules/nf-core/star/genomegenerate/main'
+include { PIPELINE_INITIALISATION } from './subworkflows/local/utils_nfcore_panoramaseq_pipeline/main'
+include { PANORAMASEQ_COMPLETION } from './subworkflows/local/utils_nfcore_panoramaseq_completion/main'
 
 
 // ==========================================================================
@@ -30,14 +32,29 @@ include { PIPELINE_INITIALISATION; PIPELINE_COMPLETION } from './subworkflows/lo
     // Use params.fasta and params.star_gtf if provided to build STAR index
     // Otherwise, rely on params.star_genome_dir (backward compatibility)
     //
-    if (params.fasta && params.star_gtf) {
-        ch_fasta = file(params.fasta, checkIfExists: true)
-        ch_gtf = file(params.star_gtf, checkIfExists: true)
+    if (params.fasta && params.star_gtf && !params.star_genome_dir) {
+        // Generate STAR index from FASTA and GTF
+        fasta_file = file(params.fasta, checkIfExists: true)
+        gtf_file = file(params.star_gtf, checkIfExists: true)
+        
+        STAR_GENOMEGENERATE(
+            Channel.value([[:], fasta_file]),
+            Channel.value([[:], gtf_file])
+        )
+        ch_versions = ch_versions.mix(STAR_GENOMEGENERATE.out.versions)
+        
+        // Use the generated STAR index
+        ch_star_index = STAR_GENOMEGENERATE.out.index.map { meta, index -> index }
+        ch_gtf_file = Channel.value(gtf_file)
+        
+    } else if (params.fasta && params.star_gtf) {
+        fasta_file = file(params.fasta, checkIfExists: true)
+        gtf_file = file(params.star_gtf, checkIfExists: true)
         ch_additional_fasta = params.additional_fasta ? file(params.additional_fasta, checkIfExists: true) : null
 
         PREPARE_GENOME(
-            ch_fasta,
-            ch_gtf,
+            fasta_file,
+            gtf_file,
             ch_additional_fasta
         )
         ch_versions = ch_versions.mix(PREPARE_GENOME.out.versions)
@@ -92,7 +109,7 @@ workflow {
          PIPELINE_INITIALISATION.out.samplesheet
     )
     // SUBWORKFLOW: Pipeline completion tasks
-    PIPELINE_COMPLETION (
+    PANORAMASEQ_COMPLETION (
         params.email,
         params.email_on_fail,
         params.plaintext_email,

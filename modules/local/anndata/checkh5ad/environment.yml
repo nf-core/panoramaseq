@@ -4,4 +4,7 @@ channels:
   - conda-forge
   - bioconda
 dependencies:
-  - bioconda::cutadapt=5.0
+  - conda-forge::anndata=0.10.9
+  - conda-forge::python=3.13.0
+  - conda-forge::pandas=2.2.3
+  - conda-forge::numpy=2.1.2

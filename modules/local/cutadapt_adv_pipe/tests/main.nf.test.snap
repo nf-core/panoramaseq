@@ -21,6 +21,18 @@
         },
         "timestamp": "2025-06-24T10:38:58.419350743"
     },
+    "versions_stub": {
+        "content": [
+            [
+                "versions.yml:md5,60a82904b7a19ced9224341e4b496cc1"
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.2"
+        },
+        "timestamp": "2025-08-12T17:12:32.573888833"
+    },
     "versions_paired_end": {
         "content": [
             [

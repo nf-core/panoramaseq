@@ -1,0 +1,8 @@
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - python=3.10
+  - dnaio=1.2.3
+  - numpy=2.2.6
+  - torch=2.7.1+cu118

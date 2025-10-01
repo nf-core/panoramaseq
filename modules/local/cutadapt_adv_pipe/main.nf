@@ -23,4 +23,16 @@ process CUTADAPT_ADV_PIPE {
         cutadapt: \$(cutadapt --version)
 END_VERSIONS
     """
+
+    stub:
+    def prefix = task.ext.prefix ?: "${meta.id}"
+    """
+    # Create stub output files for testing
+    touch ${prefix}.trim2.R2.fastq.gz
+    
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        cutadapt: "stub-version"
+END_VERSIONS
+    """
 }
