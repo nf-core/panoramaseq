@@ -187,12 +187,13 @@ We thank the following people for their contributions to the development of this
 - **Franco Poma-Soto** - Pipeline development and implementation
 - **QUIK Development Team** - GPU-accelerated barcode calling module
 - **nf-core community** - Framework, templates, and guidance
+- **Nicolas Vannieuwkerke** - For advice and reviewing  
 
 ### Institutional Support
 
 This pipeline was developed with support from:
 - Ghent University
-- VIB Center for Inflammation Research
+- CMGG Center for Medical Genetics of Ghent
 
 ## Contributions and Support
 
