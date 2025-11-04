@@ -11,6 +11,9 @@ nextflow_workflow {
     test("prepare_genome_star_align_integration") {
 
         when {
+            params {
+                outdir = "$outputDir"
+            }
             workflow {
                 """
                 input[0] = file('https://ngi-igenomes.s3.eu-west-1.amazonaws.com/testdata/nf-core/modules/genomics/homo_sapiens/genome/genome.fasta', checkIfExists: true)
@@ -38,6 +41,9 @@ nextflow_workflow {
         options "-stub"
 
         when {
+            params {
+                outdir = "$outputDir"
+            }
             workflow {
                 """
                 input[0] = file('https://ngi-igenomes.s3.eu-west-1.amazonaws.com/testdata/nf-core/modules/genomics/homo_sapiens/genome/genome.fasta', checkIfExists: true)

@@ -38,12 +38,6 @@
                 "exists": true,
                 "description": "Path to barcode file for this sample",
                 "meta": ["barcode_file"]
-            },
-            "sample_size": {
-                "type": "integer",
-                "description": "Number of reads to subsample with seqtk for this sample (optional). If not set, SEQTK_SAMPLE will be skipped for this sample.",
-                "minimum": 1,
-                "meta": ["sample_size"]
             }
         },
         "required": ["sample", "fastq_1", "N_barcodes", "barcode_file"]

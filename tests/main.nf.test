@@ -52,6 +52,11 @@ nextflow_pipeline {
                     path("$outputDir/multiqc/").list().findAll { it.toString().contains('multiqc_report') }
                 ).match("multiqc_outputs") },
                 
+                // Snapshot versions.yml file (required by nf-core)
+                { assert snapshot(
+                    path("$outputDir/pipeline_info/nf_core_panoramaseq_software_mqc_versions.yml")
+                ).match("versions") },
+                
                 // Verify key workflow outputs exist
                 { assert path("$outputDir/anndata/").exists() },
                 { assert path("$outputDir/multiqc/multiqc_report.html").exists() }
@@ -91,6 +96,11 @@ nextflow_pipeline {
                 { assert snapshot(
                     path("$outputDir/anndata/").list().findAll { it.toString().endsWith('.h5ad') }.size()
                 ).match("merged_h5ad_count") },
+                
+                // Snapshot versions.yml file (required by nf-core)
+                { assert snapshot(
+                    path("$outputDir/pipeline_info/nf_core_panoramaseq_software_mqc_versions.yml")
+                ).match("versions_merged") },
                 
                 // Check that merged file exists
                 { assert path("$outputDir/anndata/merged_counts.h5ad").exists() }

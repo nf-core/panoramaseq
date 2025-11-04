@@ -281,6 +281,14 @@
                     "type": "string",
                     "description": "Path to the GTF annotation file for STAR."
                 },
+                "sample_size": {
+                    "type": ["integer", "null"],
+                    "default": null,
+                    "description": "Number of reads to subsample with seqtk. If not set (null), no subsampling is performed.",
+                    "help_text": "Use this parameter to subsample FASTQ files to a specific number of reads for faster testing or analysis. All samples will be subsampled to this value. Set to null or omit to skip subsampling.",
+                    "fa_icon": "fas fa-random",
+                    "minimum": 1
+                },
                 "umitools_extract_method": {
                     "type": "string",
                     "description": "UMI-tools extract method (e.g. 'regex', 'tagged', 'string')."

@@ -78,36 +78,37 @@ workflow PANORAMASEQ {
     FASTQC(fastqc_raw_input)
     ch_versions = ch_versions.mix(FASTQC.out.versions.first())
     
-    // 2. Subsample reads for samples with sample_size set in meta using SEQTK_SAMPLE
-    seqtk_input = valid_data.filter{ meta, reads -> meta.sample_size != null }
-    SEQTK_SAMPLE(seqtk_input)
-    ch_versions = ch_versions.mix(SEQTK_SAMPLE.out.versions.first())
+    // 2. Subsample reads using SEQTK_SAMPLE if params.sample_size is set
+    if (params.sample_size) {
+        seqtk_input = valid_data.map { meta, reads ->
+            [meta, reads, params.sample_size]
+        }
+        SEQTK_SAMPLE(seqtk_input)
+        ch_versions = ch_versions.mix(SEQTK_SAMPLE.out.versions.first())
+        quik_input = SEQTK_SAMPLE.out.reads
+    } else {
+        // Skip subsampling if sample_size not specified
+        quik_input = valid_data
+    }
 
-    // 3. For samples without sample_size, pass through directly
-    passthrough = valid_data.filter{ meta, reads -> meta.sample_size == null }
-
-    // 4. Combine both channels for downstream processing
-    // Use concat instead of mix to avoid multi-channel operator issues
-    quik_input = SEQTK_SAMPLE.out.reads.mix(passthrough)
-
-    // 5. Decode barcodes using QUIK_BARCODE_CALLING (GPU-accelerated)
+    // 3. Decode barcodes using QUIK_BARCODE_CALLING (GPU-accelerated)
     // Extract barcode file once (all samples should use the same barcode file)
-    ch_barcode_file = quik_input.map { meta, reads -> file(meta.barcode_file) }.take(1)
+    ch_barcode_file = quik_input.map { meta, reads -> file(meta.barcode_file) }.first()
     decode_results = QUIK_BARCODE_CALLING(
         quik_input,
         ch_barcode_file
     )
     ch_versions = ch_versions.mix(QUIK_BARCODE_CALLING.out.versions.first())
 
-    // 6. Extract UMIs using UMITOOLS_EXTRACT
+    // 4. Extract UMIs using UMITOOLS_EXTRACT
     umi_extract = UMITOOLS_EXTRACT(QUIK_BARCODE_CALLING.out.reads)
     ch_versions = ch_versions.mix(UMITOOLS_EXTRACT.out.versions.first())
 
-    // 7. Trim reads after UMI extraction using CUTADAPT
+    // 5. Trim reads after UMI extraction using CUTADAPT
     cutadapt_results = CUTADAPT(UMITOOLS_EXTRACT.out.reads)
     ch_versions = ch_versions.mix(CUTADAPT.out.versions.first())
 
-    // 7a. FastQC on reads after first trimming (cutadapt_results stage)
+    // 6. FastQC on reads after first trimming (cutadapt_results stage)
     fastqc_cutadapt_input = CUTADAPT.out.reads.map { meta, reads ->
         def new_meta = meta + [id: "cutadapt_${meta.id}"]
         [new_meta, reads]
@@ -115,11 +116,11 @@ workflow PANORAMASEQ {
     FASTQC_CUTADAPT(fastqc_cutadapt_input)
     ch_versions = ch_versions.mix(FASTQC_CUTADAPT.out.versions.first())
 
-    // 8. Advanced trimming on R2 using CUTADAPT_ADV_PIPE
+    // 7. Advanced trimming on R2 using CUTADAPT_ADV_PIPE
     cutadapt2_results = CUTADAPT_ADV_PIPE(CUTADAPT.out.reads)
     ch_versions = ch_versions.mix(CUTADAPT_ADV_PIPE.out.versions.first())
 
-    // 8a. FastQC on reads after advanced trimming (cutadapt2_results stage)
+    // 8. FastQC on reads after advanced trimming (cutadapt2_results stage)
     fastqc_cutadapt2_input = CUTADAPT_ADV_PIPE.out.reads.map { meta, reads ->
         def new_meta = meta + [id:"cutadapt2_${meta.id}"]
         [new_meta, reads]
@@ -138,36 +139,43 @@ workflow PANORAMASEQ {
 
     // 10. Index the sorted BAM output from STAR_ALIGN_LOCAL using samtools index (index1)
     samtools_index_input = STAR_ALIGN_LOCAL.out.bam
-    samtools_index_results = samtools_index_input | index1
+    index1(samtools_index_input)
     ch_versions = ch_versions.mix(index1.out.versions.first())
 
-    // 11. Count features from BAM using annotation with FEATURECOUNTS_CUSTOM
-    //     Uses the provided GTF annotation file
-    //     First update metadata to reflect single-end nature after R2-only alignment
-    star_bam_corrected_meta = STAR_ALIGN_LOCAL.out.bam.map { meta, bam ->
-        def new_meta = meta + [single_end: true]  // Update to single_end since we only aligned R2
-        tuple(new_meta, bam)
-    }
-    //     Then prepare input as tuple of meta, bam, and annotation file
-    custom_featurecounts_input = star_bam_corrected_meta.combine(gtf_file).map { meta, bam, gtf ->
-        tuple(meta, bam, gtf)
-    }
+    // 11. Join BAM and BAI files for featureCounts
+    //     featureCounts needs both BAM and index staged together
+    //     The join operation matches channels by meta, staging both files in the work directory
+    bam_with_index = STAR_ALIGN_LOCAL.out.bam
+        .join(index1.out.bai, by: 0)  // Join by meta (first element)
+        .map { meta, bam, bai ->
+            def new_meta = meta + [single_end: true]  // Update to single_end since we only aligned R2
+            tuple(new_meta, bam, bai)  // Pass both BAM and BAI
+        }
+    
+    // 12. Prepare input for FEATURECOUNTS_CUSTOM
+    //     featureCounts will have both BAM and BAI staged in its work directory
+    //     The BAI is automatically found by featureCounts when it looks for bam_file.bai
+    custom_featurecounts_input = bam_with_index
+        .combine(gtf_file)
+        .map { meta, bam, bai, gtf ->
+            tuple(meta, bam, gtf)  // featureCounts input expects (meta, bam, gtf)
+        }
     FEATURECOUNTS_CUSTOM(custom_featurecounts_input)
     ch_versions = ch_versions.mix(FEATURECOUNTS_CUSTOM.out.versions.first())
 
-    // 12. Sort BAM files after feature counting using SAMTOOLS_SORT (nf-core module)
+    // 13. Sort BAM files after feature counting using SAMTOOLS_SORT (nf-core module)
     SAMTOOLS_SORT(
         FEATURECOUNTS_CUSTOM.out.annotated_bam.map { meta, bam -> tuple(meta, bam) },
         [[],[]]  // Empty tuple for reference FASTA (not needed)
     )
     ch_versions = ch_versions.mix(SAMTOOLS_SORT.out.versions.first())
 
-    // 13. Index the sorted BAM output from SAMTOOLS_SORT using samtools index (index2)
+    // 14. Index the sorted BAM output from SAMTOOLS_SORT using samtools index (index2)
     samtools_index2_input = SAMTOOLS_SORT.out.bam.map { meta, bam -> tuple(meta, bam) }
-    samtools_index2_results = samtools_index2_input | index2
+    index2(samtools_index2_input)
     ch_versions = ch_versions.mix(index2.out.versions.first())
 
-    // 14. Count UMIs using UMICOUNT
+    // 15. Count UMIs using UMICOUNT
     //     Joins sorted BAM and its index, then passes as tuple to UMICOUNT
     UMICOUNT_input = SAMTOOLS_SORT.out.bam.join(index2.out.bai)
         .map { meta, bam, bai -> tuple(meta, bam, bai) }
