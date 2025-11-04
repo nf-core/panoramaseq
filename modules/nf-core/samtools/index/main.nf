@@ -4,8 +4,8 @@ process SAMTOOLS_INDEX {
 
     conda "${moduleDir}/environment.yml"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/samtools:1.21--h50ea8bc_0' :
-        'biocontainers/samtools:1.21--h50ea8bc_0' }"
+        'https://depot.galaxyproject.org/singularity/samtools:1.22.1--h96c455f_0' :
+        'biocontainers/samtools:1.22.1--h96c455f_0' }"
 
     input:
     tuple val(meta), path(input)
@@ -21,12 +21,10 @@ process SAMTOOLS_INDEX {
 
     script:
     def args = task.ext.args ?: ''
-    def extension = file(input).getExtension() == 'cram' ? 'crai' : args.contains('-c') ? 'csi' : 'bai'
-    def index_file = file(input).getName() + '.' + extension
     """
     samtools \\
         index \\
-        -@ ${task.cpus-1} \\
+        -@ ${task.cpus} \\
         $args \\
         $input
 
@@ -40,9 +38,8 @@ process SAMTOOLS_INDEX {
     def args = task.ext.args ?: ''
     def extension = file(input).getExtension() == 'cram' ?
                     "crai" : args.contains("-c") ?  "csi" : "bai"
-    def index_file = file(input).getName() + '.' + extension
     """
-    touch $index_file
+    touch ${input}.${extension}
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
