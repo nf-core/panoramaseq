@@ -63,7 +63,7 @@ SAMPLE_2,/path/to/sample2_R1.fastq.gz,/path/to/sample2_R2.fastq.gz,34500,/path/t
 | `N_barcodes`   | Number of expected spatial barcodes for this sample (e.g., 34500 for standard arrays).                                  |
 | `barcode_file` | Path to CSV file containing spatial barcode sequences and their coordinates. Must include barcode sequences in column 1.|
 
-An [example samplesheet](../assets/samplesheet.csv) has been provided with the pipeline.
+An [example samplesheet](./assets/samplesheet.csv) has been provided with the pipeline.
 
 ### Reference genome
 
