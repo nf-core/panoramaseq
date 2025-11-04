@@ -33,7 +33,7 @@ include { SAMTOOLS_INDEX as index1; SAMTOOLS_INDEX as index2 } from '../modules/
 */
 
 include { CUTADAPT_PANORAMA as CUTADAPT } from '../modules/local/cutadapt_panorama/main'
-include { DECODE_BATCH } from '../modules/local/decoding/main' 
+include { QUIK_BARCODE_CALLING } from '../modules/local/quik/main' 
 include { CUTADAPT_ADV_PIPE } from '../modules/local/cutadapt_adv_pipe/main'
 include { STAR_ALIGN_LOCAL } from '../modules/local/staralign/custom/main'
 include { FEATURECOUNTS_CUSTOM } from '../modules/local/featurecounts/custom/main'   
@@ -88,17 +88,26 @@ workflow PANORAMASEQ {
 
     // 4. Combine both channels for downstream processing
     // Use concat instead of mix to avoid multi-channel operator issues
-    umitools_input = SEQTK_SAMPLE.out.reads.mix(passthrough)
+    quik_input = SEQTK_SAMPLE.out.reads.mix(passthrough)
 
-    // 5. Extract UMIs using UMITOOLS_EXTRACT
-    umi_extract = UMITOOLS_EXTRACT(umitools_input)
+    // 5. Decode barcodes using QUIK_BARCODE_CALLING (GPU-accelerated)
+    // Extract barcode file once (all samples should use the same barcode file)
+    ch_barcode_file = quik_input.map { meta, reads -> file(meta.barcode_file) }.take(1)
+    decode_results = QUIK_BARCODE_CALLING(
+        quik_input,
+        ch_barcode_file
+    )
+    ch_versions = ch_versions.mix(QUIK_BARCODE_CALLING.out.versions.first())
+
+    // 6. Extract UMIs using UMITOOLS_EXTRACT
+    umi_extract = UMITOOLS_EXTRACT(QUIK_BARCODE_CALLING.out.reads)
     ch_versions = ch_versions.mix(UMITOOLS_EXTRACT.out.versions.first())
 
-    // 6. Trim reads after UMI extraction using CUTADAPT
+    // 7. Trim reads after UMI extraction using CUTADAPT
     cutadapt_results = CUTADAPT(UMITOOLS_EXTRACT.out.reads)
     ch_versions = ch_versions.mix(CUTADAPT.out.versions.first())
 
-    // 6a. FastQC on reads after first trimming (cutadapt_results stage)
+    // 7a. FastQC on reads after first trimming (cutadapt_results stage)
     fastqc_cutadapt_input = CUTADAPT.out.reads.map { meta, reads ->
         def new_meta = meta + [id: "cutadapt_${meta.id}"]
         [new_meta, reads]
@@ -106,17 +115,8 @@ workflow PANORAMASEQ {
     FASTQC_CUTADAPT(fastqc_cutadapt_input)
     ch_versions = ch_versions.mix(FASTQC_CUTADAPT.out.versions.first())
 
-    // 7. Decode barcodes using Decode_batch
-    // Extract barcode file once (all samples should use the same barcode file)
-    ch_barcode_file = CUTADAPT.out.reads.map { meta, reads -> file(meta.barcode_file) }.first()
-    decode_results = DECODE_BATCH(
-        CUTADAPT.out.reads,
-        ch_barcode_file
-    )
-    ch_versions = ch_versions.mix(DECODE_BATCH.out.versions.first())
-
     // 8. Advanced trimming on R2 using CUTADAPT_ADV_PIPE
-    cutadapt2_results = CUTADAPT_ADV_PIPE(DECODE_BATCH.out.reads)
+    cutadapt2_results = CUTADAPT_ADV_PIPE(CUTADAPT.out.reads)
     ch_versions = ch_versions.mix(CUTADAPT_ADV_PIPE.out.versions.first())
 
     // 8a. FastQC on reads after advanced trimming (cutadapt2_results stage)
@@ -247,7 +247,7 @@ workflow PANORAMASEQ {
         ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.collect{it[1]}.ifEmpty([]))
         ch_multiqc_files = ch_multiqc_files.mix(FASTQC_CUTADAPT.out.zip.collect{it[1]}.ifEmpty([]))
         ch_multiqc_files = ch_multiqc_files.mix(FASTQC_CUTADAPT2.out.zip.collect{it[1]}.ifEmpty([]))
-        ch_multiqc_files = ch_multiqc_files.mix(UMITOOLS_EXTRACT.out.log.collect().ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(UMITOOLS_EXTRACT.out.log.collect{it[1]}.ifEmpty([]))
         ch_multiqc_files = ch_multiqc_files.mix(STAR_ALIGN_LOCAL.out.log_final.collect().ifEmpty([]))
         ch_multiqc_files = ch_multiqc_files.mix(STAR_ALIGN_LOCAL.out.log_out.collect().ifEmpty([]))
         ch_multiqc_files = ch_multiqc_files.mix(FEATURECOUNTS_CUSTOM.out.summary.collect{it[1]}.ifEmpty([]))

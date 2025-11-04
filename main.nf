@@ -32,8 +32,25 @@ include { PANORAMASEQ_COMPLETION } from './subworkflows/local/utils_nfcore_panor
     // Use params.fasta and params.star_gtf if provided to build STAR index
     // Otherwise, rely on params.star_genome_dir (backward compatibility)
     //
-    if (params.fasta && params.star_gtf && !params.star_genome_dir) {
-        // Generate STAR index from FASTA and GTF
+    if (params.fasta && params.star_gtf && !params.star_genome_dir && params.additional_fasta) {
+        // Generate STAR index with additional FASTA (e.g., spike-in sequences)
+        fasta_file = file(params.fasta, checkIfExists: true)
+        gtf_file = file(params.star_gtf, checkIfExists: true)
+        ch_additional_fasta = file(params.additional_fasta, checkIfExists: true)
+
+        PREPARE_GENOME(
+            fasta_file,
+            gtf_file,
+            ch_additional_fasta
+        )
+        ch_versions = ch_versions.mix(PREPARE_GENOME.out.versions)
+        
+        // Use the generated STAR index
+        ch_star_index = PREPARE_GENOME.out.index
+        ch_gtf_file = PREPARE_GENOME.out.gtf
+        
+    } else if (params.fasta && params.star_gtf && !params.star_genome_dir) {
+        // Generate STAR index from FASTA and GTF only
         fasta_file = file(params.fasta, checkIfExists: true)
         gtf_file = file(params.star_gtf, checkIfExists: true)
         
@@ -46,22 +63,6 @@ include { PANORAMASEQ_COMPLETION } from './subworkflows/local/utils_nfcore_panor
         // Use the generated STAR index
         ch_star_index = STAR_GENOMEGENERATE.out.index.map { meta, index -> index }
         ch_gtf_file = Channel.value(gtf_file)
-        
-    } else if (params.fasta && params.star_gtf) {
-        fasta_file = file(params.fasta, checkIfExists: true)
-        gtf_file = file(params.star_gtf, checkIfExists: true)
-        ch_additional_fasta = params.additional_fasta ? file(params.additional_fasta, checkIfExists: true) : null
-
-        PREPARE_GENOME(
-            fasta_file,
-            gtf_file,
-            ch_additional_fasta
-        )
-        ch_versions = ch_versions.mix(PREPARE_GENOME.out.versions)
-        
-        // Use the generated STAR index
-        ch_star_index = PREPARE_GENOME.out.index
-        ch_gtf_file = PREPARE_GENOME.out.gtf
         
     } else if (params.star_genome_dir && params.star_gtf) {
         // Use pre-built STAR index (backward compatibility)

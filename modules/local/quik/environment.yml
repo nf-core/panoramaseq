@@ -1,0 +1,29 @@
+name: quik_cuda
+channels:
+  - conda-forge
+  - nvidia
+  - defaults
+
+dependencies:
+  # CUDA toolkit
+  - cuda-toolkit=12.6
+  - cuda-nvcc=12.6
+  
+  # Build tools
+  - cmake>=3.22
+  - make
+  - gcc_linux-64>=11.0
+  - gxx_linux-64>=11.0
+  
+  # OpenMP support
+  - llvm-openmp
+  
+  # Additional utilities
+  - git
+  - wget
+
+  # Python (optional, for potential post-processing)
+  - python=3.11
+  - biopython
+  - numpy
+  - pandas
