@@ -1,7 +1,7 @@
 nextflow_process {
 
     name "Test Process SEQTK_SAMPLE"
-    script "../main.nf"
+    script "modules/nf-core/seqtk/sample/main.nf"
     process "SEQTK_SAMPLE"
     config "./standard.config"
 
@@ -16,8 +16,9 @@ nextflow_process {
             process {
                 """
                 input[0] =  [
-                                [ id:'test', single_end:true, sample_size:50 ],
-                                file(params.modules_testdata_base_path + 'genomics/sarscov2/illumina/fastq/test_1.fastq.gz', checkIfExists: true)
+                                [ id:'test', single_end:true ],
+                                file(params.modules_testdata_base_path + 'genomics/sarscov2/illumina/fastq/test_1.fastq.gz', checkIfExists: true),
+                                50
                             ]
                 """
             }
@@ -37,11 +38,9 @@ nextflow_process {
             process {
                 """
                 input[0] =  [
-                                [ id:'test', single_end:false, sample_size:50 ],
-                                [
-                                    file(params.modules_testdata_base_path + 'genomics/sarscov2/illumina/fastq/test_1.fastq.gz', checkIfExists: true),
-                                    file(params.modules_testdata_base_path + 'genomics/sarscov2/illumina/fastq/test_2.fastq.gz', checkIfExists: true)
-                                ]
+                                [ id:'test', single_end:true ],
+                                file(params.modules_testdata_base_path + 'genomics/sarscov2/illumina/fastq/test_1.fastq.gz', checkIfExists: true),
+                                50
                             ]
                 """
             }
@@ -62,8 +61,31 @@ nextflow_process {
             process {
                 """
                 input[0] =  [
-                                [ id:'test', single_end:true, sample_size:50 ],
-                                file(params.modules_testdata_base_path + 'genomics/sarscov2/illumina/fastq/test_1.fastq.gz', checkIfExists: true)
+                                [ id:'test', single_end:true ],
+                                file(params.modules_testdata_base_path + 'genomics/sarscov2/illumina/fastq/test_1.fastq.gz', checkIfExists: true),
+                                50
+                            ]
+                """
+            }
+        }
+
+        then {
+            assertAll (
+                { assert process.success },
+                { assert snapshot(process.out).match() }
+            )
+        }
+    }
+
+    test("sarscov2_sample_singleend_frac") {
+
+        when {
+            process {
+                """
+                input[0] =  [
+                                [ id:'test', single_end:true ],
+                                file(params.modules_testdata_base_path + 'genomics/sarscov2/illumina/fastq/test_1.fastq.gz', checkIfExists: true),
+                                0.5
                             ]
                 """
             }

@@ -16,8 +16,6 @@ process SAMTOOLS_INDEX {
     tuple val(meta), path("*.crai"), optional:true, emit: crai
     path  "versions.yml"           , emit: versions
 
-    publishDir "${params.outdir}/star", mode: 'copy', overwrite: true
-
     when:
     task.ext.when == null || task.ext.when
 
