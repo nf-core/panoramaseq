@@ -23,6 +23,14 @@ def load_single_tsv_gz(path, sample_name, coords_df):
         path, sep="\t", compression="gzip",
         usecols=["gene", "cell", "count"]
     )
+    
+    # Check if dataframe is empty or has no data rows
+    if df.empty or len(df) == 0:
+        raise ValueError(
+            f"Input file '{path}' is empty or contains no data rows. "
+            f"This typically happens when the GTF file has no overlapping features with aligned reads. "
+            f"Please check that your GTF file contains relevant features for your data."
+        )
 
     # 2) Build gene & cell indices
     genes = pd.Index(df["gene"].unique(), name="gene")
@@ -89,7 +97,20 @@ def main():
         sample_name = os.path.splitext(os.path.basename(args.input))[0]
 
     # Process the sample
-    adata = load_single_tsv_gz(args.input, sample_name, coords_df)
+    try:
+        adata = load_single_tsv_gz(args.input, sample_name, coords_df)
+    except ValueError as e:
+        print(f"\nERROR: {e}")
+        print("\nPossible causes:")
+        print("  1. GTF file contains no features that overlap with aligned reads")
+        print("  2. Test data is too small (e.g., using test profile with truncated GTF)")
+        print("  3. Barcode calling filtered out all reads")
+        print("  4. No UMIs were counted in the previous step")
+        print("\nSuggestions:")
+        print("  - Use a complete GTF file with full gene annotations")
+        print("  - Check UMICOUNT logs for warnings")
+        print("  - Verify that your barcode calling step produced valid output")
+        raise SystemExit(1)
 
     # Write to .h5ad
     adata.write_h5ad(args.output)

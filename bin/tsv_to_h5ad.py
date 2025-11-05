@@ -25,6 +25,14 @@ def load_tsv_gz(path, prefix, coords_df):
         path, sep="\t", compression="gzip",
         usecols=["gene", "cell", "count"]
     )
+    
+    # Check if dataframe is empty or has no data rows
+    if df.empty or len(df) == 0:
+        raise ValueError(
+            f"Input file '{path}' is empty or contains no data rows. "
+            f"This typically happens when the GTF file has no overlapping features with aligned reads. "
+            f"Please check that your GTF file contains relevant features for your data."
+        )
 
     # 2) Build gene & cell indices
     genes = pd.Index(df["gene"].unique(), name="gene")
@@ -83,9 +91,31 @@ def main():
 
     # Process each sample
     adata_list = []
+    empty_files = []
     for fp in args.inputs:
         sample_name = os.path.splitext(os.path.basename(fp))[0]
-        adata_list.append(load_tsv_gz(fp, sample_name, coords_df))
+        try:
+            adata_list.append(load_tsv_gz(fp, sample_name, coords_df))
+        except ValueError as e:
+            empty_files.append((fp, str(e)))
+            print(f"WARNING: Skipping {fp}: {e}")
+    
+    # If all files are empty, exit with error
+    if len(adata_list) == 0:
+        print("\nERROR: All input files are empty or contain no data.")
+        print("\nEmpty files encountered:")
+        for fp, err in empty_files:
+            print(f"  - {fp}: {err}")
+        print("\nPossible causes:")
+        print("  1. GTF file contains no features that overlap with aligned reads")
+        print("  2. Test data is too small (e.g., using test profile with truncated GTF)")
+        print("  3. Barcode calling filtered out all reads")
+        print("  4. No UMIs were counted in the previous step")
+        print("\nSuggestions:")
+        print("  - Use a complete GTF file with full gene annotations")
+        print("  - Check UMICOUNT logs for warnings")
+        print("  - Verify that your barcode calling step produced valid output")
+        raise SystemExit(1)
 
     # Concatenate all samples (outer join on genes; obs already unique)
     combined = ad.concat(
