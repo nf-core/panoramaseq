@@ -1,28 +1,17 @@
 name: quik_cuda
 channels:
   - conda-forge
-  - nvidia
   - defaults
 
 dependencies:
-  # CUDA toolkit
-  - cuda-toolkit=12.6
-  - cuda-nvcc=12.6
+  # Note: QUIK barcode calling requires Singularity/Apptainer container.
+  # The pre-built container (oras://quay.io/francoaps/quik-cuda:prebuilt-36bp-v2)
+  # is the only supported method for GPU-accelerated QUIK barcode calling.
+  # 
+  # This conda environment is kept for nf-core compliance but is NOT used
+  # for the QUIK process, which runs exclusively in the Singularity container.
   
-  # Build tools
-  - cmake>=3.22
-  - make
-  - gcc_linux-64>=11.0
-  - gxx_linux-64>=11.0
-  
-  # OpenMP support
-  - llvm-openmp
-  
-  # Additional utilities
-  - git
-  - wget
-
-  # Python (optional, for potential post-processing)
+  # Python utilities for data processing
   - python=3.11
   - biopython
   - numpy

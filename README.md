@@ -207,6 +207,57 @@ nextflow run main.nf \
 - GPU jobs will be scheduled on GPU-enabled nodes based on your `clusterOptions`
 - The pipeline requires at least 1 GPU for QUIK barcode calling
 
+### Execution Profiles
+
+The pipeline requires **Singularity/Apptainer** for QUIK barcode calling due to the GPU-accelerated pre-built container requirement.
+
+#### Singularity Profile (Required for QUIK)
+
+```bash
+nextflow run main.nf --input samplesheet.csv -profile singularity
+```
+
+**Requirements:**
+- ✅ Singularity/Apptainer container engine
+- ✅ NVIDIA GPU with CUDA support
+
+**Advantages:**
+- ✅ Fast GPU-accelerated barcode calling (~0.75ms per read)
+- ✅ Consistent environment across systems
+- ✅ No compilation overhead
+- ✅ Recommended for HPC systems
+
+**QUIK Performance:**
+- Compiled with: `SEQUENCE_LENGTH=36`, `REJECTION_THRESHOLD=8`
+- Performance: ~0.75ms per read on NVIDIA Tesla V100 GPU
+- ~10-20x faster than runtime compilation
+
+#### Docker Profile
+
+```bash
+nextflow run main.nf --input samplesheet.csv -profile docker
+```
+
+**Notes:**
+- Uses same pre-built QUIK container as Singularity profile
+- Requires Docker daemon and GPU plugin for GPU access
+- Not recommended for HPC systems (Singularity preferred)
+
+### Combined Profiles
+
+You can combine profiles for your specific setup:
+
+```bash
+# UGent HPC with GPU (recommended)
+nextflow run main.nf -profile vsc_ugent,singularity
+
+# Generic HPC with GPU
+nextflow run main.nf -profile singularity
+
+# Test run with singularity
+nextflow run main.nf -profile test,singularity
+```
+
 ### Key parameters
 
 #### Subsampling
@@ -219,13 +270,18 @@ To subsample FASTQ files for faster testing or analysis:
 
 #### QUIK barcode calling
 
-The pipeline uses a pre-built QUIK container with GPU acceleration for barcode calling. Some parameters are **fixed at compile-time** in the container, while others are **configurable at runtime**.
+The pipeline uses GPU-accelerated QUIK for fast and accurate barcode calling via the pre-built Singularity container.
 
-**Fixed parameters (cannot be changed without rebuilding container):**
+**Container:**
+- Pre-built container: `oras://quay.io/francoaps/quik-cuda:prebuilt-36bp-v2`
+- Base: NVIDIA CUDA 12.6.0 on Ubuntu 22.04
+- Engine: Singularity/Apptainer (required)
+
+**Fixed parameters** (compiled at container build time):
 - `barcode_length`: 36bp (compiled with `SEQUENCE_LENGTH=36`)
 - `rejection_threshold`: 8 (compiled with `REJECTION_THRESHOLD=8`)
 
-**Configurable parameters:**
+**Configurable parameters** (set at runtime):
 
 ```bash
 --barcode_start 9                        # Start position of barcode in read (default: 9)
@@ -233,7 +289,18 @@ The pipeline uses a pre-built QUIK container with GPU acceleration for barcode c
 --distance_measure 'SEQUENCE_LEVENSHTEIN' # Distance metric for matching (default: SEQUENCE_LEVENSHTEIN)
 ```
 
-> **Note:** The QUIK container was pre-compiled with fixed barcode length (36bp) and rejection threshold (8) for optimal performance. If you need different values, you would need to rebuild the container from source with different compile-time parameters.
+**Performance:**
+- ~0.75ms per read on NVIDIA Tesla V100 GPU
+- Optimized with pre-built binary in container
+
+**Requirements:**
+- NVIDIA GPU (Tesla V100 or equivalent)
+- Singularity/Apptainer container engine
+- CUDA drivers 12.6 or compatible
+
+**If you need different barcode length or threshold:**
+- You must rebuild the container from the Singularity definition file (`containers/quik_cuda_prebuilt.def`) with different compile-time parameters
+- The pre-built binary cannot be reconfigured at runtime
 
 #### UMI tools
 
