@@ -315,12 +315,6 @@
                     "description": "Start position of the barcode in the read (zero-based).",
                     "fa_icon": "fas fa-ruler"
                 },
-                "barcode_length": {
-                    "type": "integer",
-                    "default": 36,
-                    "description": "Length of the barcode sequence.",
-                    "fa_icon": "fas fa-ruler-horizontal"
-                },
                 "strategy": {
                     "type": "string",
                     "default": "4_7_mer_gpu_v1",
@@ -333,12 +327,6 @@
                     "enum": ["LEVENSHTEIN", "SEQUENCE_LEVENSHTEIN", "PSEUDO_DISTANCE"],
                     "description": "Distance measure for barcode matching.",
                     "fa_icon": "fas fa-calculator"
-                },
-                "rejection_threshold": {
-                    "type": "integer",
-                    "default": 7,
-                    "description": "Threshold for rejecting barcode matches (higher = more stringent).",
-                    "fa_icon": "fas fa-filter"
                 },
                 "gpus": {
                     "type": "integer",

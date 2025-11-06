@@ -106,6 +106,107 @@ nextflow run nf-core/panoramaseq \
 
 This will launch the pipeline with the `singularity` configuration profile. See below for more information about profiles.
 
+### GPU Requirements and Configuration
+
+The pipeline uses GPU-accelerated barcode calling via QUIK, which requires NVIDIA GPUs and CUDA libraries. **You must configure GPU settings by modifying the pipeline's `nextflow.config` file to match your system.**
+
+#### For UGent HPC Users (Joltik/Accelgor clusters)
+
+**Step 1: Set up environment variables** (add to your `~/.bashrc` or run before each session):
+
+```bash
+export NXF_HOME=$VSC_DATA_VO_USER/.nextflow
+export APPTAINER_CACHEDIR=$VSC_SCRATCH_VO_USER/.apptainer/cache
+export APPTAINER_TMPDIR=$VSC_SCRATCH_VO_USER/.apptainer/tmp
+export SINGULARITY_CACHEDIR=$VSC_SCRATCH_VO_USER/.apptainer/cache
+```
+
+**Step 2: Modify the pipeline's `nextflow.config` file** by adding this GPU configuration at the end:
+
+```bash
+# Navigate to the pipeline directory
+cd /path/to/nf-core-panoramaseq
+
+# Edit nextflow.config and add the following at the end of the file:
+```
+
+```groovy
+// GPU configuration for UGent HPC (Joltik/Accelgor)
+process {
+    withLabel: use_gpu {
+        beforeScript = 'module load cuDNN/9.5.0.50-CUDA-12.6.0'
+        clusterOptions = { "--gpus=1 --clusters=joltik,accelgor" + (System.getenv("SBATCH_ACCOUNT") || System.getenv("SLURM_ACCOUNT") ? " --account=" + (System.getenv("SBATCH_ACCOUNT") ?: System.getenv("SLURM_ACCOUNT")) : "") }
+    }
+}
+```
+
+**Step 3: Run the pipeline**:
+
+```bash
+nextflow run main.nf \
+   --input samplesheet.csv \
+   --outdir results \
+   --star_genome_dir /path/to/star_index \
+   --star_gtf /path/to/annotation.gtf \
+   -profile vsc_ugent,singularity
+```
+
+#### For Other HPC Systems
+
+**Step 1: Check available CUDA modules**:
+
+```bash
+module spider CUDA
+module spider cuDNN
+```
+
+**Step 2: Modify the pipeline's `nextflow.config` file** by adding GPU configuration at the end:
+
+```bash
+# Navigate to the pipeline directory
+cd /path/to/nf-core-panoramaseq
+
+# Edit nextflow.config and add this at the end:
+```
+
+```groovy
+// GPU configuration for your HPC system
+process {
+    withLabel: use_gpu {
+        // Load your system's CUDA module (CUDA 12.6.0 or compatible)
+        beforeScript = 'module load CUDA/12.6.0'  // Adjust version for your system
+        
+        // Configure GPU allocation for your scheduler (SLURM example)
+        clusterOptions = '--gpus=1'  // Adjust for your scheduler (PBS/SGE/etc)
+        
+        // Enable GPU access in containers
+        containerOptions = {
+            workflow.containerEngine == "singularity" ? '--nv' : 
+            ( workflow.containerEngine == "docker" ? '--gpus all': null )
+        }
+    }
+}
+```
+
+**Step 3: Run the pipeline**:
+
+```bash
+nextflow run main.nf \
+   --input samplesheet.csv \
+   --outdir results \
+   --star_genome_dir /path/to/star_index \
+   --star_gtf /path/to/annotation.gtf \
+   -profile singularity
+```
+
+#### Important Notes
+
+- The QUIK container is pre-built with CUDA 12.6.0 runtime
+- Your system must have CUDA drivers version 12.6 or higher
+- Add the GPU configuration to the **end** of the pipeline's `nextflow.config` file (this overrides institutional defaults)
+- GPU jobs will be scheduled on GPU-enabled nodes based on your `clusterOptions`
+- The pipeline requires at least 1 GPU for QUIK barcode calling
+
 ### Key parameters
 
 #### Subsampling
@@ -118,13 +219,21 @@ To subsample FASTQ files for faster testing or analysis:
 
 #### QUIK barcode calling
 
-Configure GPU-accelerated barcode calling:
+The pipeline uses a pre-built QUIK container with GPU acceleration for barcode calling. Some parameters are **fixed at compile-time** in the container, while others are **configurable at runtime**.
+
+**Fixed parameters (cannot be changed without rebuilding container):**
+- `barcode_length`: 36bp (compiled with `SEQUENCE_LENGTH=36`)
+- `rejection_threshold`: 8 (compiled with `REJECTION_THRESHOLD=8`)
+
+**Configurable parameters:**
 
 ```bash
---barcode_start 9          # Start position of barcode (default: 9)
---barcode_length 36        # Length of barcode sequence (default: 36)
---rejection_threshold 7    # Mismatch threshold for barcode calling (default: 7)
+--barcode_start 9                        # Start position of barcode in read (default: 9)
+--strategy '4_7_mer_gpu_v1'              # Barcode matching strategy (default: 4_7_mer_gpu_v1)
+--distance_measure 'SEQUENCE_LEVENSHTEIN' # Distance metric for matching (default: SEQUENCE_LEVENSHTEIN)
 ```
+
+> **Note:** The QUIK container was pre-compiled with fixed barcode length (36bp) and rejection threshold (8) for optimal performance. If you need different values, you would need to rebuild the container from source with different compile-time parameters.
 
 #### UMI tools
 

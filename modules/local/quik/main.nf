@@ -1,10 +1,10 @@
 process QUIK_BARCODE_CALLING {
     tag "${meta.id}"
-    label 'gpu_process'
+    label 'use_gpu'
     conda "${moduleDir}/environment.yml"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'oras://quay.io/francoaps/quik-cuda:latest' :
-        'quay.io/francoaps/quik-cuda:latest' }"
+        'oras://quay.io/francoaps/quik-cuda:prebuilt-36bp-v2' :
+        'quay.io/francoaps/quik-cuda:prebuilt-36bp-v2' }"
     
     input:
     tuple val(meta), path(reads)
@@ -23,54 +23,21 @@ process QUIK_BARCODE_CALLING {
     def prefix = task.ext.prefix ?: "${meta.id}"
     
     // Extract parameters from params (pipeline-level configuration)
-    // These can be overridden via command line: --barcode_start 10 --barcode_length 40 etc.
+    // Note: barcode_length and rejection_threshold are now FIXED in the pre-built binary (36bp, threshold=8)
+    // Only runtime parameters can be varied
     def barcode_start = params.barcode_start
-    def barcode_length = params.barcode_length
+    def barcode_length = 36  // FIXED in pre-built binary
     def strategy = params.strategy
     def distance_measure = params.distance_measure
-    def rejection_threshold = params.rejection_threshold
+    def rejection_threshold = 8  // FIXED in pre-built binary
     
     """
-    # Debug: Check environment and available tools
-    echo "=== Environment Debug ==="
-    echo "PATH: \$PATH"
-    echo "PWD: \$(pwd)"
-    which cmake || echo "cmake not found in PATH"
-    which make || echo "make not found in PATH"
-    which g++ || echo "g++ not found in PATH"
-    which nvcc || echo "nvcc not found in PATH"
-    cmake --version || echo "cmake version check failed"
-    nvcc --version || echo "nvcc version check failed"
-    echo "========================="
-    
-    # Copy quik source from bin directory
-    cp -r ${projectDir}/bin/quik .
-    
-    # Build the executable using HPC modules
-    cd quik
-    # Clean any previous build artifacts to avoid cache conflicts
-    rm -rf build
-    mkdir -p build
-    cd build
-    
-    # Pass pipeline parameters to CMake as compile-time definitions
-    echo "Configuring QUIK with SEQUENCE_LENGTH=${barcode_length} and REJECTION_THRESHOLD=${rejection_threshold}"
-    cmake -DSEQUENCE_LENGTH=${barcode_length} -DREJECTION_THRESHOLD=${rejection_threshold} ..
-    make -j${task.cpus}
-    
-    # Copy executable to working directory
-    echo "Files in build directory:"
-    ls -la
-    echo "Current directory: \$(pwd)"
-    WORK_DIR=\$(pwd | sed 's|/quik/build||')
-    echo "Work directory: \$WORK_DIR"
-    echo "Copying executable to work directory..."
-    cp single_strategy_benchmark_fastq_paired \$WORK_DIR/
-    cd ../..
-    echo "Files in work directory after copy:"
-    ls -la
-    echo "Making executable..."
-    chmod +x single_strategy_benchmark_fastq_paired
+    # Using pre-built QUIK binary - no build step required!
+    echo "=== Using Pre-built QUIK Binary ==="
+    echo "Binary location: \$(which quik)"
+    echo "Configured for: SEQUENCE_LENGTH=36, REJECTION_THRESHOLD=8"
+    echo "Runtime parameters: barcode_start=${barcode_start}, strategy=${strategy}, distance=${distance_measure}"
+    echo "===================================="
     
     # Decompress input FASTQ files (QUIK requires uncompressed input)
     echo "Decompressing input FASTQ files..."
@@ -81,8 +48,9 @@ process QUIK_BARCODE_CALLING {
     echo "Extracting barcode sequences..."
     tail -n +2 ${barcode_file} | cut -d',' -f1 > barcodes_only.txt
     
-    # Run quik_clean barcode calling using the built executable
-    ./single_strategy_benchmark_fastq_paired \\
+    # Run QUIK barcode calling using the pre-built executable
+    # The binary is already compiled and optimized - execution starts immediately!
+    quik \\
         barcodes_only.txt \\
         input_R1.fastq \\
         input_R2.fastq \\
@@ -104,9 +72,8 @@ process QUIK_BARCODE_CALLING {
     
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        quik_clean: \$(echo "1.0.0")
-        cuda: \$(nvcc --version | grep release | cut -d' ' -f6 | cut -d',' -f1)
-        cmake: \$(cmake --version | head -1 | cut -d' ' -f3)
+        quik: \$(echo "2.0-prebuilt-36bp")
+        cuda: \$(nvcc --version 2>/dev/null | grep release | cut -d' ' -f6 | cut -d',' -f1 || echo "12.6.0")
     END_VERSIONS
     """
     
