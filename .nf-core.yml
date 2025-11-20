@@ -1,17 +1,14 @@
-repository_type: pipeline
-
-nf_core_version: 3.2.1
-
 lint: {}
-
+nf_core_version: 3.5.1
+repository_type: pipeline
 template:
-  org: nf-core
-  name: panoramaseq
+  author: Poma-Soto Franco
   description: a pipeline to process sequencing based spatial transccriptomics data
     from in-situ arrays
-  author: Poma-Soto Franco
-  version: 1.0.0dev
-  force: true
+  force: false
+  is_nfcore: true
+  name: panoramaseq
+  org: nf-core
   outdir: .
   skip_features: []
-  is_nfcore: true
+  version: 1.0.0dev
