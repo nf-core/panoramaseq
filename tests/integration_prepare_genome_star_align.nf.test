@@ -31,7 +31,11 @@ nextflow_workflow {
                 { assert workflow.out.index },
                 { assert workflow.out.versions },
                 { assert path(workflow.out.index.get(0)).exists() },
-                { assert path(workflow.out.index.get(0)).isDirectory() }
+                { assert path(workflow.out.index.get(0)).isDirectory() },
+                { assert snapshot(workflow.out.versions).match("versions") },
+                { assert snapshot(
+                    path("$outputDir/pipeline_info/nf_core_pipeline_software_mqc_versions.yml")
+                ).match("versions_yml") }
             )
         }
     }
@@ -59,7 +63,11 @@ nextflow_workflow {
                 { assert workflow.out.fasta },
                 { assert workflow.out.gtf },
                 { assert workflow.out.index },
-                { assert workflow.out.versions }
+                { assert workflow.out.versions },
+                { assert snapshot(workflow.out.versions).match("versions_stub") },
+                { assert snapshot(
+                    path("$outputDir/pipeline_info/nf_core_pipeline_software_mqc_versions.yml")
+                ).match("versions_yml_stub") }
             )
         }
     }
