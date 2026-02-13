@@ -38,6 +38,7 @@ The pipeline handles paired-end FASTQ files from spatial transcriptomics experim
 11. **Quality Reports** - Aggregate QC metrics ([`MultiQC`](http://multiqc.info/))
 
 ![Pipeline Overview](PanoramaSeqv1.jpg)
+
 ## Usage
 
 > [!NOTE]
@@ -55,13 +56,13 @@ SAMPLE_1,/path/to/sample1_R1.fastq.gz,/path/to/sample1_R2.fastq.gz,34500,/path/t
 SAMPLE_2,/path/to/sample2_R1.fastq.gz,/path/to/sample2_R2.fastq.gz,34500,/path/to/barcodes_coords.csv
 ```
 
-| Column         | Description                                                                                                               |
-| -------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| `sample`       | Custom sample name. This will be used to name all output files. Spaces are not allowed.                                 |
-| `fastq_1`      | Path to FASTQ file for read 1. File must be gzipped and have the extension `.fastq.gz` or `.fq.gz`.                    |
-| `fastq_2`      | Path to FASTQ file for read 2. File must be gzipped and have the extension `.fastq.gz` or `.fq.gz`.                    |
-| `N_barcodes`   | Number of expected spatial barcodes for this sample (e.g., 34500 for standard arrays).                                  |
-| `barcode_file` | Path to CSV file containing spatial barcode sequences and their coordinates. Must include barcode sequences in column 1.|
+| Column         | Description                                                                                                              |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `sample`       | Custom sample name. This will be used to name all output files. Spaces are not allowed.                                  |
+| `fastq_1`      | Path to FASTQ file for read 1. File must be gzipped and have the extension `.fastq.gz` or `.fq.gz`.                      |
+| `fastq_2`      | Path to FASTQ file for read 2. File must be gzipped and have the extension `.fastq.gz` or `.fq.gz`.                      |
+| `N_barcodes`   | Number of expected spatial barcodes for this sample (e.g., 34500 for standard arrays).                                   |
+| `barcode_file` | Path to CSV file containing spatial barcode sequences and their coordinates. Must include barcode sequences in column 1. |
 
 An [example samplesheet](./assets/samplesheet.csv) has been provided with the pipeline.
 
@@ -175,13 +176,13 @@ process {
     withLabel: use_gpu {
         // Load your system's CUDA module (CUDA 12.6.0 or compatible)
         beforeScript = 'module load CUDA/12.6.0'  // Adjust version for your system
-        
+
         // Configure GPU allocation for your scheduler (SLURM example)
         clusterOptions = '--gpus=1'  // Adjust for your scheduler (PBS/SGE/etc)
-        
+
         // Enable GPU access in containers
         containerOptions = {
-            workflow.containerEngine == "singularity" ? '--nv' : 
+            workflow.containerEngine == "singularity" ? '--nv' :
             ( workflow.containerEngine == "docker" ? '--gpus all': null )
         }
     }
@@ -218,16 +219,19 @@ nextflow run main.nf --input samplesheet.csv -profile singularity
 ```
 
 **Requirements:**
+
 - ✅ Singularity/Apptainer container engine
 - ✅ NVIDIA GPU with CUDA support
 
 **Advantages:**
+
 - ✅ Fast GPU-accelerated barcode calling (~0.75ms per read)
 - ✅ Consistent environment across systems
 - ✅ No compilation overhead
 - ✅ Recommended for HPC systems
 
 **QUIK Performance:**
+
 - Compiled with: `SEQUENCE_LENGTH=36`, `REJECTION_THRESHOLD=8`
 - Performance: ~0.75ms per read on NVIDIA Tesla V100 GPU
 - ~10-20x faster than runtime compilation
@@ -239,6 +243,7 @@ nextflow run main.nf --input samplesheet.csv -profile docker
 ```
 
 **Notes:**
+
 - Uses same pre-built QUIK container as Singularity profile
 - Requires Docker daemon and GPU plugin for GPU access
 - Not recommended for HPC systems (Singularity preferred)
@@ -273,11 +278,13 @@ To subsample FASTQ files for faster testing or analysis:
 The pipeline uses GPU-accelerated QUIK for fast and accurate barcode calling via the pre-built Singularity container.
 
 **Container:**
+
 - Pre-built container: `oras://quay.io/francoaps/quik-cuda:prebuilt-36bp-v2`
 - Base: NVIDIA CUDA 12.6.0 on Ubuntu 22.04
 - Engine: Singularity/Apptainer (required)
 
 **Fixed parameters** (compiled at container build time):
+
 - `barcode_length`: 36bp (compiled with `SEQUENCE_LENGTH=36`)
 - `rejection_threshold`: 8 (compiled with `REJECTION_THRESHOLD=8`)
 
@@ -290,15 +297,18 @@ The pipeline uses GPU-accelerated QUIK for fast and accurate barcode calling via
 ```
 
 **Performance:**
+
 - ~0.75ms per read on NVIDIA Tesla V100 GPU
 - Optimized with pre-built binary in container
 
 **Requirements:**
+
 - NVIDIA GPU (Tesla V100 or equivalent)
 - Singularity/Apptainer container engine
 - CUDA drivers 12.6 or compatible
 
 **If you need different barcode length or threshold:**
+
 - You must rebuild the container from the Singularity definition file (`containers/quik_cuda_prebuilt.def`) with different compile-time parameters
 - The pre-built binary cannot be reconfigured at runtime
 
@@ -363,11 +373,12 @@ We thank the following people for their contributions to the development of this
 - **Franco Poma-Soto** - Pipeline development and implementation
 - **QUIK Development Team** - GPU-accelerated barcode calling module
 - **nf-core community** - Framework, templates, and guidance
-- **Nicolas Vannieuwkerke** - For advice and reviewing  
+- **Nicolas Vannieuwkerke** - For advice and reviewing
 
 ### Institutional Support
 
 This pipeline was developed with support from:
+
 - Ghent University
 - CMGG Center for Medical Genetics of Ghent
 
@@ -388,7 +399,6 @@ This pipeline uses the following software and tools. Please cite them appropriat
 - **QUIK** - Uphoff, R.C., Schüler, S., Grosse, I., & Müller-Hannemann, M. (2025). QUIK: GPU-accelerated barcode calling for spatial transcriptomics. _bioRxiv_. doi: [10.1101/2025.05.12.653416](https://doi.org/10.1101/2025.05.12.653416)
 
 - **FastQC** - Andrews, S. (2010). FastQC: A Quality Control Tool for High Throughput Sequence Data.
-  
 - **MultiQC** - Ewels, P., et al. (2016). MultiQC: summarize analysis results for multiple tools and samples in a single report. _Bioinformatics_, 32(19), 3047-3048.
 
 - **UMI-tools** - Smith, T., et al. (2017). UMI-tools: modeling sequencing errors in Unique Molecular Identifiers to improve quantification accuracy. _Genome Research_, 27(3), 491-499.

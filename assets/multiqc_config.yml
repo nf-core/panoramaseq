@@ -32,7 +32,7 @@ use_filename_as_sample_name: true
 # Custom sample name patterns to organize FastQC results by stage
 sample_names_replace_regex:
   - ["raw_(.+)", "\\1 (Raw reads)"]
-  - ["cutadapt_(.+)", "\\1 (After trimming)"] 
+  - ["cutadapt_(.+)", "\\1 (After trimming)"]
   - ["cutadapt2_(.+)", "\\1 (After advanced trimming)"]
 
 # Order FastQC sections by processing stage
