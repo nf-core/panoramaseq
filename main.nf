@@ -5,7 +5,7 @@ nextflow.enable.dsl=2
 // 0) Import the CHECK_FASTQS process from your fixed module
 // ==========================================================================
 
-include { PANORAMASEQ } from './workflows/panoramaseq' 
+include { PANORAMASEQ } from './workflows/panoramaseq'
 include { PREPARE_GENOME } from './subworkflows/local/prepare_genome/main'
 include { STAR_GENOMEGENERATE } from './modules/nf-core/star/genomegenerate/main'
 include { PIPELINE_INITIALISATION } from './subworkflows/local/utils_nfcore_panoramaseq_pipeline/main'
@@ -18,11 +18,11 @@ include { PANORAMASEQ_COMPLETION } from './subworkflows/local/utils_nfcore_panor
 // ==========================================================================
 
 
- workflow NFCORE_PANORAMASEQ {  
-    
+workflow NFCORE_PANORAMASEQ {
+
     take:
-    valid_data 
- 
+    valid_data
+
     main:
     ch_versions = Channel.empty()
 
@@ -44,31 +44,31 @@ include { PANORAMASEQ_COMPLETION } from './subworkflows/local/utils_nfcore_panor
             ch_additional_fasta
         )
         ch_versions = ch_versions.mix(PREPARE_GENOME.out.versions)
-        
+
         // Use the generated STAR index
         ch_star_index = PREPARE_GENOME.out.index
         ch_gtf_file = PREPARE_GENOME.out.gtf
-        
+
     } else if (params.fasta && params.star_gtf && !params.star_genome_dir) {
         // Generate STAR index from FASTA and GTF only
         fasta_file = file(params.fasta, checkIfExists: true)
         gtf_file = file(params.star_gtf, checkIfExists: true)
-        
+
         STAR_GENOMEGENERATE(
             Channel.value([[:], fasta_file]),
             Channel.value([[:], gtf_file])
         )
         ch_versions = ch_versions.mix(STAR_GENOMEGENERATE.out.versions)
-        
+
         // Use the generated STAR index
         ch_star_index = STAR_GENOMEGENERATE.out.index.map { meta, index -> index }
         ch_gtf_file = Channel.value(gtf_file)
-        
+
     } else if (params.star_genome_dir && params.star_gtf) {
         // Use pre-built STAR index (backward compatibility)
         ch_star_index = Channel.value(file(params.star_genome_dir, checkIfExists: true))
         ch_gtf_file = Channel.value(file(params.star_gtf, checkIfExists: true))
-        
+
     } else {
         error "ERROR: Either provide --fasta and --star_gtf to build STAR index, or --star_genome_dir and --star_gtf to use existing index"
     }
@@ -92,7 +92,7 @@ include { PANORAMASEQ_COMPLETION } from './subworkflows/local/utils_nfcore_panor
 
 workflow {
     main:
-    
+
     PIPELINE_INITIALISATION (
         params.version,
         params.validate_params,
@@ -101,13 +101,13 @@ workflow {
         params.outdir,
         params.input
     )
-    
+
     // Print the output of PIPELINE_INITIALISATION.out.samplesheet
     PIPELINE_INITIALISATION.out.samplesheet.view { "PIPELINE_INITIALISATION.out.samplesheet: $it" }
 
     // main PANORAMASEQ workflow
     NFCORE_PANORAMASEQ (
-         PIPELINE_INITIALISATION.out.samplesheet
+        PIPELINE_INITIALISATION.out.samplesheet
     )
     // SUBWORKFLOW: Pipeline completion tasks
     PANORAMASEQ_COMPLETION (

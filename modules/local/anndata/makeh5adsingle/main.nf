@@ -26,7 +26,7 @@ process ANNDATA_MAKEH5AD_SINGLE {
     echo "Checking input file ${count_tsv} for data..."
     lines=\$(zcat ${count_tsv} | wc -l)
     echo "File has \$lines lines (including header)"
-    
+
     # If file has 1 or fewer lines (header only or empty), exit with error
     if [ "\$lines" -le 1 ]; then
         echo ""
@@ -46,14 +46,14 @@ process ANNDATA_MAKEH5AD_SINGLE {
         echo "  - Check UMICOUNT logs in the work directory for warnings"
         echo "  - Verify barcode calling produced valid output files"
         echo "  - Ensure your test data has reads that map to genes in the GTF"
-        
+
         # Create a dummy output to satisfy Nextflow output requirements
         # This allows the errorStrategy = 'ignore' to work properly
         touch ${prefix}.h5ad.failed
-        
+
         exit 1
     fi
-    
+
     tsv_to_h5ad_single.py \\
         ${count_tsv} \\
         --coords ${coords_csv} \\

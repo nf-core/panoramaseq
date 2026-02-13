@@ -25,7 +25,7 @@ def load_tsv_gz(path, prefix, coords_df):
         path, sep="\t", compression="gzip",
         usecols=["gene", "cell", "count"]
     )
-    
+
     # Check if dataframe is empty or has no data rows
     if df.empty or len(df) == 0:
         raise ValueError(
@@ -99,7 +99,7 @@ def main():
         except ValueError as e:
             empty_files.append((fp, str(e)))
             print(f"WARNING: Skipping {fp}: {e}")
-    
+
     # If all files are empty, exit with error
     if len(adata_list) == 0:
         print("\nERROR: All input files are empty or contain no data.")

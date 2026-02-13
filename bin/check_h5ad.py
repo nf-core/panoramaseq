@@ -27,7 +27,7 @@ def main():
     n_obs, n_vars = adata.n_obs, adata.n_vars
     print(f"adata.X shape: {adata.X.shape} (expected {n_obs} x {n_vars})")
     validation_errors = []
-    
+
     if adata.X.shape != (n_obs, n_vars):
         error_msg = "ERROR: X shape mismatch!"
         print(error_msg)
@@ -39,7 +39,7 @@ def main():
         error_msg = "ERROR: Neither 'batch' nor 'sample' column found in obs."
         print(error_msg)
         validation_errors.append(error_msg)
-    
+
     print(f"var index name: {adata.var.index.name}, number of genes: {n_vars}")
     dup_genes = adata.var.index.duplicated().sum()
     print(f"Duplicate genes in var index: {dup_genes}")

@@ -12,19 +12,19 @@ nextflow_workflow {
         when {
             params {
                 outdir = "$outputDir"
-                
+
                 // Test data
                 star_genome_dir = params.pipelines_testdata_base_path + 'reference/star_index'
                 star_gtf = params.pipelines_testdata_base_path + 'reference/genes.gtf'
                 mergecounts = false
                 validate_h5ad = true
             }
-            
+
             workflow {
                 """
                 input[0] = Channel.fromList([
                     [
-                        [ 
+                        [
                             id: 'sample1',
                             N_barcodes: 1000,
                             barcode_file: params.pipelines_testdata_base_path + 'reference/barcodes_coords_test.csv',

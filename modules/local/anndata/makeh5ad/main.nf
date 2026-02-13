@@ -28,7 +28,7 @@ process ANNDATA_MAKEH5AD {
     empty_files=""
     empty_count=0
     valid_count=0
-    
+
     for tsv in ${tsv_files}; do
         # Get uncompressed size (number of lines)
         lines=\$(zcat "\$tsv" | wc -l)
@@ -43,10 +43,10 @@ process ANNDATA_MAKEH5AD {
             valid_count=\$((valid_count + 1))
         fi
     done
-    
+
     echo ""
     echo "Summary: \$valid_count valid files, \$empty_count empty files"
-    
+
     # If ALL files are empty, exit with error
     if [ \$valid_count -eq 0 ]; then
         echo ""
@@ -67,7 +67,7 @@ process ANNDATA_MAKEH5AD {
         echo "  - Ensure your test data has reads that map to genes in the GTF"
         exit 1
     fi
-    
+
     # If some files are empty but others are valid, proceed with valid files only
     if [ \$empty_count -gt 0 ]; then
         echo ""
@@ -75,7 +75,7 @@ process ANNDATA_MAKEH5AD {
         echo "Empty files skipped: \$empty_files"
         echo ""
     fi
-    
+
     # Process only the valid files
     tsv_to_h5ad.py \\
         \$valid_files \\

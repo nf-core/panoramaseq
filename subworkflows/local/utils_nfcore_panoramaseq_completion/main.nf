@@ -23,7 +23,7 @@ workflow PANORAMASEQ_COMPLETION {
 
     take:
     email           //  string: email address for completion notification
-    email_on_fail   //  string: email address for failure notification  
+    email_on_fail   //  string: email address for failure notification
     plaintext_email // boolean: send plain-text email instead of HTML
     outdir          //    path: output directory for results
     monochrome_logs // boolean: disable ANSI colour codes in log output
@@ -74,7 +74,7 @@ workflow PANORAMASEQ_COMPLETION {
 //
 def panoramaseqSummary(monochrome_logs=true) {
     def colors = logColours(monochrome_logs)
-    
+
     if (workflow.success) {
         def color = colors.green
         def status = []

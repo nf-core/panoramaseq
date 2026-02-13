@@ -49,7 +49,7 @@ def makeerrors(seq,srate,irate,drate) : #error mode applied to a sequence seq
     # deletions
     nd = random.binomial(n,drate)
     ndx = random.randint(low=0,high=n,size=nd)
-    seq = delete(seq,ndx)    
+    seq = delete(seq,ndx)
     # insertions (at specified rate into smaller seq)
     ni = random.binomial(len(seq),irate)
     ndx = random.randint(low=0,high=len(seq)+1,size=ni)
@@ -123,7 +123,7 @@ def prank(arr, descending=False) : # returns rank of each element in torch array
     argsrt = torch.argsort(arr, descending=descending)
     rank = torch.zeros(arr.shape, dtype=torch.float, device=device)
     rank[argsrt] = torch.arange(len(argsrt),dtype=torch.float,device=device)
-    return rank    
+    return rank
 
 class ApproximateLevenshtein :
     def __init__(s, M, N, Q, zsub, zins, zdel, zskew):
@@ -133,7 +133,7 @@ class ApproximateLevenshtein :
         s.Q = Q # number of seq2s
         (s.zsub, s.zins, s.zdel, s.zskew) = (zsub, zins, zdel, zskew)
         s.tab = torch.zeros(N+1,Q, device=device)
-        
+
     def __call__(s,seq1,seq2) :
         assert (len(seq1) == s.M) and (seq2.shape[1] == s.N) and (seq2.shape[0] == s.Q)
         s.tab[:,:] = (s.zskew * torch.arange(s.N+1., device=device)).unsqueeze(1) # force broadcast
@@ -161,14 +161,14 @@ class ParallelLevenshtein :
         for m in torch.arange(M,device=device) :
             for n in torch.arange(N,device=device) :
                 s.ndxr[n + N*m] = (3*M+2*N+2) + (M+N)*m + (M+N+2)*n
-        s.lls = torch.zeros(MN1+1,dtype=torch.int,device=device)       
-        s.rrs = torch.zeros(MN1+1,dtype=torch.int,device=device)       
+        s.lls = torch.zeros(MN1+1,dtype=torch.int,device=device)
+        s.rrs = torch.zeros(MN1+1,dtype=torch.int,device=device)
         for i in range(2,MN1+1) :
             s.lls[i] = abs(M - i + 1) + 1
             s.rrs[i] = (M+N-1) - abs(- i + 1 + N )
 
     def __call__(s, seq1, sseq2): # single seq1, tensor of sseq2s
-        assert (len(seq1) == s.M) and (sseq2.shape[1] == s.N) and (sseq2.shape[0] == s.Q)    
+        assert (len(seq1) == s.M) and (sseq2.shape[1] == s.N) and (sseq2.shape[0] == s.Q)
         (M1,N1,MN,MN1,MN2) = (s.M + 1, s.N + 1, s.M + s.N, s.M + s.N + 1, s.M + s.N + 2)
         abmatch = (seq1.view(1,s.M,1) != sseq2.view(s.Q,1,s.N)).type(torch.float) * s.zsub
         s.bluef[:,s.ndxr] = abmatch.view(s.Q,s.M*s.N)
@@ -239,7 +239,7 @@ allseqs = []
 alltrimers = []
 allbitmaps = zeros(N, dtype=uint64)
 cosvecs = torch.zeros((Ncos,N,64),dtype=torch.float)
-coses = zeros((Ncos,M)) 
+coses = zeros((Ncos,M))
 for k in range(Ncos) :
     coses[k,:] = cos(pi*arange(M)*(k+1.)/(M-1.))
 tcoses = torch.tensor(coses, dtype=torch.float)
@@ -253,7 +253,7 @@ for i,code in enumerate(codes) :
     for k in range(Ncos):
         source = tcoses[k,arange(M-2)]
         cosvecs[k,i,:].index_add_(0,mmer,source)
-print("finished making code auxilliary tables, now pickling")        
+print("finished making code auxilliary tables, now pickling")
 pickledict = {"N" : N, "M" : M, "allseqs" : allseqs,
     "alltrimers" : alltrimers, "allbitmaps" : allbitmaps, "coses" : coses, "cosvecs" : cosvecs}
 
@@ -285,7 +285,7 @@ endline = int(int(totlines*float(num)/float(denom))/4)
 torch.set_grad_enabled(False)
 tallseqs = torch.tensor(array(allseqs), device=device)
 talltrimers = torch.tensor(array(alltrimers), device=device)
-tallbitmaps = torch.tensor(allbitmaps.astype(int64), dtype=torch.int64, device=device) # 
+tallbitmaps = torch.tensor(allbitmaps.astype(int64), dtype=torch.int64, device=device) #
 tcoses = torch.tensor(coses, dtype=torch.float, device=device)
 tcosvecs = cosvecs.to(device)
 

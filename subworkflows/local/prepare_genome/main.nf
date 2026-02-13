@@ -45,7 +45,7 @@ workflow PREPARE_GENOME {
     // 3) Handle additional FASTA (if provided)
     //---------------------------------------------------
     ch_final_fasta = ch_fasta
-    
+
     if (additional_fasta) {
         // Process additional FASTA (decompress if needed)
         if (additional_fasta.toString().endsWith('.gz')) {
@@ -56,7 +56,7 @@ workflow PREPARE_GENOME {
         } else {
             ch_additional_fasta = Channel.value(additional_fasta)
         }
-        
+
         // For now, we'll use the original fasta
         // TODO: Add concatenation logic when needed
         log.warn "Additional FASTA concatenation not yet implemented. Using original FASTA: ${fasta}"
@@ -75,7 +75,7 @@ workflow PREPARE_GENOME {
 
     emit:
     fasta     = ch_final_fasta                               // path: final fasta file
-    gtf       = ch_gtf                                       // path: final GTF file  
+    gtf       = ch_gtf                                       // path: final GTF file
     index     = STAR_GENOMEGENERATE.out.index.map { it[1] } // path: STAR genome index directory
     versions  = ch_versions                                  // channel: versions.yml files
 }

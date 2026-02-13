@@ -33,15 +33,15 @@ include { SAMTOOLS_INDEX as index1; SAMTOOLS_INDEX as index2 } from '../modules/
 */
 
 include { CUTADAPT_PANORAMA as CUTADAPT } from '../modules/local/cutadapt_panorama/main'
-include { QUIK_BARCODE_CALLING } from '../modules/local/quik/main' 
+include { QUIK_BARCODE_CALLING } from '../modules/local/quik/main'
 include { CUTADAPT_ADV_PIPE } from '../modules/local/cutadapt_adv_pipe/main'
 include { STAR_ALIGN_LOCAL } from '../modules/local/staralign/custom/main'
-include { FEATURECOUNTS_CUSTOM } from '../modules/local/featurecounts/custom/main'   
+include { FEATURECOUNTS_CUSTOM } from '../modules/local/featurecounts/custom/main'
 include { UMICOUNT } from '../modules/local/umicount/custom/main'
 // include { SAMTOOLS_SORT_LOCAL } from '../modules/local/samtoolssort/custom/main'
-include { ANNDATA_MAKEH5AD } from '../modules/local/anndata/makeh5ad/main' 
+include { ANNDATA_MAKEH5AD } from '../modules/local/anndata/makeh5ad/main'
 include { ANNDATA_MAKEH5AD_SINGLE } from '../modules/local/anndata/makeh5adsingle/main'
-include { ANNDATA_CHECKH5AD } from '../modules/local/anndata/checkh5ad/main' 
+include { ANNDATA_CHECKH5AD } from '../modules/local/anndata/checkh5ad/main'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -60,16 +60,16 @@ ch_multiqc_logo          = params.multiqc_logo   ? Channel.fromPath( params.mult
 */
 
 workflow PANORAMASEQ {
-    
+
     take:
     valid_data    // channel: samplesheet read in from checked samplesheet process
     star_index    // path: STAR genome index directory
     gtf_file      // path: GTF annotation file
-    
+
     main:
 
     ch_versions = Channel.empty()
-    
+
     // 1. FastQC on raw input reads (valid_data stage)
     fastqc_raw_input = valid_data.map { meta, reads ->
         def new_meta = meta + [id:"raw_${meta.id}"]
@@ -77,7 +77,7 @@ workflow PANORAMASEQ {
     }
     FASTQC(fastqc_raw_input)
     ch_versions = ch_versions.mix(FASTQC.out.versions.first())
-    
+
     // 2. Subsample reads using SEQTK_SAMPLE if params.sample_size is set
     if (params.sample_size) {
         seqtk_input = valid_data.map { meta, reads ->
@@ -151,7 +151,7 @@ workflow PANORAMASEQ {
             def new_meta = meta + [single_end: true]  // Update to single_end since we only aligned R2
             tuple(new_meta, bam, bai)  // Pass both BAM and BAI
         }
-    
+
     // 12. Prepare input for FEATURECOUNTS_CUSTOM
     //     featureCounts will have both BAM and BAI staged in its work directory
     //     The BAI is automatically found by featureCounts when it looks for bam_file.bai
@@ -186,7 +186,7 @@ workflow PANORAMASEQ {
     if (params.mergecounts) {
         // Merge all count TSV files into single H5AD with spatial coordinates
         ch_counts_with_meta = UMICOUNT.out.umi_counts
-        
+
         // Create the merged input by collecting all data and creating a single emission
         ch_merge_input = ch_counts_with_meta
             .collect { meta, tsv -> [meta, tsv] }
@@ -197,30 +197,30 @@ workflow PANORAMASEQ {
                 for (int i = 0; i < items.size(); i += 2) {
                     grouped_items.add([items[i], items[i+1]])  // [meta, tsv]
                 }
-                
+
                 def merged_meta = [id: 'merged_counts']
                 def tsvs = grouped_items.collect { it[1] }  // Extract all TSV files
                 def coords_file = file(items[0].barcode_file)  // Use barcode_file from first sample
                 tuple(merged_meta, tsvs, coords_file)
             }
-        
+
         ANNDATA_MAKEH5AD(ch_merge_input)
         ch_versions = ch_versions.mix(ANNDATA_MAKEH5AD.out.versions.first())
-        
+
         // Collect the merged H5AD for validation
         ch_h5ad_files = ANNDATA_MAKEH5AD.out.h5ad
-        
+
     } else {
         // Create individual H5AD files for each sample
         ch_single_input = UMICOUNT.out.umi_counts
-            .map { meta, tsv -> 
+            .map { meta, tsv ->
                 def coords_file = file(meta.barcode_file)
                 [meta, tsv, coords_file]
             }
-        
+
         ANNDATA_MAKEH5AD_single(ch_single_input)
         ch_versions = ch_versions.mix(ANNDATA_MAKEH5AD_single.out.versions.first())
-        
+
         // Collect individual H5AD files for validation
         ch_h5ad_files = ANNDATA_MAKEH5AD_single.out.h5ad
     }

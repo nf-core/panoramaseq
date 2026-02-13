@@ -20,12 +20,12 @@ process CUTADAPT_PANORAMA {
 
     script:
     def args = task.ext.args ?: ''
-    
+
     // Remove paired-end specific parameters for single-end data
     if (meta.single_end) {
         args = args.replaceAll(/--pair-filter=[^\s]+/, '')
-                  .replaceAll(/\s+/, ' ')
-                  .trim()
+            .replaceAll(/\s+/, ' ')
+            .trim()
     }
     def prefix = task.ext.prefix ?: "${meta.id}"
     def trimmed  = meta.single_end ? "-o ${prefix}.trim.fastq.gz" : "-o ${prefix}_1.trim.fastq.gz -p ${prefix}_2.trim.fastq.gz"

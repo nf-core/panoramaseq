@@ -23,7 +23,7 @@ def load_single_tsv_gz(path, sample_name, coords_df):
         path, sep="\t", compression="gzip",
         usecols=["gene", "cell", "count"]
     )
-    
+
     # Check if dataframe is empty or has no data rows
     if df.empty or len(df) == 0:
         raise ValueError(
@@ -69,7 +69,7 @@ def main():
         description="Convert single gzipped count TSV into .h5ad, with spatial coords"
     )
     p.add_argument(
-        "input", 
+        "input",
         help="Input gzipped count TSV (*.tsv.gz) with columns gene, cell, count"
     )
     p.add_argument(
