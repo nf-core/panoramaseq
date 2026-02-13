@@ -34,6 +34,7 @@ include { UMICOUNT } from '../modules/local/umicount/custom/main'
 include { ANNDATA_MAKEH5AD } from '../modules/local/anndata/makeh5ad/main'
 include { ANNDATA_MAKEH5AD_SINGLE } from '../modules/local/anndata/makeh5adsingle/main'
 include { ANNDATA_CHECKH5AD } from '../modules/local/anndata/checkh5ad/main'
+include { PANORAMASEQ_STARSOLO } from '../subworkflows/local/panoramaseq_starsolo/main'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -77,17 +78,50 @@ workflow PANORAMASEQ {
         }
         SEQTK_SAMPLE(seqtk_input)
         ch_versions = ch_versions.mix(SEQTK_SAMPLE.out.versions.first())
-        quik_input = SEQTK_SAMPLE.out.reads
+        ch_workflow_input = SEQTK_SAMPLE.out.reads
     } else {
         // Skip subsampling if sample_size not specified
-        quik_input = valid_data
+        ch_workflow_input = valid_data
     }
 
+    //
+    // WORKFLOW BRANCHING: Run either BASIC or STARSOLO workflow
+    //
+    ch_barcode_file = ch_workflow_input.map { meta, reads -> file(meta.barcode_file) }.first()
+    
+    if (params.workflow_type == 'starsolo') {
+        //
+        // STARsolo Workflow: QUIK → Reorder R1 → STARsolo → H5AD
+        //
+        PANORAMASEQ_STARSOLO(
+            ch_workflow_input,
+            star_index,
+            gtf_file,
+            ch_barcode_file
+        )
+        ch_versions = ch_versions.mix(PANORAMASEQ_STARSOLO.out.versions)
+        
+        // Set outputs for STARsolo workflow
+        ch_h5ad_files = PANORAMASEQ_STARSOLO.out.h5ad
+        ch_star_logs_final = PANORAMASEQ_STARSOLO.out.star_log_final
+        ch_star_logs_out = PANORAMASEQ_STARSOLO.out.star_log_out
+        ch_quik_stats = PANORAMASEQ_STARSOLO.out.quik_stats
+        ch_fastqc_raw = PANORAMASEQ_STARSOLO.out.fastqc_zip
+        
+        // Empty channels for unused BASIC workflow outputs
+        ch_umi_logs = Channel.empty()
+        ch_featurecounts_summary = Channel.empty()
+        ch_fastqc_cutadapt = Channel.empty()
+        ch_fastqc_cutadapt2 = Channel.empty()
+        
+    } else {
+        //
+        // BASIC Workflow: QUIK → UMItools → Cutadapt → STAR → FeatureCounts → UMItools Count → H5AD
+        //
+
     // 3. Decode barcodes using QUIK_BARCODE_CALLING (GPU-accelerated)
-    // Extract barcode file once (all samples should use the same barcode file)
-    ch_barcode_file = quik_input.map { meta, reads -> file(meta.barcode_file) }.first()
     decode_results = QUIK_BARCODE_CALLING(
-        quik_input,
+        ch_workflow_input,
         ch_barcode_file
     )
     ch_versions = ch_versions.mix(QUIK_BARCODE_CALLING.out.versions.first())
@@ -232,6 +266,18 @@ workflow PANORAMASEQ {
         ch_versions = ch_versions.mix(ANNDATA_CHECKH5AD.out.versions.first())
     }
 
+        // Set outputs for BASIC workflow
+        ch_star_logs_final = STAR_ALIGN_LOCAL.out.log_final
+        ch_star_logs_out = STAR_ALIGN_LOCAL.out.log_out
+        ch_umi_logs = UMITOOLS_EXTRACT.out.log
+        ch_featurecounts_summary = FEATURECOUNTS_CUSTOM.out.summary
+        ch_fastqc_raw = FASTQC.out.zip
+        ch_fastqc_cutadapt = FASTQC_CUTADAPT.out.zip
+        ch_fastqc_cutadapt2 = FASTQC_CUTADAPT2.out.zip
+        ch_quik_stats = QUIK_BARCODE_CALLING.out.stats
+    
+    }  // End of BASIC vs STARSOLO workflow branching
+
     // Collect and save software versions
     softwareVersionsToYAML(ch_versions)
         .collectFile(
@@ -253,13 +299,13 @@ workflow PANORAMASEQ {
         ch_multiqc_files = ch_multiqc_files.mix(ch_workflow_summary.collectFile(name: 'workflow_summary_mqc.yaml'))
         ch_multiqc_files = ch_multiqc_files.mix(ch_methods_description.collectFile(name: 'methods_description_mqc.yaml'))
         ch_multiqc_files = ch_multiqc_files.mix(ch_collated_versions)
-        ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.collect{it[1]}.ifEmpty([]))
-        ch_multiqc_files = ch_multiqc_files.mix(FASTQC_CUTADAPT.out.zip.collect{it[1]}.ifEmpty([]))
-        ch_multiqc_files = ch_multiqc_files.mix(FASTQC_CUTADAPT2.out.zip.collect{it[1]}.ifEmpty([]))
-        ch_multiqc_files = ch_multiqc_files.mix(UMITOOLS_EXTRACT.out.log.collect{it[1]}.ifEmpty([]))
-        ch_multiqc_files = ch_multiqc_files.mix(STAR_ALIGN.out.log_final.collect{it[1]}.ifEmpty([]))
-        ch_multiqc_files = ch_multiqc_files.mix(STAR_ALIGN.out.log_out.collect{it[1]}.ifEmpty([]))
-        ch_multiqc_files = ch_multiqc_files.mix(FEATURECOUNTS_CUSTOM.out.summary.collect{it[1]}.ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(ch_fastqc_raw.collect{it[1]}.ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(ch_fastqc_cutadapt.collect{it[1]}.ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(ch_fastqc_cutadapt2.collect{it[1]}.ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(ch_umi_logs.collect{it[1]}.ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(ch_star_logs_final.collect().ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(ch_star_logs_out.collect().ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(ch_featurecounts_summary.collect{it[1]}.ifEmpty([]))
 
         MULTIQC (
             ch_multiqc_files.collect(),
