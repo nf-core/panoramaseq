@@ -34,6 +34,7 @@ process ANNDATA_CHECKH5AD {
     stub:
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
+    touch ${h5ad_file}
     echo "H5AD validation check completed successfully" > ${prefix}_h5ad_validation.log
 
     cat <<-END_VERSIONS > versions.yml

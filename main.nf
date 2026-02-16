@@ -50,19 +50,20 @@ workflow NFCORE_PANORAMASEQ {
         ch_gtf_file = PREPARE_GENOME.out.gtf
 
     } else if (params.fasta && params.star_gtf && !params.star_genome_dir) {
-        // Generate STAR index from FASTA and GTF only
+        // Generate STAR index from FASTA and GTF only (no additional fasta)
         fasta_file = file(params.fasta, checkIfExists: true)
         gtf_file = file(params.star_gtf, checkIfExists: true)
 
-        STAR_GENOMEGENERATE(
-            Channel.value([[:], fasta_file]),
-            Channel.value([[:], gtf_file])
+        PREPARE_GENOME(
+            fasta_file,
+            gtf_file,
+            null  // no additional fasta
         )
-        ch_versions = ch_versions.mix(STAR_GENOMEGENERATE.out.versions)
+        ch_versions = ch_versions.mix(PREPARE_GENOME.out.versions)
 
         // Use the generated STAR index
-        ch_star_index = STAR_GENOMEGENERATE.out.index.map { meta, index -> index }
-        ch_gtf_file = Channel.value(gtf_file)
+        ch_star_index = PREPARE_GENOME.out.index
+        ch_gtf_file = PREPARE_GENOME.out.gtf
 
     } else if (params.star_genome_dir && params.star_gtf) {
         // Use pre-built STAR index (backward compatibility)

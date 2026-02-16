@@ -82,8 +82,8 @@ workflow PIPELINE_INITIALISATION {
         .fromList(samplesheetToList(params.input, "${projectDir}/assets/schema_input.json"))
         .map { meta, R1, R2 ->
             if (!R2) {
-                meta.single_end = true
-                return tuple(meta, [R1])
+                def new_meta = meta + [single_end: true]
+                return tuple(new_meta, [R1])
             } else {
                 def new_meta = meta + [single_end: false]
                 return tuple(new_meta, [R1, R2])
