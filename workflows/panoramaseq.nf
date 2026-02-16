@@ -24,7 +24,7 @@ include { SAMTOOLS_INDEX as index1; SAMTOOLS_INDEX as index2 } from '../modules/
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { CUTADAPT_PANORAMA as CUTADAPT } from '../modules/local/cutadapt_panorama/main'
+include { CUTADAPT } from '../modules/nf-core/cutadapt/main'
 include { QUIK_BARCODE_CALLING } from '../modules/local/quik/main'
 include { CUTADAPT_ADV_PIPE } from '../modules/local/cutadapt_adv_pipe/main'
 include { STAR_ALIGN } from '../modules/nf-core/star/align/main'
@@ -135,9 +135,7 @@ workflow PANORAMASEQ {
         '',                            // seq_platform
         ''                             // seq_center
     )
-    ch_versions = ch_versions.mix(STAR_ALIGN.out.versions_star)
-    ch_versions = ch_versions.mix(STAR_ALIGN.out.versions_samtools)
-    ch_versions = ch_versions.mix(STAR_ALIGN.out.versions_gawk)
+    // Note: STAR_ALIGN versions are collected automatically via topic emissions
 
     // 10. Index the sorted BAM output from STAR_ALIGN using samtools index (index1)
     //     Use bam_sorted_aligned output which contains BAM SortedByCoordinate
