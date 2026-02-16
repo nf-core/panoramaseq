@@ -81,7 +81,7 @@ workflow PIPELINE_INITIALISATION {
     Channel
         .fromList(samplesheetToList(params.input, "${projectDir}/assets/schema_input.json"))
         .map { meta, R1, R2 ->
-            if (!R2 || R2 == "" || R2 == "null") {
+            if (!R2) {
                 meta.single_end = true
                 return tuple(meta, [R1])
             } else {
