@@ -20,7 +20,7 @@ workflow PREPARE_GENOME {
     //-------------------------------------
     // 1) Process FASTA file (decompress if needed)
     //-------------------------------------
-    if (fasta.toString().endsWith('.gz')) {
+    if (fasta.extension == 'gz') {
         ch_fasta_input = Channel.value([[:], fasta])
         GUNZIP_FASTA(ch_fasta_input)
         ch_fasta = GUNZIP_FASTA.out.gunzip.map { meta, file -> file }
