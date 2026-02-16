@@ -9,5 +9,5 @@ testing*
 null/
 .nf-test.log
 .nf-test/
-tests/
+/tests/
 nextflow_withgpus.config.txt
