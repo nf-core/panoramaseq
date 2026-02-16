@@ -85,8 +85,8 @@ workflow PIPELINE_INITIALISATION {
                 meta.single_end = true
                 return tuple(meta, [R1])
             } else {
-                meta.single_end = false
-                return tuple(meta, [R1, R2])
+                def new_meta = meta + [single_end: false]
+                return tuple(new_meta, [R1, R2])
             }
         }
         .set { ch_samplesheet }
