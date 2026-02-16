@@ -1,0 +1,35 @@
+{
+    "versions_stub": {
+        "content": [
+            [
+                "versions.yml:md5,0402da15b4f54d61fef5056d8318b05d"
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "25.04.8"
+        },
+        "timestamp": "2025-11-04T13:15:16.176924172"
+    },
+    "versions": {
+        "content": [
+            [
+                "versions.yml:md5,0fa018e7a4c201421bbb2f9880c9bedf"
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "25.04.8"
+        },
+        "timestamp": "2025-11-04T13:15:09.978878786"
+    },
+    "first_read_header": [
+        [
+            "execution_trace_2025-08-19_10-55-43.txt:md5,8ad4a81ac400f067841cbfb3f18e6889",
+            "execution_trace_2025-08-19_10-57-05.txt:md5,8ad4a81ac400f067841cbfb3f18e6889",
+            "execution_trace_2025-10-31_15-38-21.txt:md5,8ad4a81ac400f067841cbfb3f18e6889",
+            "execution_trace_2025-10-31_17-40-23.txt:md5,8ad4a81ac400f067841cbfb3f18e6889",
+            "execution_trace_2025-11-04_12-29-14.txt:md5,8ad4a81ac400f067841cbfb3f18e6889"
+        ]
+    ]
+}

@@ -1,0 +1,79 @@
+nextflow_process {
+
+    name "Test Process UMICOUNT"
+    script "../main.nf"
+    process "UMICOUNT"
+    config "./nextflow.config"
+    tag "modules"
+    tag "modules_local"
+    tag "umi_count"
+
+    test("panoramaseq [bam] - S09") {
+
+        when {
+            params {
+                panoramaseq_testdata_base_path = "https://raw.githubusercontent.com/nf-core/test-datasets/panoramaseq/testdata/"
+                outdir   = "$outputDir"
+            }
+            process {
+                """
+                input[0] = [
+                    [ id:'S09', N_barcodes:34500, sample_size:10000, len_barcode:36, Nthresh:9, Ntriage:1000 ], // meta map
+                    file(params.panoramaseq_testdata_base_path + 'samtools/test1.assigned_sorted.bam', checkIfExists: true),
+                    file(params.panoramaseq_testdata_base_path + 'samtools/test1.assigned_sorted.bam.bai', checkIfExists: true)
+                ]
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert process.out.umi_counts != null },
+                { assert process.out.log_files != null },
+                { assert process.out.versions != null },
+                { assert snapshot(
+                    process.out.umi_counts,
+                    process.out.versions
+                ).match() }
+            )
+        }
+
+    }
+
+    test("panoramaseq [bam] - S09 - stub") {
+
+        options "-stub"
+
+        when {
+            params {
+                panoramaseq_testdata_base_path = "https://raw.githubusercontent.com/nf-core/test-datasets/panoramaseq/testdata/"
+                outdir   = "$outputDir"
+            }
+            process {
+                """
+                input[0] = [
+                    [ id:'S09', N_barcodes:34500, sample_size:10000, len_barcode:36, Nthresh:9, Ntriage:1000 ], // meta map
+                    file(params.panoramaseq_testdata_base_path + 'samtools/test1.assigned_sorted.bam', checkIfExists: true),
+                    file(params.panoramaseq_testdata_base_path + 'samtools/test1.assigned_sorted.bam.bai', checkIfExists: true)
+                ]
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert process.out.umi_counts != null },
+                { assert process.out.log_files != null },
+                { assert process.out.versions != null },
+                { assert snapshot(
+                    process.out.umi_counts,
+                    process.out.versions
+                ).match("stub") }
+            )
+        }
+
+    }
+
+}
