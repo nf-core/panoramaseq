@@ -32,7 +32,7 @@ workflow PREPARE_GENOME {
     //-------------------------------------
     // 2) Process GTF file (decompress if needed)
     //-------------------------------------
-    if (gtf.toString().endsWith('.gz')) {
+    if (gtf.extension == 'gz') {
         ch_gtf_input = Channel.value([[:], gtf])
         GUNZIP_GTF(ch_gtf_input)
         ch_gtf = GUNZIP_GTF.out.gunzip.map { meta, file -> file }
