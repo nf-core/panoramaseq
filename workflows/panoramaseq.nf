@@ -1,15 +1,7 @@
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     IMPORT NF-CORE MODULES/SUBWORKFLOWS
-~~~~    // 11. Count features from BAM using annotation with FEATURECOUNTS_CUSTOM
-    //     Uses the provided GTF annotation file
-    //     Update metadata to indicate single-end since we only aligned R2
-    //     Prepares input as tuple of meta, bam, and annotation file
-    custom_featurecounts_input = STAR_ALIGN_LOCAL.out.bam.combine(gtf_file).map { meta, bam, gtf ->
-        def new_meta = meta.clone()
-        new_meta.single_end = true  // Update to single_end since we only aligned R2
-        [new_meta, bam, gtf]
-    }~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 include { FASTQC                 } from '../modules/nf-core/fastqc/main'
 include { FASTQC as FASTQC_CUTADAPT } from '../modules/nf-core/fastqc/main'
@@ -35,7 +27,7 @@ include { SAMTOOLS_INDEX as index1; SAMTOOLS_INDEX as index2 } from '../modules/
 include { CUTADAPT_PANORAMA as CUTADAPT } from '../modules/local/cutadapt_panorama/main'
 include { QUIK_BARCODE_CALLING } from '../modules/local/quik/main'
 include { CUTADAPT_ADV_PIPE } from '../modules/local/cutadapt_adv_pipe/main'
-include { STAR_ALIGN_LOCAL } from '../modules/local/staralign/custom/main'
+include { STAR_ALIGN } from '../modules/nf-core/star/align/main'
 include { FEATURECOUNTS_CUSTOM } from '../modules/local/featurecounts/custom/main'
 include { UMICOUNT } from '../modules/local/umicount/custom/main'
 // include { SAMTOOLS_SORT_LOCAL } from '../modules/local/samtoolssort/custom/main'
@@ -128,24 +120,35 @@ workflow PANORAMASEQ {
     FASTQC_CUTADAPT2(fastqc_cutadapt2_input)
     ch_versions = ch_versions.mix(FASTQC_CUTADAPT2.out.versions.first())
 
-    // 9. Align single-end trimmed R2 fastq using STAR_ALIGN_LOCAL
-    //     Uses the provided STAR index directory
-    //     Combine the reads with the star_index channel
-    star_local_input = CUTADAPT_ADV_PIPE.out.reads.combine(star_index).map { meta, r2fastq, index_dir ->
-        [meta, file(r2fastq), index_dir]
+    // 9. Align single-end trimmed R2 fastq using STAR_ALIGN (nf-core)
+    //     Uses the provided STAR index directory and GTF file
+    //     Prepare input with single_end flag set to true
+    star_input = CUTADAPT_ADV_PIPE.out.reads.map { meta, r2fastq ->
+        def new_meta = meta + [single_end: true]
+        tuple(new_meta, [r2fastq])  // Wrap reads in list for nf-core module
     }
-    STAR_ALIGN_LOCAL(star_local_input)
-    ch_versions = ch_versions.mix(STAR_ALIGN_LOCAL.out.versions.first())
+    STAR_ALIGN(
+        star_input,                    // tuple val(meta), path(reads)
+        star_index.map { [[:], it] },  // tuple val(meta2), path(index)
+        gtf_file.map { [[:], it] },    // tuple val(meta3), path(gtf)
+        false,                         // star_ignore_sjdbgtf
+        '',                            // seq_platform
+        ''                             // seq_center
+    )
+    ch_versions = ch_versions.mix(STAR_ALIGN.out.versions_star)
+    ch_versions = ch_versions.mix(STAR_ALIGN.out.versions_samtools)
+    ch_versions = ch_versions.mix(STAR_ALIGN.out.versions_gawk)
 
-    // 10. Index the sorted BAM output from STAR_ALIGN_LOCAL using samtools index (index1)
-    samtools_index_input = STAR_ALIGN_LOCAL.out.bam
+    // 10. Index the sorted BAM output from STAR_ALIGN using samtools index (index1)
+    //     Use bam_sorted_aligned output which contains BAM SortedByCoordinate
+    samtools_index_input = STAR_ALIGN.out.bam_sorted_aligned
     index1(samtools_index_input)
     ch_versions = ch_versions.mix(index1.out.versions.first())
 
     // 11. Join BAM and BAI files for featureCounts
     //     featureCounts needs both BAM and index staged together
     //     The join operation matches channels by meta, staging both files in the work directory
-    bam_with_index = STAR_ALIGN_LOCAL.out.bam
+    bam_with_index = STAR_ALIGN.out.bam_sorted_aligned
         .join(index1.out.bai, by: 0)  // Join by meta (first element)
         .map { meta, bam, bai ->
             def new_meta = meta + [single_end: true]  // Update to single_end since we only aligned R2
@@ -256,8 +259,8 @@ workflow PANORAMASEQ {
         ch_multiqc_files = ch_multiqc_files.mix(FASTQC_CUTADAPT.out.zip.collect{it[1]}.ifEmpty([]))
         ch_multiqc_files = ch_multiqc_files.mix(FASTQC_CUTADAPT2.out.zip.collect{it[1]}.ifEmpty([]))
         ch_multiqc_files = ch_multiqc_files.mix(UMITOOLS_EXTRACT.out.log.collect{it[1]}.ifEmpty([]))
-        ch_multiqc_files = ch_multiqc_files.mix(STAR_ALIGN_LOCAL.out.log_final.collect().ifEmpty([]))
-        ch_multiqc_files = ch_multiqc_files.mix(STAR_ALIGN_LOCAL.out.log_out.collect().ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(STAR_ALIGN.out.log_final.collect{it[1]}.ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(STAR_ALIGN.out.log_out.collect{it[1]}.ifEmpty([]))
         ch_multiqc_files = ch_multiqc_files.mix(FEATURECOUNTS_CUSTOM.out.summary.collect{it[1]}.ifEmpty([]))
 
         MULTIQC (
