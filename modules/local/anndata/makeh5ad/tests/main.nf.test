@@ -1,0 +1,104 @@
+nextflow_process {
+
+    name "Test Process ANNDATA_MAKEH5AD"
+    script "../main.nf"
+    process "ANNDATA_MAKEH5AD"
+    tag "modules"
+    tag "modules_local"
+    tag "makeh5ad"
+    tag "anndata_makeh5ad"
+
+    test("ANNDATA_MAKEH5AD - stub") {
+
+        options "-stub"
+
+        when {
+            params {
+                outdir = "$outputDir"
+            }
+            process {
+                """
+                input[0] = [
+                    [ id: 'test_h5ad' ],
+                    [
+                        file(params.pipelines_testdata_base_path + 'panoramaseq/testdata/counts/S09_counts.tsv.gz', checkIfExists: true),
+                        file(params.pipelines_testdata_base_path + 'panoramaseq/testdata/counts/S10_counts.tsv.gz', checkIfExists: true)
+                    ],
+                    file(params.pipelines_testdata_base_path + 'panoramaseq/testdata/barcodes_coords.csv', checkIfExists: true)
+                ]
+                """
+            }
+        }
+
+        then {
+            assertAll (
+                { assert process.success },
+                { assert process.out.h5ad != null },
+                { assert process.out.h5ad.get(0).get(1) ==~ ".*\\.h5ad" },
+                { assert process.out.versions != null },
+                { assert snapshot(process.out.versions).match() }
+            )
+        }
+    }
+
+    test("ANNDATA_MAKEH5AD - single file") {
+
+        when {
+            params {
+                outdir = "$outputDir"
+            }
+            process {
+                """
+                input[0] = [
+                    [ id: 'single_h5ad' ],
+                    file(params.pipelines_testdata_base_path + 'panoramaseq/testdata/counts/S09_counts.tsv.gz', checkIfExists: true),
+                    file(params.pipelines_testdata_base_path + 'panoramaseq/testdata/barcodes_coords.csv', checkIfExists: true)
+                ]
+                """
+            }
+        }
+
+        then {
+            assertAll (
+                { assert process.success },
+                { assert process.out.h5ad != null },
+                { assert process.out.h5ad.get(0).get(1) ==~ ".*\\.h5ad" },
+                { assert file(process.out.h5ad.get(0).get(1)).exists() },
+                { assert process.out.versions != null },
+                { assert snapshot(process.out.h5ad, process.out.versions).match("single_file") }
+            )
+        }
+    }
+
+    test("ANNDATA_MAKEH5AD - multiple files") {
+
+        when {
+            params {
+                outdir = "$outputDir"
+            }
+            process {
+                """
+                input[0] = [
+                    [ id: 'multi_h5ad' ],
+                    [
+                        file(params.pipelines_testdata_base_path + 'panoramaseq/testdata/counts/S09_counts.tsv.gz', checkIfExists: true),
+                        file(params.pipelines_testdata_base_path + 'panoramaseq/testdata/counts/S10_counts.tsv.gz', checkIfExists: true)
+                    ],
+                    file(params.pipelines_testdata_base_path + 'panoramaseq/testdata/barcodes_coords.csv', checkIfExists: true)
+                ]
+                """
+            }
+        }
+
+        then {
+            assertAll (
+                { assert process.success },
+                { assert process.out.h5ad != null },
+                { assert process.out.h5ad.get(0).get(1) ==~ ".*\\.h5ad" },
+                { assert file(process.out.h5ad.get(0).get(1)).exists() },
+                { assert process.out.versions != null },
+                { assert snapshot(process.out.h5ad, process.out.versions).match("multiple_files") }
+            )
+        }
+    }
+}

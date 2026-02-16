@@ -1,0 +1,127 @@
+nextflow_process {
+
+    name "Test Process ANNDATA_MAKEH5AD_SINGLE"
+    script "../main.nf"
+    process "ANNDATA_MAKEH5AD_SINGLE"
+    tag "modules"
+    tag "modules_local"
+    tag "anndata_makeh5ad_single"
+    tag "anndata"
+
+    test("ANNDATA_MAKEH5AD_SINGLE - stub") {
+
+        options "-stub"
+
+        when {
+            params {
+                outdir = "$outputDir"
+            }
+            process {
+                """
+                input[0] = [
+                    [ id: 'S09_single' ],
+                    file(params.pipelines_testdata_base_path + 'panoramaseq/testdata/counts/S09_counts.tsv.gz', checkIfExists: true),
+                    file(params.pipelines_testdata_base_path + 'panoramaseq/testdata/barcodes_coords.csv', checkIfExists: true)
+                ]
+                """
+            }
+        }
+
+        then {
+            assertAll (
+                { assert process.success },
+                { assert process.out.h5ad != null },
+                { assert process.out.h5ad.get(0).get(1) ==~ ".*\\.h5ad" },
+                { assert process.out.versions != null },
+                { assert snapshot(process.out.versions).match() }
+            )
+        }
+    }
+
+    test("ANNDATA_MAKEH5AD_SINGLE - S09 sample") {
+
+        when {
+            params {
+                outdir = "$outputDir"
+            }
+            process {
+                """
+                input[0] = [
+                    [ id: 'S09' ],
+                    file(params.pipelines_testdata_base_path + 'panoramaseq/testdata/counts/S09_counts.tsv.gz', checkIfExists: true),
+                    file(params.pipelines_testdata_base_path + 'panoramaseq/testdata/barcodes_coords.csv', checkIfExists: true)
+                ]
+                """
+            }
+        }
+
+        then {
+            assertAll (
+                { assert process.success },
+                { assert process.out.h5ad != null },
+                { assert process.out.h5ad.get(0).get(1) ==~ ".*\\.h5ad" },
+                { assert file(process.out.h5ad.get(0).get(1)).exists() },
+                { assert process.out.versions != null },
+                { assert snapshot(process.out.h5ad, process.out.versions).match("S09_sample") }
+            )
+        }
+    }
+
+    test("ANNDATA_MAKEH5AD_SINGLE - S10 sample") {
+
+        when {
+            params {
+                outdir = "$outputDir"
+            }
+            process {
+                """
+                input[0] = [
+                    [ id: 'S10' ],
+                    file(params.pipelines_testdata_base_path + 'panoramaseq/testdata/counts/S10_counts.tsv.gz', checkIfExists: true),
+                    file(params.pipelines_testdata_base_path + 'panoramaseq/testdata/barcodes_coords.csv', checkIfExists: true)
+                ]
+                """
+            }
+        }
+
+        then {
+            assertAll (
+                { assert process.success },
+                { assert process.out.h5ad != null },
+                { assert process.out.h5ad.get(0).get(1) ==~ ".*\\.h5ad" },
+                { assert file(process.out.h5ad.get(0).get(1)).exists() },
+                { assert process.out.versions != null },
+                { assert snapshot(process.out.h5ad, process.out.versions).match("S10_sample") }
+            )
+        }
+    }
+
+    test("ANNDATA_MAKEH5AD_SINGLE - custom prefix") {
+
+        when {
+            params {
+                outdir = "$outputDir"
+            }
+            process {
+                """
+                input[0] = [
+                    [ id: 'custom_test' ],
+                    file(params.pipelines_testdata_base_path + 'panoramaseq/testdata/counts/S09_counts.tsv.gz', checkIfExists: true),
+                    file(params.pipelines_testdata_base_path + 'panoramaseq/testdata/barcodes_coords.csv', checkIfExists: true)
+                ]
+                """
+            }
+        }
+
+        then {
+            assertAll (
+                { assert process.success },
+                { assert process.out.h5ad != null },
+                { assert process.out.h5ad.get(0).get(1) ==~ ".*custom_test\\.h5ad" },
+                { assert file(process.out.h5ad.get(0).get(1)).exists() },
+                { assert process.out.versions != null },
+                { assert snapshot(process.out.h5ad, process.out.versions).match("custom_prefix") }
+            )
+        }
+    }
+}
