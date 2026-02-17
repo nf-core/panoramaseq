@@ -341,8 +341,8 @@
                 },
                 "starsolo_cb_len": {
                     "type": "integer",
-                    "default": 36,
-                    "description": "STARsolo: Cell barcode length.",
+                    "default": 31,
+                    "description": "STARsolo: Cell barcode length (max 31bp due to STAR limitation). Panoramaseq uses 36bp barcodes - consider using basic workflow for full barcode support.",
                     "fa_icon": "fas fa-ruler"
                 },
                 "starsolo_umi_len": {
@@ -359,8 +359,8 @@
                 },
                 "starsolo_umi_start": {
                     "type": "integer",
-                    "default": 37,
-                    "description": "STARsolo: UMI start position (1-based).",
+                    "default": 32,
+                    "description": "STARsolo: UMI start position (1-based). Default is 32 for 31bp truncated barcode.",
                     "fa_icon": "fas fa-ruler"
                 },
                 "starsolo_match_wl_type": {
