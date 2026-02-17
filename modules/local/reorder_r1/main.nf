@@ -80,9 +80,9 @@ print(f"Skipped: {records_processed - records_reordered} reads")
 EOF
 
     cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        python: \$(python3 --version | cut -d' ' -f2)
-    END_VERSIONS
+	"${task.process}":
+	    python: \$(python3 --version | cut -d' ' -f2)
+	END_VERSIONS
     """
     
     stub:
@@ -91,8 +91,8 @@ EOF
     touch ${prefix}_R1_reordered.fastq.gz
     
     cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        python: \$(python3 --version | cut -d' ' -f2)
-    END_VERSIONS
+	"${task.process}":
+	    python: \$(python3 --version | cut -d' ' -f2)
+	END_VERSIONS
     """
 }
