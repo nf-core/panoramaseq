@@ -23,6 +23,7 @@ process REMAP_BARCODES_FOR_STARSOLO {
     def prefix = task.ext.prefix ?: "${meta.id}"
     def barcode_start = task.ext.barcode_start ?: 0
     def barcode_length = task.ext.barcode_length ?: 36
+    def umi_length = task.ext.umi_length ?: 10
     def synthetic_length = task.ext.synthetic_length ?: 25
     """
     remap_barcodes_for_starsolo.py \\
@@ -33,6 +34,7 @@ process REMAP_BARCODES_FOR_STARSOLO {
         --output-mapping ${prefix}_barcode_mapping.tsv \\
         --barcode-start ${barcode_start} \\
         --barcode-length ${barcode_length} \\
+        --umi-length ${umi_length} \\
         --synthetic-length ${synthetic_length}
     
     cat <<-END_VERSIONS > versions.yml

@@ -121,9 +121,10 @@ def write_synthetic_whitelist(mapping, output_file):
     print(f"Wrote synthetic whitelist: {output_file}", file=sys.stderr)
 
 
-def remap_fastq(input_fastq, output_fastq, mapping, barcode_start, barcode_length):
+def remap_fastq(input_fastq, output_fastq, mapping, barcode_start, barcode_length, umi_length=10):
     """
     Rewrite FASTQ file replacing original barcodes with synthetic ones.
+    Trims reads to exactly synthetic_barcode_length + UMI_length.
     
     Args:
         input_fastq: Input FASTQ path (can be .gz)
@@ -131,6 +132,7 @@ def remap_fastq(input_fastq, output_fastq, mapping, barcode_start, barcode_lengt
         mapping: dict of original -> synthetic barcodes
         barcode_start: 0-based start position of barcode in read
         barcode_length: Length of original barcode
+        umi_length: Length of UMI (default: 10bp)
     """
     # Open input (handle gzip)
     if str(input_fastq).endswith('.gz'):
@@ -146,6 +148,14 @@ def remap_fastq(input_fastq, output_fastq, mapping, barcode_start, barcode_lengt
     reads_skipped = 0
     unmapped_barcodes = set()
     
+    # Get synthetic barcode length from first mapping
+    synthetic_length = len(next(iter(mapping.values()))) if mapping else 25
+    expected_output_length = synthetic_length + umi_length
+    
+    print(f"Synthetic barcode length: {synthetic_length}bp", file=sys.stderr)
+    print(f"UMI length: {umi_length}bp", file=sys.stderr)
+    print(f"Output read length will be trimmed to: {expected_output_length}bp", file=sys.stderr)
+    
     try:
         while True:
             # Read FASTQ record (4 lines)
@@ -159,8 +169,8 @@ def remap_fastq(input_fastq, output_fastq, mapping, barcode_start, barcode_lengt
             
             reads_processed += 1
             
-            # Extract barcode from sequence
-            if len(seq) < barcode_start + barcode_length:
+            # Extract barcode from sequence (at barcode_start position)
+            if len(seq) < barcode_start + barcode_length + umi_length:
                 print(f"Warning: Read {reads_processed} too short ({len(seq)}bp), skipping", file=sys.stderr)
                 reads_skipped += 1
                 continue
@@ -178,17 +188,22 @@ def remap_fastq(input_fastq, output_fastq, mapping, barcode_start, barcode_lengt
             
             synthetic_barcode = mapping[original_barcode]
             
-            # Replace barcode in sequence and quality
-            new_seq = seq[:barcode_start] + synthetic_barcode + seq[barcode_start + barcode_length:]
-            new_qual = qual[:barcode_start] + qual[barcode_start:barcode_start + len(synthetic_barcode)] + qual[barcode_start + barcode_length:]
+            # Extract UMI (comes right after the original barcode)
+            umi = seq[barcode_start + barcode_length:barcode_start + barcode_length + umi_length]
+            umi_qual = qual[barcode_start + barcode_length:barcode_start + barcode_length + umi_length]
             
-            # Adjust quality if synthetic is shorter
-            if len(synthetic_barcode) < barcode_length:
-                # Keep quality scores for synthetic barcode length
-                prefix_qual = qual[:barcode_start]
-                bc_qual = qual[barcode_start:barcode_start + len(synthetic_barcode)]
-                suffix_qual = qual[barcode_start + barcode_length:]
-                new_qual = prefix_qual + bc_qual + suffix_qual
+            # Build new sequence: synthetic_barcode + UMI (trimmed to expected length)
+            new_seq = synthetic_barcode + umi
+            
+            # Build new quality: synthetic_barcode_qual + UMI_qual
+            bc_qual = qual[barcode_start:barcode_start + len(synthetic_barcode)]
+            new_qual = bc_qual + umi_qual
+            
+            # Verify output length
+            if len(new_seq) != expected_output_length:
+                print(f"Warning: Read {reads_processed} output length mismatch: {len(new_seq)} != {expected_output_length}", file=sys.stderr)
+                reads_skipped += 1
+                continue
             
             # Write remapped record
             outfile.write(header)
@@ -210,6 +225,7 @@ def remap_fastq(input_fastq, output_fastq, mapping, barcode_start, barcode_lengt
     print(f"  Remapped: {reads_remapped}", file=sys.stderr)
     print(f"  Skipped: {reads_skipped}", file=sys.stderr)
     print(f"  Unmapped barcodes: {len(unmapped_barcodes)}", file=sys.stderr)
+    print(f"  Output read length: {expected_output_length}bp", file=sys.stderr)
     
     if reads_remapped == 0:
         raise RuntimeError("No reads were successfully remapped!")
@@ -228,6 +244,7 @@ def main():
     parser.add_argument('--output-mapping', required=True, help='Output TSV mapping file')
     parser.add_argument('--barcode-start', type=int, default=0, help='0-based barcode start position (default: 0)')
     parser.add_argument('--barcode-length', type=int, default=36, help='Original barcode length (default: 36)')
+    parser.add_argument('--umi-length', type=int, default=10, help='UMI length (default: 10)')
     parser.add_argument('--synthetic-length', type=int, default=25, help='Synthetic barcode length (default: 25, max: 31)')
     
     args = parser.parse_args()
@@ -240,7 +257,9 @@ def main():
     print(f"Input whitelist: {args.whitelist}", file=sys.stderr)
     print(f"Input FASTQ: {args.fastq}", file=sys.stderr)
     print(f"Original barcode: {args.barcode_length}bp at position {args.barcode_start}", file=sys.stderr)
+    print(f"UMI length: {args.umi_length}bp", file=sys.stderr)
     print(f"Synthetic barcode: {args.synthetic_length}bp", file=sys.stderr)
+    print(f"Output read length: {args.synthetic_length + args.umi_length}bp (trimmed)", file=sys.stderr)
     print(f"", file=sys.stderr)
     
     # Step 1: Generate mapping
@@ -257,7 +276,7 @@ def main():
     
     # Step 4: Remap FASTQ
     print("Step 4: Remapping FASTQ reads...", file=sys.stderr)
-    remap_fastq(args.fastq, args.output_fastq, mapping, args.barcode_start, args.barcode_length)
+    remap_fastq(args.fastq, args.output_fastq, mapping, args.barcode_start, args.barcode_length, args.umi_length)
     
     print("\n=== Remapping complete! ===", file=sys.stderr)
 
