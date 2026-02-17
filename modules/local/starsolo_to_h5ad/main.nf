@@ -1,10 +1,10 @@
 process STARSOLO_TO_H5AD {
     tag "${meta.id}"
     label 'process_medium'
-    conda "conda-forge::python=3.11 conda-forge::pandas=2.0.3 conda-forge::scipy=1.11.2 bioconda::scanpy=1.9.3"
+    conda "conda-forge::python=3.11 conda-forge::pandas=2.0.3 conda-forge::scipy=1.11.2 bioconda::scanpy=1.7.2"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'oras://quay.io/biocontainers/scanpy:1.9.6--pyhdfd78af_0' :
-        'quay.io/biocontainers/scanpy:1.9.6--pyhdfd78af_0' }"
+        'oras://quay.io/biocontainers/scanpy:1.7.2--pyhdfd78af_0' :
+        'quay.io/biocontainers/scanpy:1.7.2--pyhdfd78af_0' }"
     
     input:
     tuple val(meta), path(star_out_dir)
