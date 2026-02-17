@@ -331,6 +331,87 @@
                 "gpus": {
                     "type": "integer",
                     "description": "Number of GPUs to use."
+                },
+                "workflow_type": {
+                    "type": "string",
+                    "default": "basic",
+                    "enum": ["basic", "starsolo"],
+                    "description": "Workflow type to run: 'basic' (UMI-tools + featureCounts) or 'starsolo' (STARsolo-based quantification).",
+                    "fa_icon": "fas fa-random"
+                },
+                "starsolo_cb_len": {
+                    "type": "integer",
+                    "default": 36,
+                    "description": "STARsolo: Cell barcode length.",
+                    "fa_icon": "fas fa-ruler"
+                },
+                "starsolo_umi_len": {
+                    "type": "integer",
+                    "default": 10,
+                    "description": "STARsolo: UMI length.",
+                    "fa_icon": "fas fa-ruler"
+                },
+                "starsolo_cb_start": {
+                    "type": "integer",
+                    "default": 1,
+                    "description": "STARsolo: Cell barcode start position (1-based).",
+                    "fa_icon": "fas fa-ruler"
+                },
+                "starsolo_umi_start": {
+                    "type": "integer",
+                    "default": 37,
+                    "description": "STARsolo: UMI start position (1-based).",
+                    "fa_icon": "fas fa-ruler"
+                },
+                "starsolo_match_wl_type": {
+                    "type": "string",
+                    "default": "Exact",
+                    "enum": ["Exact", "1MM", "1MM_multi"],
+                    "description": "STARsolo: Whitelist matching type (Exact, 1MM, or 1MM_multi).",
+                    "fa_icon": "fas fa-search"
+                },
+                "starsolo_features": {
+                    "type": "string",
+                    "default": "Gene GeneFull SJ Velocyto",
+                    "description": "STARsolo: Features to quantify (space-separated).",
+                    "fa_icon": "fas fa-dna"
+                },
+                "starsolo_strand": {
+                    "type": "string",
+                    "default": "Forward",
+                    "enum": ["Forward", "Reverse", "Unstranded"],
+                    "description": "STARsolo: Strand specificity.",
+                    "fa_icon": "fas fa-arrows-alt-h"
+                },
+                "starsolo_clip_3p_adapter": {
+                    "type": "string",
+                    "default": "AAAAAAAAAA",
+                    "description": "STARsolo: 3' adapter sequence to clip.",
+                    "fa_icon": "fas fa-cut"
+                },
+                "starsolo_clip_3p_mm": {
+                    "type": "number",
+                    "default": 0.1,
+                    "description": "STARsolo: Maximum mismatch rate for 3' adapter clipping.",
+                    "fa_icon": "fas fa-percent"
+                },
+                "starsolo_min_match_len": {
+                    "type": "integer",
+                    "default": 30,
+                    "description": "STARsolo: Minimum number of matched bases.",
+                    "fa_icon": "fas fa-ruler"
+                },
+                "starsolo_min_match_frac": {
+                    "type": "number",
+                    "default": 0.66,
+                    "description": "STARsolo: Minimum fraction of matched bases relative to read length.",
+                    "fa_icon": "fas fa-percent"
+                },
+                "starsolo_sj_limit": {
+                    "type": "integer",
+                    "default": 5000000,
+                    "description": "STARsolo: Maximum number of splice junctions to collect.",
+                    "fa_icon": "fas fa-sort-numeric-up"
                 }
             }
         }
