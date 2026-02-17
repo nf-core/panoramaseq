@@ -56,7 +56,7 @@ workflow PANORAMASEQ_STARSOLO {
     ch_whitelist = QUIK_STARSOLO.out.whitelist
     
     // 6. Prepare GTF channel for STARsolo
-    ch_gtf_for_starsolo = Channel.fromPath(ch_gtf_file)
+    ch_gtf_for_starsolo = ch_gtf_file
         .map { gtf -> [[id: 'annotation'], gtf] }
     
     // 7. Run STARsolo (align + demux + quantify)
