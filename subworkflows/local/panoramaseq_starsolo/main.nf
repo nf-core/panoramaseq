@@ -47,9 +47,13 @@ workflow PANORAMASEQ_STARSOLO {
     
     // 4. Remap 36bp barcodes to synthetic ≤31bp barcodes for STARsolo compatibility
     //    This preserves full barcode information while bypassing STARsolo's 31bp limit
+    //    Join reordered R1 with whitelist by meta.id
+    ch_for_remap = REORDER_R1_FOR_STARSOLO.out.reads
+        .join(QUIK_STARSOLO.out.whitelist)
+    
     REMAP_BARCODES_FOR_STARSOLO(
-        REORDER_R1_FOR_STARSOLO.out.reads,
-        QUIK_STARSOLO.out.whitelist
+        ch_for_remap.map { meta, reads, whitelist -> [meta, reads] },
+        ch_for_remap.map { meta, reads, whitelist -> [meta, whitelist] }
     )
     ch_versions = ch_versions.mix(REMAP_BARCODES_FOR_STARSOLO.out.versions.first())
     
