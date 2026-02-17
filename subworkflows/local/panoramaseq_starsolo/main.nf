@@ -70,7 +70,7 @@ workflow PANORAMASEQ_STARSOLO {
     
     // 8. Convert STARsolo output to H5AD with spatial coordinates
     STARSOLO_TO_H5AD(
-        STARSOLO.out.tab_gene,    // STARsolo Gene output directory
+        STARSOLO.out.counts,      // STARsolo counts directory (*.Solo.out)
         ch_barcode_file
     )
     ch_versions = ch_versions.mix(STARSOLO_TO_H5AD.out.versions.first())
@@ -80,7 +80,8 @@ workflow PANORAMASEQ_STARSOLO {
     star_log_final    = STARSOLO.out.log_final             // channel: [ val(meta), path(log) ]
     star_log_out      = STARSOLO.out.log_out               // channel: [ val(meta), path(log) ]
     star_log_progress = STARSOLO.out.log_progress          // channel: [ val(meta), path(log) ]
-    star_bam          = STARSOLO.out.bam                   // channel: [ val(meta), path(bam) ]
+    star_counts       = STARSOLO.out.counts                // channel: [ val(meta), path(Solo.out) ]
+    star_summary      = STARSOLO.out.summary               // channel: [ val(meta), path(Summary.csv) ]
     quik_stats        = QUIK_STARSOLO.out.stats            // channel: [ val(meta), path(stats) ]
     whitelist         = QUIK_STARSOLO.out.whitelist        // channel: path(whitelist)
     fastqc_zip        = FASTQC.out.zip                     // channel: [ val(meta), path(zip) ]
