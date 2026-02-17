@@ -13,7 +13,7 @@ process QUIK_STARSOLO {
     output:
     tuple val(meta), path("*_R1_filtered.fastq.gz"), emit: r1
     tuple val(meta), path("*_R2_filtered.fastq.gz"), emit: r2
-    path "*_whitelist.txt", emit: whitelist
+    tuple val(meta), path("*_whitelist.txt"), emit: whitelist
     tuple val(meta), path("*_barcode_calling_stats.txt"), emit: stats
     path "versions.yml", emit: versions
     

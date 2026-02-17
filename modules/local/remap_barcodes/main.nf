@@ -8,7 +8,7 @@ process REMAP_BARCODES_FOR_STARSOLO {
     
     input:
     tuple val(meta), path(reads)
-    path whitelist
+    tuple val(meta2), path(whitelist)
     
     output:
     tuple val(meta), path("*_synthetic.fastq.gz"), emit: reads

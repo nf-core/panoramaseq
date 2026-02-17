@@ -92,7 +92,7 @@ workflow PANORAMASEQ_STARSOLO {
     star_counts       = STARSOLO.out.counts                         // channel: [ val(meta), path(Solo.out) ]
     star_summary      = STARSOLO.out.summary                        // channel: [ val(meta), path(Summary.csv) ]
     quik_stats        = QUIK_STARSOLO.out.stats                     // channel: [ val(meta), path(stats) ]
-    whitelist         = QUIK_STARSOLO.out.whitelist                 // channel: path(whitelist) - original 36bp
+    whitelist         = QUIK_STARSOLO.out.whitelist                 // channel: [ val(meta), path(whitelist) ] - original 36bp
     whitelist_synthetic = REMAP_BARCODES_FOR_STARSOLO.out.whitelist // channel: path(whitelist_synthetic) - synthetic ≤31bp
     barcode_mapping   = REMAP_BARCODES_FOR_STARSOLO.out.mapping     // channel: path(mapping.tsv) - original↔synthetic
     fastqc_zip        = FASTQC.out.zip                              // channel: [ val(meta), path(zip) ]
