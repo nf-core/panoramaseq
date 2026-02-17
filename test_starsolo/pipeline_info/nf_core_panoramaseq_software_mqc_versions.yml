@@ -1,0 +1,10 @@
+FASTQC:
+  fastqc: 0.12.1
+QUIK_STARSOLO:
+  quik: 2.0-prebuilt-36bp
+  cuda: V12.6.20
+REORDER_R1_FOR_STARSOLO:
+  python: 3.11.10
+Workflow:
+    nf-core/panoramaseq: v1.0.0dev
+    Nextflow: 25.10.2

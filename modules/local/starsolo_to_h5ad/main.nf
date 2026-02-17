@@ -21,14 +21,14 @@ process STARSOLO_TO_H5AD {
     def prefix = task.ext.prefix ?: "${meta.id}"
     def feature_type = task.ext.feature_type ?: "Gene"
     """
-    # Find STARsolo output files
-    MATRIX=\$(find ${star_out_dir} -name "matrix.mtx" -path "*/Solo.out/${feature_type}/raw/*" | head -1)
-    BARCODES=\$(find ${star_out_dir} -name "barcodes.tsv" -path "*/Solo.out/${feature_type}/raw/*" | head -1)
-    FEATURES=\$(find ${star_out_dir} -name "features.tsv" -path "*/Solo.out/${feature_type}/raw/*" | head -1)
+    # Find STARsolo output files (can be gzipped or uncompressed)
+    MATRIX=\$(find ${star_out_dir} -path "*/${feature_type}/raw/*" \\( -name "matrix.mtx.gz" -o -name "matrix.mtx" \\) | head -1)
+    BARCODES=\$(find ${star_out_dir} -path "*/${feature_type}/raw/*" \\( -name "barcodes.tsv.gz" -o -name "barcodes.tsv" \\) | head -1)
+    FEATURES=\$(find ${star_out_dir} -path "*/${feature_type}/raw/*" \\( -name "features.tsv.gz" -o -name "features.tsv" \\) | head -1)
     
     if [ -z "\$MATRIX" ] || [ -z "\$BARCODES" ] || [ -z "\$FEATURES" ]; then
         echo "ERROR: Could not find STARsolo output files in ${star_out_dir}"
-        echo "Looking for: Solo.out/${feature_type}/raw/{matrix.mtx,barcodes.tsv,features.tsv}"
+        echo "Looking for: ${feature_type}/raw/{matrix.mtx[.gz],barcodes.tsv[.gz],features.tsv[.gz]}"
         exit 1
     fi
     

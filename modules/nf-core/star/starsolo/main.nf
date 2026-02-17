@@ -56,7 +56,6 @@ process STARSOLO {
         --soloType $solotype \\
         $zcat \\
         $solotype_args \\
-        --soloCellFilter None \\
         $args
 
     if [ -d ${prefix}.Solo.out ]; then

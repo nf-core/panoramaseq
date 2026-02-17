@@ -1,0 +1,37 @@
+Reading barcodes from: barcodes_only.txt
+Loaded 34500 barcodes
+Reading FASTQ files...
+Total read pairs processed: 40000
+Short reads padded: 0
+
+=== Running Barcode Calling ===
+Strategy: 4_7_mer_gpu_v1
+Distance measure: SEQUENCE_LEVENSHTEIN
+Rejection threshold: 8
+Barcode start position: 9
+Barcode length: 36
+Barcode calling completed in 3.21365 seconds
+Time per read: 0.0803413 ms
+
+=== Writing Output Files ===
+Written 31330 filtered read pairs
+
+=== Final Statistics ===
+Total reads: 40000
+Assigned reads: 31330 (78.325%)
+Rejected reads: 8670 (21.675%)
+Short reads (padded): 0 (0%)
+
+Barcode distribution (top 10):
+  Barcode 28887: 52 reads
+  Barcode 14800: 45 reads
+  Barcode 20374: 42 reads
+  Barcode 34039: 39 reads
+  Barcode 11940: 36 reads
+  Barcode 20571: 36 reads
+  Barcode 18264: 36 reads
+  Barcode 16446: 35 reads
+  Barcode 33312: 34 reads
+  Barcode 8789: 34 reads
+
+=== SUCCESS ===
