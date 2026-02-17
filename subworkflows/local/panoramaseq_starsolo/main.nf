@@ -4,11 +4,11 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { QUIK_STARSOLO } from '../../modules/local/quik/starsolo/main'
-include { REORDER_R1_FOR_STARSOLO } from '../../modules/local/reorder_r1/main'
-include { STARSOLO } from '../../modules/nf-core/star/starsolo/main'
-include { STARSOLO_TO_H5AD } from '../../modules/local/starsolo_to_h5ad/main'
-include { FASTQC } from '../../modules/nf-core/fastqc/main'
+include { QUIK_STARSOLO } from '../../../modules/local/quik/starsolo/main'
+include { REORDER_R1_FOR_STARSOLO } from '../../../modules/local/reorder_r1/main'
+include { STARSOLO } from '../../../modules/nf-core/star/starsolo/main'
+include { STARSOLO_TO_H5AD } from '../../../modules/local/starsolo_to_h5ad/main'
+include { FASTQC } from '../../../modules/nf-core/fastqc/main'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
