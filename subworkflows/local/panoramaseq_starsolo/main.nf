@@ -45,29 +45,26 @@ workflow PANORAMASEQ_STARSOLO {
     ch_versions = ch_versions.mix(REORDER_R1_FOR_STARSOLO.out.versions.first())
     
     // 4. Combine R2 (cDNA) with reordered R1 (BC+UMI)
-    //    IMPORTANT: STARsolo expects [R2, R1] order
+    //    IMPORTANT: STARsolo expects [R2, R1] order with solotype in meta
     ch_starsolo_input = QUIK_STARSOLO.out.r2
         .join(REORDER_R1_FOR_STARSOLO.out.reads)
         .map { meta, r2, r1 ->
-            tuple(meta, [r2, r1])  // R2 first, R1 second
+            def new_meta = meta + [solotype: 'CB_UMI_Simple']
+            tuple(new_meta, 'CB_UMI_Simple', [r2, r1])  // meta, solotype, reads [R2, R1]
         }
     
     // 5. Prepare whitelist channel (STARsolo needs it as a file input)
     ch_whitelist = QUIK_STARSOLO.out.whitelist
     
-    // 6. Prepare GTF channel for STARsolo
-    ch_gtf_for_starsolo = ch_gtf_file
-        .map { gtf -> [[id: 'annotation'], gtf] }
+    // 6. Prepare STAR index channel
+    ch_star_index_tuple = ch_star_index
+        .map { index -> [[id: 'star_index'], index] }
     
     // 7. Run STARsolo (align + demux + quantify)
     STARSOLO(
         ch_starsolo_input,
-        ch_star_index,
-        ch_gtf_for_starsolo,
-        false,                    // star_ignore_sjdbgtf
-        '',                       // seq_platform
-        '',                       // seq_center
-        ch_whitelist              // barcode whitelist
+        ch_whitelist,
+        ch_star_index_tuple
     )
     ch_versions = ch_versions.mix(STARSOLO.out.versions.first())
     
