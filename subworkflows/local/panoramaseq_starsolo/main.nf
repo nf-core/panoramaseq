@@ -54,12 +54,12 @@ workflow PANORAMASEQ_STARSOLO {
     ch_versions = ch_versions.mix(REMAP_BARCODES_FOR_STARSOLO.out.versions.first())
     
     // 5. Combine R2 (cDNA) with remapped R1 (synthetic BC + UMI)
-    //    IMPORTANT: STARsolo expects [R2, R1] order with solotype in meta
+    //    IMPORTANT: STARSOLO module expects [R1, R2] order (it reverses them for STAR)
     ch_starsolo_input = QUIK_STARSOLO.out.r2
         .join(REMAP_BARCODES_FOR_STARSOLO.out.reads)
         .map { meta, r2, r1_synthetic ->
             def new_meta = meta + [solotype: 'CB_UMI_Simple']
-            tuple(new_meta, 'CB_UMI_Simple', [r2, r1_synthetic])  // meta, solotype, reads [R2, R1_synthetic]
+            tuple(new_meta, 'CB_UMI_Simple', [r1_synthetic, r2])  // meta, solotype, reads [R1_synthetic, R2]
         }
     
     // 6. Prepare synthetic whitelist channel (STARsolo needs it as a file input)
