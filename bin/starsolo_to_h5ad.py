@@ -49,7 +49,8 @@ def main():
     # Create AnnData object
     print("Creating AnnData object...")
     adata = anndata.AnnData(X=matrix, obs=barcodes, var=features)
-    adata.var_names = adata.var["gene_name"]
+    # Use gene_id as index (unique), keep gene_name as a column
+    adata.var_names = adata.var["gene_id"]
     adata.obs_names = adata.obs["barcode"]
     
     # Add spatial coordinates from barcode file
@@ -61,8 +62,11 @@ def main():
         # Assume first column is barcode
         coords.columns = ['barcode'] + list(coords.columns[1:])
     
-    # Merge coordinates with obs
-    adata.obs = adata.obs.merge(coords, on="barcode", how="left")
+    # Set barcode as index in coords for merging
+    coords = coords.set_index('barcode')
+    
+    # Merge coordinates with obs using index
+    adata.obs = adata.obs.join(coords, how="left")
     
     # Check for spatial columns
     spatial_cols = [col for col in adata.obs.columns if col.lower() in ['x', 'y', 'x_coord', 'y_coord', 'row', 'col']]

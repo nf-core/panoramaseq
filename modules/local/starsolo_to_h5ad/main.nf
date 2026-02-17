@@ -22,9 +22,10 @@ process STARSOLO_TO_H5AD {
     def feature_type = task.ext.feature_type ?: "Gene"
     """
     # Find STARsolo output files (can be gzipped or uncompressed)
-    MATRIX=\$(find ${star_out_dir} -path "*/${feature_type}/raw/*" \\( -name "matrix.mtx.gz" -o -name "matrix.mtx" \\) | head -1)
-    BARCODES=\$(find ${star_out_dir} -path "*/${feature_type}/raw/*" \\( -name "barcodes.tsv.gz" -o -name "barcodes.tsv" \\) | head -1)
-    FEATURES=\$(find ${star_out_dir} -path "*/${feature_type}/raw/*" \\( -name "features.tsv.gz" -o -name "features.tsv" \\) | head -1)
+    # Use -L to follow symlinks
+    MATRIX=\$(find -L ${star_out_dir} -path "*/${feature_type}/raw/*" \\( -name "matrix.mtx.gz" -o -name "matrix.mtx" \\) | head -1)
+    BARCODES=\$(find -L ${star_out_dir} -path "*/${feature_type}/raw/*" \\( -name "barcodes.tsv.gz" -o -name "barcodes.tsv" \\) | head -1)
+    FEATURES=\$(find -L ${star_out_dir} -path "*/${feature_type}/raw/*" \\( -name "features.tsv.gz" -o -name "features.tsv" \\) | head -1)
     
     if [ -z "\$MATRIX" ] || [ -z "\$BARCODES" ] || [ -z "\$FEATURES" ]; then
         echo "ERROR: Could not find STARsolo output files in ${star_out_dir}"
