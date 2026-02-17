@@ -303,8 +303,8 @@ workflow PANORAMASEQ {
         ch_multiqc_files = ch_multiqc_files.mix(ch_fastqc_cutadapt.collect{it[1]}.ifEmpty([]))
         ch_multiqc_files = ch_multiqc_files.mix(ch_fastqc_cutadapt2.collect{it[1]}.ifEmpty([]))
         ch_multiqc_files = ch_multiqc_files.mix(ch_umi_logs.collect{it[1]}.ifEmpty([]))
-        ch_multiqc_files = ch_multiqc_files.mix(ch_star_logs_final.collect().ifEmpty([]))
-        ch_multiqc_files = ch_multiqc_files.mix(ch_star_logs_out.collect().ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(ch_star_logs_final.collect{it[1]}.ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(ch_star_logs_out.collect{it[1]}.ifEmpty([]))
         ch_multiqc_files = ch_multiqc_files.mix(ch_featurecounts_summary.collect{it[1]}.ifEmpty([]))
 
         MULTIQC (
