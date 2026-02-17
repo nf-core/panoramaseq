@@ -1,0 +1,47 @@
+nextflow_process {
+
+    name "Test Process REMAP_BARCODES_FOR_STARSOLO"
+    script "../main.nf"
+    process "REMAP_BARCODES_FOR_STARSOLO"
+    tag "modules"
+    tag "modules_local"
+    tag "remap_barcodes"
+    tag "remap_barcodes_for_starsolo"
+
+    test("REMAP_BARCODES_FOR_STARSOLO - stub") {
+
+        options "-stub"
+
+        when {
+            params {
+                outdir = "$outputDir"
+            }
+            process {
+                """
+                input[0] = [
+                    [ id: 'test_remap' ],
+                    file(params.pipelines_testdata_base_path + 'panoramaseq/testdata/rawfastq/S09_UHRR_R1.fastq.gz', checkIfExists: true)
+                ]
+                input[1] = [
+                    [ id: 'test_remap' ],
+                    file(params.pipelines_testdata_base_path + 'panoramaseq/testdata/whitelist_test.txt', checkIfExists: true)
+                ]
+                """
+            }
+        }
+
+        then {
+            assertAll (
+                { assert process.success },
+                { assert process.out.reads != null },
+                { assert process.out.reads.get(0).get(1) ==~ ".*_synthetic.fastq.gz" },
+                { assert process.out.whitelist != null },
+                { assert process.out.whitelist.get(0) ==~ ".*_whitelist_synthetic.txt" },
+                { assert process.out.mapping != null },
+                { assert process.out.mapping.get(0) ==~ ".*_barcode_mapping.tsv" },
+                { assert process.out.versions != null },
+                { assert snapshot(process.out.versions).match() }
+            )
+        }
+    }
+}

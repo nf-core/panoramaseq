@@ -1,0 +1,39 @@
+nextflow_process {
+
+    name "Test Process STARSOLO_TO_H5AD"
+    script "../main.nf"
+    process "STARSOLO_TO_H5AD"
+    tag "modules"
+    tag "modules_local"
+    tag "starsolo_to_h5ad"
+
+    test("STARSOLO_TO_H5AD - stub") {
+
+        options "-stub"
+
+        when {
+            params {
+                outdir = "$outputDir"
+            }
+            process {
+                """
+                input[0] = [
+                    [ id: 'test_starsolo_h5ad' ],
+                    file(params.pipelines_testdata_base_path + 'panoramaseq/testdata/starsolo_output', checkIfExists: true)
+                ]
+                input[1] = file(params.pipelines_testdata_base_path + 'panoramaseq/testdata/barcodes_coords.csv', checkIfExists: true)
+                """
+            }
+        }
+
+        then {
+            assertAll (
+                { assert process.success },
+                { assert process.out.h5ad != null },
+                { assert process.out.h5ad.get(0).get(1) ==~ ".*\\.h5ad" },
+                { assert process.out.versions != null },
+                { assert snapshot(process.out.versions).match() }
+            )
+        }
+    }
+}

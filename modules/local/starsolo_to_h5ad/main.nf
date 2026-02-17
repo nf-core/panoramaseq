@@ -1,7 +1,7 @@
 process STARSOLO_TO_H5AD {
     tag "${meta.id}"
     label 'process_medium'
-    conda "conda-forge::anndata=0.10.9 conda-forge::python=3.11 conda-forge::pandas=2.0.3 conda-forge::scipy=1.11.2 conda-forge::numpy=1.24.3"
+    conda "${moduleDir}/environment.yml"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'oras://community.wave.seqera.io/library/anndata:0.10.9--d13580e4b297da7c' :
         'community.wave.seqera.io/library/anndata:0.10.9--1eab54e300e1e584' }"

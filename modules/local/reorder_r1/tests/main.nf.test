@@ -1,0 +1,67 @@
+nextflow_process {
+
+    name "Test Process REORDER_R1_FOR_STARSOLO"
+    script "../main.nf"
+    process "REORDER_R1_FOR_STARSOLO"
+    tag "modules"
+    tag "modules_local"
+    tag "reorder_r1"
+    tag "reorder_r1_for_starsolo"
+
+    test("REORDER_R1_FOR_STARSOLO - stub") {
+
+        options "-stub"
+
+        when {
+            params {
+                outdir = "$outputDir"
+            }
+            process {
+                """
+                input[0] = [
+                    [ id: 'test_reorder' ],
+                    file(params.pipelines_testdata_base_path + 'panoramaseq/testdata/rawfastq/S09_UHRR_R1.fastq.gz', checkIfExists: true)
+                ]
+                """
+            }
+        }
+
+        then {
+            assertAll (
+                { assert process.success },
+                { assert process.out.reads != null },
+                { assert process.out.reads.get(0).get(1) ==~ ".*_reordered.fastq.gz" },
+                { assert process.out.versions != null },
+                { assert snapshot(process.out.versions).match() }
+            )
+        }
+    }
+
+    test("REORDER_R1_FOR_STARSOLO - fastq") {
+
+        when {
+            params {
+                outdir = "$outputDir"
+            }
+            process {
+                """
+                input[0] = [
+                    [ id: 'test_reorder_real' ],
+                    file(params.pipelines_testdata_base_path + 'panoramaseq/testdata/rawfastq/S09_UHRR_R1.fastq.gz', checkIfExists: true)
+                ]
+                """
+            }
+        }
+
+        then {
+            assertAll (
+                { assert process.success },
+                { assert process.out.reads != null },
+                { assert process.out.reads.get(0).get(1) ==~ ".*_reordered.fastq.gz" },
+                { assert file(process.out.reads.get(0).get(1)).exists() },
+                { assert process.out.versions != null },
+                { assert snapshot(process.out.reads, process.out.versions).match() }
+            )
+        }
+    }
+}
