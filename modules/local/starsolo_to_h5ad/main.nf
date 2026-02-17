@@ -22,13 +22,13 @@ process STARSOLO_TO_H5AD {
     def feature_type = task.ext.feature_type ?: "Gene"
     """
     # Find STARsolo output files
-    MATRIX=\$(find ${star_out_dir} -name "matrix.mtx" -path "*/Solo.out/${feature_type}/filtered/*" | head -1)
-    BARCODES=\$(find ${star_out_dir} -name "barcodes.tsv" -path "*/Solo.out/${feature_type}/filtered/*" | head -1)
-    FEATURES=\$(find ${star_out_dir} -name "features.tsv" -path "*/Solo.out/${feature_type}/filtered/*" | head -1)
+    MATRIX=\$(find ${star_out_dir} -name "matrix.mtx" -path "*/Solo.out/${feature_type}/raw/*" | head -1)
+    BARCODES=\$(find ${star_out_dir} -name "barcodes.tsv" -path "*/Solo.out/${feature_type}/raw/*" | head -1)
+    FEATURES=\$(find ${star_out_dir} -name "features.tsv" -path "*/Solo.out/${feature_type}/raw/*" | head -1)
     
     if [ -z "\$MATRIX" ] || [ -z "\$BARCODES" ] || [ -z "\$FEATURES" ]; then
         echo "ERROR: Could not find STARsolo output files in ${star_out_dir}"
-        echo "Looking for: Solo.out/${feature_type}/filtered/{matrix.mtx,barcodes.tsv,features.tsv}"
+        echo "Looking for: Solo.out/${feature_type}/raw/{matrix.mtx,barcodes.tsv,features.tsv}"
         exit 1
     fi
     
