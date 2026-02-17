@@ -26,8 +26,8 @@ import subprocess
 
 print("=== Reordering R1 for STARsolo ===")
 print("Input: UMI(10bp) + Barcode(36bp)")
-print("Output: Barcode(31bp, truncated) + UMI(10bp)")
-print("Note: STARsolo has 31bp barcode limit")
+print("Output: Barcode(36bp) + UMI(10bp)")
+print("Using --soloCBtype String for full barcode support")
 print("===================================")
 
 records_processed = 0
@@ -53,18 +53,17 @@ with gzip.open('${r1}', 'rt') as infile, \\
             print(f"Warning: Read {records_processed} length {len(seq)} < 46bp, skipping", file=sys.stderr)
             continue
         
-        # Extract UMI (first 10bp) and Barcode (next 31bp TRUNCATED from 36bp)
-        # Note: STARsolo has a 31bp limit for cell barcodes
+        # Extract UMI (first 10bp) and Barcode (next 36bp)
         umi = seq[:10]
-        barcode = seq[10:41]  # Use only first 31bp of 36bp barcode
-        rest = seq[46:]  # Any remaining sequence after position 46
+        barcode = seq[10:46]
+        rest = seq[46:]  # Any remaining sequence (usually empty)
         
-        # Reorder: Barcode first (31bp), then UMI (10bp), then rest
+        # Reorder: Barcode first (36bp), then UMI (10bp), then rest
         new_seq = barcode + umi + rest
         
         # Quality scores follow same order
         umi_qual = qual[:10]
-        bc_qual = qual[10:41]  # First 31bp of barcode quality
+        bc_qual = qual[10:46]
         rest_qual = qual[46:]
         new_qual = bc_qual + umi_qual + rest_qual
         
