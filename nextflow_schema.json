@@ -412,6 +412,32 @@
                     "default": 5000000,
                     "description": "STARsolo: Maximum number of splice junctions to collect.",
                     "fa_icon": "fas fa-sort-numeric-up"
+                },
+                "heatmap_metric": {
+                    "type": "string",
+                    "default": "total_counts",
+                    "enum": ["total_counts", "n_genes_by_counts", "rgb"],
+                    "description": "Metric to visualize in heatmap (total_counts, n_genes_by_counts, or rgb for multi-channel). Note: bin sizes 1, 10, and 50 are generated automatically.",
+                    "fa_icon": "fas fa-chart-area"
+                },
+                "heatmap_colormap": {
+                    "type": "string",
+                    "default": "viridis",
+                    "enum": ["viridis", "magma", "plasma", "hot", "rgb"],
+                    "description": "Colormap for heatmap visualization.",
+                    "fa_icon": "fas fa-palette"
+                },
+                "heatmap_percentile": {
+                    "type": "number",
+                    "default": 99.5,
+                    "description": "Percentile for color clipping in heatmap (0-100).",
+                    "fa_icon": "fas fa-percent"
+                },
+                "heatmap_save_h5ad": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Save AnnData object with spatial data from heatmap module.",
+                    "fa_icon": "fas fa-save"
                 }
             }
         }

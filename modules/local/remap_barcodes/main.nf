@@ -13,7 +13,7 @@ process REMAP_BARCODES_FOR_STARSOLO {
     output:
     tuple val(meta), path("*_synthetic.fastq.gz"), emit: reads
     path "*_whitelist_synthetic.txt"              , emit: whitelist
-    path "*_barcode_mapping.tsv"                  , emit: mapping
+    tuple val(meta), path("*_barcode_mapping.tsv"), emit: mapping
     path "versions.yml"                           , emit: versions
     
     when:

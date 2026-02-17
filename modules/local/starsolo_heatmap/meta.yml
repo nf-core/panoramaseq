@@ -1,0 +1,72 @@
+name: "starsolo_heatmap"
+description: Generate spatial UMI count heatmap from STARsolo output with barcode remapping support
+keywords:
+  - spatial
+  - heatmap
+  - visualization
+  - starsolo
+  - barcode
+tools:
+  - custom:
+      description: |
+        Python script to generate spatial heatmaps from STARsolo quantification output.
+        Handles synthetic-to-original barcode remapping and supports spatial binning.
+      homepage: https://github.com/nf-core/panoramaseq
+      documentation: https://github.com/nf-core/panoramaseq
+      tool_dev_url: https://github.com/nf-core/panoramaseq
+      licence: ["MIT"]
+
+input:
+  - meta:
+      type: map
+      description: |
+        Groovy Map containing sample information
+        e.g. [ id:'test', single_end:false ]
+  - star_dir:
+      type: directory
+      description: STARsolo output directory (*.Solo.out)
+      pattern: "*.Solo.out"
+  - meta2:
+      type: map
+      description: |
+        Groovy Map containing barcode mapping metadata
+  - mapping:
+      type: file
+      description: Barcode mapping TSV file (synthetic_barcode → original_barcode)
+      pattern: "*_barcode_mapping.tsv"
+  - coords:
+      type: file
+      description: Spatial coordinates CSV file with columns (barcode, x, y)
+      pattern: "*.csv"
+
+output:
+  - meta:
+      type: map
+      description: |
+        Groovy Map containing sample information
+        e.g. [ id:'test', single_end:false ]
+  - versions:
+      type: file
+      description: File containing software versions
+      pattern: "versions.yml"
+  - heatmap:
+      type: file
+      description: Spatial heatmap PNG image
+      pattern: "*_heatmap.png"
+  - data:
+      type: file
+      description: Data table with spot coordinates and UMI counts
+      pattern: "*_data.tsv"
+  - stats:
+      type: file
+      description: Summary statistics JSON file
+      pattern: "*_stats.json"
+  - h5ad:
+      type: file
+      description: Optional AnnData object with spatial data
+      pattern: "*.h5ad"
+
+authors:
+  - "@francoaps"
+maintainers:
+  - "@francoaps"

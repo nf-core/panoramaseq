@@ -9,6 +9,7 @@ include { REORDER_R1_FOR_STARSOLO } from '../../../modules/local/reorder_r1/main
 include { REMAP_BARCODES_FOR_STARSOLO } from '../../../modules/local/remap_barcodes/main'
 include { STARSOLO } from '../../../modules/nf-core/star/starsolo/main'
 include { STARSOLO_TO_H5AD } from '../../../modules/local/starsolo_to_h5ad/main'
+include { STARSOLO_HEATMAP } from '../../../modules/local/starsolo_heatmap/main'
 include { FASTQC } from '../../../modules/nf-core/fastqc/main'
 
 /*
@@ -88,8 +89,28 @@ workflow PANORAMASEQ_STARSOLO {
     )
     ch_versions = ch_versions.mix(STARSOLO_TO_H5AD.out.versions.first())
     
+    // 10. Generate spatial UMI count heatmap with barcode remapping
+    //     Join by meta.id only (not entire meta) because STARSOLO adds 'solotype' field
+    ch_heatmap_input = STARSOLO.out.counts
+        .map { meta, counts -> [meta.id, meta, counts] }
+        .join(
+            REMAP_BARCODES_FOR_STARSOLO.out.mapping
+                .map { meta, mapping -> [meta.id, mapping] }
+        )
+        .map { id, meta, counts, mapping -> [meta, counts, mapping] }
+    
+    STARSOLO_HEATMAP(
+        ch_heatmap_input.map { meta, counts, mapping -> [meta, counts] },
+        ch_heatmap_input.map { meta, counts, mapping -> [meta, mapping] },
+        ch_barcode_file
+    )
+    ch_versions = ch_versions.mix(STARSOLO_HEATMAP.out.versions.first())
+    
     emit:
     h5ad              = STARSOLO_TO_H5AD.out.h5ad                    // channel: [ val(meta), path(h5ad) ]
+    heatmap           = STARSOLO_HEATMAP.out.heatmap                 // channel: [ val(meta), path(png) ]
+    heatmap_data      = STARSOLO_HEATMAP.out.data                    // channel: [ val(meta), path(tsv) ]
+    heatmap_stats     = STARSOLO_HEATMAP.out.stats                   // channel: [ val(meta), path(json) ]
     star_log_final    = STARSOLO.out.log_final                      // channel: [ val(meta), path(log) ]
     star_log_out      = STARSOLO.out.log_out                        // channel: [ val(meta), path(log) ]
     star_log_progress = STARSOLO.out.log_progress                   // channel: [ val(meta), path(log) ]
@@ -98,7 +119,7 @@ workflow PANORAMASEQ_STARSOLO {
     quik_stats        = QUIK_STARSOLO.out.stats                     // channel: [ val(meta), path(stats) ]
     whitelist         = QUIK_STARSOLO.out.whitelist                 // channel: [ val(meta), path(whitelist) ] - original 36bp
     whitelist_synthetic = REMAP_BARCODES_FOR_STARSOLO.out.whitelist // channel: path(whitelist_synthetic) - synthetic ≤31bp
-    barcode_mapping   = REMAP_BARCODES_FOR_STARSOLO.out.mapping     // channel: path(mapping.tsv) - original↔synthetic
+    barcode_mapping   = REMAP_BARCODES_FOR_STARSOLO.out.mapping     // channel: [ val(meta), path(mapping.tsv) ] - original↔synthetic
     fastqc_zip        = FASTQC.out.zip                              // channel: [ val(meta), path(zip) ]
     versions          = ch_versions                                  // channel: [ path(versions.yml) ]
 }
