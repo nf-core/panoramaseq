@@ -1,0 +1,63 @@
+name: remap_barcodes_for_starsolo
+description: Remap 36bp barcodes to 25bp synthetic barcodes using base-4 DNA encoding for STARsolo compatibility
+keywords:
+  - barcode
+  - remapping
+  - synthetic
+  - starsolo
+  - encoding
+tools:
+  - python:
+      description: Python programming language for barcode remapping
+      homepage: https://www.python.org/
+      documentation: https://docs.python.org/3/
+      licence: ["PSF-2.0"]
+input:
+  - - meta:
+        type: map
+        description: |
+          Groovy Map containing sample information
+          e.g. [ id:'test', single_end:false ]
+    - reads:
+        type: file
+        description: FASTQ file with 36bp barcodes
+        pattern: "*.fastq.gz"
+  - - meta2:
+        type: map
+        description: |
+          Groovy Map containing sample information
+          e.g. [ id:'test', single_end:false ]
+    - whitelist:
+        type: file
+        description: Whitelist of valid 36bp barcodes
+        pattern: "*.txt"
+output:
+  - reads:
+      - meta:
+          type: map
+          description: |
+            Groovy Map containing sample information
+            e.g. [ id:'test', single_end:false ]
+      - "*_synthetic.fastq.gz":
+          type: file
+          description: FASTQ with 25bp synthetic barcodes + 10bp UMI (35bp total)
+          pattern: "*_synthetic.fastq.gz"
+  - whitelist:
+      - "*_whitelist_synthetic.txt":
+          type: file
+          description: Whitelist of 25bp synthetic barcodes
+          pattern: "*_whitelist_synthetic.txt"
+  - mapping:
+      - "*_barcode_mapping.tsv":
+          type: file
+          description: TSV mapping original 36bp barcodes to synthetic 25bp barcodes
+          pattern: "*_barcode_mapping.tsv"
+  - versions:
+      - versions.yml:
+          type: file
+          description: File containing software versions
+          pattern: "versions.yml"
+authors:
+  - "@francoaps"
+maintainers:
+  - "@francoaps"

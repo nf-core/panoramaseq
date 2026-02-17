@@ -1,0 +1,50 @@
+name: starsolo_to_h5ad
+description: Convert STARsolo count matrices to AnnData H5AD format with spatial coordinates
+keywords:
+  - starsolo
+  - h5ad
+  - anndata
+  - conversion
+  - spatial
+tools:
+  - anndata:
+      description: Annotated data for Python
+      homepage: https://anndata.readthedocs.io/
+      documentation: https://anndata.readthedocs.io/en/latest/
+      licence: ["BSD-3-Clause"]
+      identifier: biotools:anndata
+input:
+  - - meta:
+        type: map
+        description: |
+          Groovy Map containing sample information
+          e.g. [ id:'test', single_end:false ]
+    - star_out_dir:
+        type: directory
+        description: STARsolo output directory containing Solo.out/
+        pattern: "*"
+  - barcode_coords:
+      - barcode_coords:
+          type: file
+          description: CSV file with barcode spatial coordinates
+          pattern: "*.csv"
+output:
+  - h5ad:
+      - meta:
+          type: map
+          description: |
+            Groovy Map containing sample information
+            e.g. [ id:'test', single_end:false ]
+      - "*.h5ad":
+          type: file
+          description: AnnData H5AD file with counts and spatial coordinates
+          pattern: "*.h5ad"
+  - versions:
+      - versions.yml:
+          type: file
+          description: File containing software versions
+          pattern: "versions.yml"
+authors:
+  - "@francoaps"
+maintainers:
+  - "@francoaps"
