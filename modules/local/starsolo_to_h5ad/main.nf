@@ -1,10 +1,10 @@
 process STARSOLO_TO_H5AD {
     tag "${meta.id}"
     label 'process_medium'
-    conda "conda-forge::python=3.11 conda-forge::pandas=2.0.3 conda-forge::scipy=1.11.2 bioconda::scanpy=1.7.2"
+    conda "conda-forge::anndata=0.10.9 conda-forge::python=3.11 conda-forge::pandas=2.0.3 conda-forge::scipy=1.11.2 conda-forge::numpy=1.24.3"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'docker://quay.io/biocontainers/scanpy:1.7.2--pyhdfd78af_0' :
-        'quay.io/biocontainers/scanpy:1.7.2--pyhdfd78af_0' }"
+        'oras://community.wave.seqera.io/library/anndata:0.10.9--d13580e4b297da7c' :
+        'community.wave.seqera.io/library/anndata:0.10.9--1eab54e300e1e584' }"
     
     input:
     tuple val(meta), path(star_out_dir)
@@ -49,7 +49,7 @@ process STARSOLO_TO_H5AD {
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         python: \$(python3 --version | cut -d' ' -f2)
-        scanpy: \$(python3 -c "import scanpy; print(scanpy.__version__)")
+        anndata: \$(python3 -c "import anndata; print(anndata.__version__)")
         pandas: \$(python3 -c "import pandas; print(pandas.__version__)")
         scipy: \$(python3 -c "import scipy; print(scipy.__version__)")
     END_VERSIONS
@@ -63,7 +63,7 @@ process STARSOLO_TO_H5AD {
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         python: \$(python3 --version | cut -d' ' -f2)
-        scanpy: 1.9.3
+        anndata: 0.10.9
         pandas: 2.0.3
         scipy: 1.11.2
     END_VERSIONS

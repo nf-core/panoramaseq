@@ -3,7 +3,8 @@
 import argparse
 import pandas as pd
 import scipy.io as sio
-import scanpy as sc
+import anndata
+import numpy as np
 from pathlib import Path
 
 def main():
@@ -47,7 +48,7 @@ def main():
     
     # Create AnnData object
     print("Creating AnnData object...")
-    adata = sc.AnnData(X=matrix, obs=barcodes, var=features)
+    adata = anndata.AnnData(X=matrix, obs=barcodes, var=features)
     adata.var_names = adata.var["gene_name"]
     adata.obs_names = adata.obs["barcode"]
     
@@ -74,9 +75,12 @@ def main():
     # Add sample metadata
     adata.obs['sample_id'] = args.sample_id
     
-    # Calculate basic QC metrics
+    # Calculate basic QC metrics manually
     print("Calculating QC metrics...")
-    sc.pp.calculate_qc_metrics(adata, inplace=True)
+    adata.obs['n_counts'] = np.array(adata.X.sum(axis=1)).flatten()
+    adata.obs['n_genes'] = np.array((adata.X > 0).sum(axis=1)).flatten()
+    adata.var['n_cells'] = np.array((adata.X > 0).sum(axis=0)).flatten()
+    adata.var['total_counts'] = np.array(adata.X.sum(axis=0)).flatten()
     
     # Save to H5AD
     print(f"Saving to {args.output}...")
