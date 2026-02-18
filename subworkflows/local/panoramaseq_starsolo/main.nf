@@ -4,7 +4,7 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { QUIK_STARSOLO } from '../../../modules/local/quik/starsolo/main'
+include { QUIK_STARSOLO } from '../../../modules/local/quik_starsolo/main'
 include { REORDER_R1_FOR_STARSOLO } from '../../../modules/local/reorder_r1/main'
 include { REMAP_BARCODES_FOR_STARSOLO } from '../../../modules/local/remap_barcodes/main'
 include { STARSOLO } from '../../../modules/nf-core/star/starsolo/main'
