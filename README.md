@@ -341,6 +341,7 @@ The pipeline generates several types of output files organized in directories by
 ### Main outputs
 
 - **`h5ad/`** - Spatially-resolved count matrices in AnnData H5AD format
+
   - Individual sample H5AD files (if `mergecounts=false`)
   - Merged H5AD file with all samples (if `mergecounts=true`)
   - Validation logs for each H5AD file
