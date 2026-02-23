@@ -154,6 +154,52 @@ workflow PIPELINE_COMPLETION {
 //
 def validateInputParameters() {
     genomeExistsError()
+    validateReadStructure()
+}
+
+//
+// Validate read_structure and STARsolo position parameters consistency
+//
+def validateReadStructure() {
+    // Validate read_structure is a valid value
+    if (!['UMI_BC', 'BC_UMI'].contains(params.read_structure)) {
+        def error_string = "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" +
+            "  Invalid read_structure: '${params.read_structure}'\n" +
+            "  Allowed values: 'UMI_BC' (UMI first, e.g., Visium) or 'BC_UMI' (barcode first)\n" +
+            "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+        error(error_string)
+    }
+    
+    // Check consistency between read_structure and STARsolo positions
+    if (params.read_structure == 'BC_UMI') {
+        // BC_UMI: barcode at position 1 (1-indexed), UMI after barcode
+        def expected_umi_start = params.starsolo_cb_len + 1
+        if (params.starsolo_cb_start != 1) {
+            log.warn("Warning: read_structure='BC_UMI' but starsolo_cb_start=${params.starsolo_cb_start}. " +
+                     "Expected starsolo_cb_start=1 (barcode at read start). " +
+                     "Proceeding with user-specified value.")
+        }
+        if (params.starsolo_umi_start != expected_umi_start) {
+            log.warn("Warning: read_structure='BC_UMI' expects starsolo_umi_start=${expected_umi_start} " +
+                     "(after ${params.starsolo_cb_len}bp barcode), but got ${params.starsolo_umi_start}. " +
+                     "Proceeding with user-specified value.")
+        }
+    }
+    
+    if (params.read_structure == 'UMI_BC') {
+        // UMI_BC: UMI at position 1 (1-indexed), barcode after UMI
+        def expected_cb_start = params.starsolo_umi_len + 1
+        if (params.starsolo_umi_start != 1) {
+            log.warn("Warning: read_structure='UMI_BC' but starsolo_umi_start=${params.starsolo_umi_start}. " +
+                     "Expected starsolo_umi_start=1 (UMI at read start). " +
+                     "Proceeding with user-specified value.")
+        }
+        if (params.starsolo_cb_start != expected_cb_start) {
+            log.warn("Warning: read_structure='UMI_BC' expects starsolo_cb_start=${expected_cb_start} " +
+                     "(after ${params.starsolo_umi_len}bp UMI), but got ${params.starsolo_cb_start}. " +
+                     "Proceeding with user-specified value.")
+        }
+    }
 }
 
 //

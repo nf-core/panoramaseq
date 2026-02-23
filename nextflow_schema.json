@@ -309,11 +309,12 @@
                     "type": ["string", "null"],
                     "description": "UMI separator for UMI-tools (optional)."
                 },
-                "barcode_start": {
-                    "type": "integer",
-                    "default": 9,
-                    "description": "Start position of the barcode in the read (zero-based).",
-                    "fa_icon": "fas fa-ruler"
+                "read_structure": {
+                    "type": "string",
+                    "default": "BC_UMI",
+                    "enum": ["BC_UMI", "UMI_BC"],
+                    "description": "Read structure format: 'BC_UMI' (barcode first at position 0) or 'UMI_BC' (UMI first at position 0, barcode at starsolo_umi_len).",
+                    "fa_icon": "fas fa-dna"
                 },
                 "strategy": {
                     "type": "string",
@@ -327,6 +328,11 @@
                     "enum": ["LEVENSHTEIN", "SEQUENCE_LEVENSHTEIN", "PSEUDO_DISTANCE"],
                     "description": "Distance measure for barcode matching.",
                     "fa_icon": "fas fa-calculator"
+                },
+                "rejection_threshold": {
+                    "type": "integer",
+                    "description": "Maximum edit distance for barcode assignment (auto-calculated as 25% of starsolo_cb_len if not specified).",
+                    "fa_icon": "fas fa-filter"
                 },
                 "gpus": {
                     "type": "integer",
@@ -342,25 +348,25 @@
                 "starsolo_cb_len": {
                     "type": "integer",
                     "default": 36,
-                    "description": "STARsolo: Cell barcode length. Uses --soloCBtype String for barcodes >31bp.",
+                    "description": "Cell barcode length (used by both QUIK and STARsolo). STARsolo uses --soloCBtype String for barcodes >31bp.",
                     "fa_icon": "fas fa-ruler"
                 },
                 "starsolo_umi_len": {
                     "type": "integer",
                     "default": 10,
-                    "description": "STARsolo: UMI length.",
+                    "description": "UMI length (used by both QUIK and STARsolo).",
                     "fa_icon": "fas fa-ruler"
                 },
                 "starsolo_cb_start": {
                     "type": "integer",
                     "default": 1,
-                    "description": "STARsolo: Cell barcode start position (1-based).",
+                    "description": "Cell barcode start position (1-based, for STARsolo). QUIK derives 0-based position from read_structure.",
                     "fa_icon": "fas fa-ruler"
                 },
                 "starsolo_umi_start": {
                     "type": "integer",
                     "default": 37,
-                    "description": "STARsolo: UMI start position (1-based).",
+                    "description": "UMI start position (1-based, for STARsolo). QUIK derives 0-based position from read_structure.",
                     "fa_icon": "fas fa-ruler"
                 },
                 "starsolo_match_wl_type": {
@@ -438,6 +444,25 @@
                     "default": false,
                     "description": "Save AnnData object with spatial data from heatmap module.",
                     "fa_icon": "fas fa-save"
+                },
+                "enable_columba_rescue": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Enable Columba barcode rescue to recover additional barcodes from QUIK-discarded reads. Note: This significantly increases runtime.",
+                    "fa_icon": "fas fa-life-ring"
+                },
+                "columba_repo": {
+                    "type": "string",
+                    "description": "Path to local Columba repository (required for HPC environments without container support). If not provided, will use containerized version.",
+                    "fa_icon": "fas fa-folder-open"
+                },
+                "columba_identity_threshold": {
+                    "type": "integer",
+                    "default": 83,
+                    "description": "Columba identity threshold (-I parameter). Lower values are more permissive but may increase false positives.",
+                    "fa_icon": "fas fa-percentage",
+                    "minimum": 50,
+                    "maximum": 100
                 }
             }
         }

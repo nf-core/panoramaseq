@@ -15,7 +15,69 @@ Author: nf-core/panoramaseq
 import gzip
 import sys
 import argparse
+import csv
+import re
+import subprocess
+import shutil
 from pathlib import Path
+
+
+# IMPROVEMENT 1: Check for pigz availability and use it for parallel compression if available
+_PIGZ_AVAILABLE = None
+
+def check_pigz_available():
+    """Check if pigz is available on the system PATH."""
+    global _PIGZ_AVAILABLE
+    if _PIGZ_AVAILABLE is None:
+        _PIGZ_AVAILABLE = shutil.which('pigz') is not None
+    return _PIGZ_AVAILABLE
+
+
+def open_fastq_read(filepath):
+    """
+    Open FASTQ file for reading with pigz if available, otherwise use gzip.
+    Returns a file-like object suitable for text reading.
+    """
+    filepath = str(filepath)
+    if filepath.endswith('.gz'):
+        if check_pigz_available():
+            # Use pigz for parallel decompression
+            proc = subprocess.Popen(
+                ['pigz', '-dc', filepath],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True
+            )
+            return proc.stdout
+        else:
+            # Fall back to Python gzip
+            return gzip.open(filepath, 'rt')
+    else:
+        return open(filepath, 'r')
+
+
+def open_fastq_write(filepath):
+    """
+    Open FASTQ file for writing with pigz if available, otherwise use gzip.
+    Returns a file-like object suitable for text writing.
+    """
+    filepath = str(filepath)
+    if filepath.endswith('.gz'):
+        if check_pigz_available():
+            # Use pigz for parallel compression
+            proc = subprocess.Popen(
+                ['pigz', '-c'],
+                stdin=subprocess.PIPE,
+                stdout=open(filepath, 'wb'),
+                stderr=subprocess.PIPE,
+                text=True
+            )
+            return proc.stdin
+        else:
+            # Fall back to Python gzip
+            return gzip.open(filepath, 'wt')
+    else:
+        return open(filepath, 'w')
 
 
 def encode_index_to_dna(index, length=25):
@@ -109,73 +171,188 @@ def write_mapping_table(mapping, output_file):
 def write_synthetic_whitelist(mapping, output_file):
     """
     Write whitelist containing only synthetic barcodes.
+    IMPROVEMENT 6: Removed unnecessary sort - synthetic barcodes are unique by construction.
     
     Args:
         mapping: dict of original -> synthetic barcodes
         output_file: Output whitelist path
     """
     with open(output_file, 'w') as f:
-        for synthetic in sorted(set(mapping.values())):
+        # Use set to ensure uniqueness (guaranteed by construction but defensive)
+        for synthetic in set(mapping.values()):
             f.write(f"{synthetic}\n")
     
     print(f"Wrote synthetic whitelist: {output_file}", file=sys.stderr)
 
 
-def remap_fastq(input_fastq, output_fastq, mapping, barcode_start, barcode_length, umi_length=10):
+def create_synthetic_coordinates(mapping, coords_file, output_file):
     """
-    Rewrite FASTQ file replacing original barcodes with synthetic ones.
-    Trims reads to exactly synthetic_barcode_length + UMI_length.
+    Create coordinate file with synthetic barcodes instead of original barcodes.
+    This allows heatmap generation to skip the reverse mapping step.
     
     Args:
-        input_fastq: Input FASTQ path (can be .gz)
-        output_fastq: Output FASTQ path (will be .gz)
+        mapping: dict of original -> synthetic barcodes
+        coords_file: Input coordinate CSV file (cell/barcode, x, y)
+        output_file: Output coordinate CSV file with synthetic barcodes
+    """
+    print(f"Creating synthetic barcode coordinates...", file=sys.stderr)
+    
+    # Read coordinates file using csv module
+    with open(coords_file, 'r') as f:
+        reader = csv.DictReader(f)
+        rows = list(reader)
+        
+        # Determine barcode column name
+        if not rows:
+            print(f"  Warning: Empty coordinate file", file=sys.stderr)
+            # Create empty output file
+            with open(output_file, 'w') as out_f:
+                writer = csv.writer(out_f)
+                writer.writerow(['cell', 'x', 'y'])
+            return
+        
+        # Get column names
+        fieldnames = reader.fieldnames
+        if 'cell' in fieldnames:
+            barcode_col = 'cell'
+        elif 'barcode' in fieldnames:
+            barcode_col = 'barcode'
+        else:
+            # Assume first column is barcode
+            barcode_col = fieldnames[0]
+    
+    print(f"  Input coordinates: {len(rows)} spots", file=sys.stderr)
+    
+    # Map original barcodes to synthetic and write output
+    n_mapped = 0
+    n_unmapped = 0
+    
+    with open(output_file, 'w', newline='') as out_f:
+        writer = csv.writer(out_f)
+        writer.writerow(['cell', 'x', 'y'])
+        
+        for row in rows:
+            original_bc = row[barcode_col]
+            
+            # Map to synthetic barcode
+            if original_bc in mapping:
+                synthetic_bc = mapping[original_bc]
+                writer.writerow([synthetic_bc, row['x'], row['y']])
+                n_mapped += 1
+            else:
+                n_unmapped += 1
+    
+    print(f"  Mapped {n_mapped}/{len(rows)} spots to synthetic barcodes", file=sys.stderr)
+    if n_unmapped > 0:
+        print(f"  Warning: {n_unmapped} spots had no matching synthetic barcode", file=sys.stderr)
+    print(f"Wrote synthetic coordinates: {output_file}", file=sys.stderr)
+
+
+def remap_fastq(input_fastq, output_fastq, mapping, barcode_start, barcode_length, umi_length=10, r2_input=None, r2_output=None):
+    """
+    Rewrite FASTQ file replacing original barcodes with synthetic ones.
+    IMPROVEMENT 2: Process R1 and R2 simultaneously to eliminate index set and halve I/O.
+    IMPROVEMENT 3: Use zip iterator for efficient FASTQ record reading.
+    IMPROVEMENT 4: Assign constant Phred 40 quality (='I') to synthetic barcodes from headers.
+    IMPROVEMENT 5: Use regex for robust QUIK header parsing.
+    IMPROVEMENT 7: Batch output writes to reduce system call overhead.
+    
+    Args:
+        input_fastq: Input R1 FASTQ path
+        output_fastq: Output R1 FASTQ path
         mapping: dict of original -> synthetic barcodes
         barcode_start: 0-based start position of barcode in read
         barcode_length: Length of original barcode
         umi_length: Length of UMI (default: 10bp)
+        r2_input: Optional R2 input FASTQ path
+        r2_output: Optional R2 output FASTQ path
     """
-    # Open input (handle gzip)
-    if str(input_fastq).endswith('.gz'):
-        infile = gzip.open(input_fastq, 'rt')
-    else:
-        infile = open(input_fastq, 'r')
+    # IMPROVEMENT 5: Compile regex for QUIK header parsing once
+    # Matches: _calledidx_<digits>_<barcode>$ where barcode is all ACGT
+    quik_header_pattern = re.compile(r'_calledidx_\d+_([ACGT]+)$')
     
-    # Open output (always gzip)
-    outfile = gzip.open(output_fastq, 'wt')
-    
-    reads_processed = 0
-    reads_remapped = 0
-    reads_skipped = 0
-    unmapped_barcodes = set()
-    
-    # Get synthetic barcode length from first mapping
+    # Get synthetic barcode length
     synthetic_length = len(next(iter(mapping.values()))) if mapping else 25
     expected_output_length = synthetic_length + umi_length
+    
+    # IMPROVEMENT 4: Constant high-quality string for synthetic barcodes
+    phred40_quality = 'I' * synthetic_length  # Phred 40 = ASCII 'I'
     
     print(f"Synthetic barcode length: {synthetic_length}bp", file=sys.stderr)
     print(f"UMI length: {umi_length}bp", file=sys.stderr)
     print(f"Output read length will be trimmed to: {expected_output_length}bp", file=sys.stderr)
+    if check_pigz_available():
+        print(f"Using pigz for parallel compression/decompression", file=sys.stderr)
+    
+    # IMPROVEMENT 1: Use pigz-aware file openers
+    r1_in = open_fastq_read(input_fastq)
+    r1_out = open_fastq_write(output_fastq)
+    r2_in = open_fastq_read(r2_input) if r2_input else None
+    r2_out = open_fastq_write(r2_output) if r2_output else None
+    
+    # Statistics counters
+    reads_processed = 0
+    reads_remapped = 0
+    reads_skipped = 0
+    unmapped_barcodes = set()
+    reads_header_extracted = 0
+    reads_seq_extracted = 0
+    
+    # IMPROVEMENT 7: Batch output buffers
+    r1_buffer = []
+    r2_buffer = []
+    batch_size = 10000
     
     try:
-        while True:
-            # Read FASTQ record (4 lines)
-            header = infile.readline()
-            if not header:
-                break
+        # IMPROVEMENT 3: Use zip iterator for FASTQ record reading
+        r1_iter = iter(r1_in)
+        r2_iter = iter(r2_in) if r2_in else None
+        
+        # IMPROVEMENT 2: Process R1 and R2 in lockstep
+        for r1_header, r1_seq, r1_plus, r1_qual in zip(r1_iter, r1_iter, r1_iter, r1_iter):
+            # Strip newlines
+            r1_seq = r1_seq.rstrip('\n')
+            r1_qual = r1_qual.rstrip('\n')
             
-            seq = infile.readline().rstrip('\n')
-            plus = infile.readline()
-            qual = infile.readline().rstrip('\n')
+            # Read corresponding R2 record if present
+            r2_record = None
+            if r2_iter:
+                try:
+                    r2_header = next(r2_iter)
+                    r2_seq = next(r2_iter)
+                    r2_plus = next(r2_iter)
+                    r2_qual = next(r2_iter)
+                    r2_record = (r2_header, r2_seq, r2_plus, r2_qual)
+                except StopIteration:
+                    print(f"Warning: R2 ended before R1 at read {reads_processed + 1}", file=sys.stderr)
+                    break
             
             reads_processed += 1
             
-            # Extract barcode from sequence (at barcode_start position)
-            if len(seq) < barcode_start + barcode_length + umi_length:
-                print(f"Warning: Read {reads_processed} too short ({len(seq)}bp), skipping", file=sys.stderr)
+            # Check minimum read length
+            if len(r1_seq) < barcode_start + barcode_length + umi_length:
+                if reads_processed <= 10:
+                    print(f"Warning: Read {reads_processed} too short ({len(r1_seq)}bp), skipping", file=sys.stderr)
                 reads_skipped += 1
                 continue
             
-            original_barcode = seq[barcode_start:barcode_start + barcode_length]
+            # IMPROVEMENT 5: Extract barcode using regex (robust to underscores in read names)
+            original_barcode = None
+            extracted_from_header = False
+            
+            if r1_header.startswith('@'):
+                match = quik_header_pattern.search(r1_header)
+                if match:
+                    original_barcode = match.group(1)
+                    if len(original_barcode) == barcode_length:
+                        extracted_from_header = True
+            
+            # Fall back to sequence extraction if header parsing fails
+            if not extracted_from_header:
+                original_barcode = r1_seq[barcode_start:barcode_start + barcode_length]
+                reads_seq_extracted += 1
+            else:
+                reads_header_extracted += 1
             
             # Look up synthetic barcode
             if original_barcode not in mapping:
@@ -188,47 +365,88 @@ def remap_fastq(input_fastq, output_fastq, mapping, barcode_start, barcode_lengt
             
             synthetic_barcode = mapping[original_barcode]
             
-            # Extract UMI (comes right after the original barcode)
-            umi = seq[barcode_start + barcode_length:barcode_start + barcode_length + umi_length]
-            umi_qual = qual[barcode_start + barcode_length:barcode_start + barcode_length + umi_length]
+            # Extract UMI from original read
+            umi = r1_seq[barcode_start + barcode_length:barcode_start + barcode_length + umi_length]
+            umi_qual = r1_qual[barcode_start + barcode_length:barcode_start + barcode_length + umi_length]
             
-            # Build new sequence: synthetic_barcode + UMI (trimmed to expected length)
-            new_seq = synthetic_barcode + umi
+            # Build new R1 sequence and quality
+            new_r1_seq = synthetic_barcode + umi
             
-            # Build new quality: synthetic_barcode_qual + UMI_qual
-            bc_qual = qual[barcode_start:barcode_start + len(synthetic_barcode)]
-            new_qual = bc_qual + umi_qual
+            # IMPROVEMENT 4: Use constant high quality for synthetic barcode if from header
+            if extracted_from_header:
+                new_r1_qual = phred40_quality + umi_qual
+            else:
+                # Use original quality if barcode came from sequence
+                bc_qual = r1_qual[barcode_start:barcode_start + synthetic_length]
+                new_r1_qual = bc_qual + umi_qual
             
             # Verify output length
-            if len(new_seq) != expected_output_length:
-                print(f"Warning: Read {reads_processed} output length mismatch: {len(new_seq)} != {expected_output_length}", file=sys.stderr)
+            if len(new_r1_seq) != expected_output_length:
+                if reads_processed <= 10:
+                    print(f"Warning: Read {reads_processed} output length mismatch: {len(new_r1_seq)} != {expected_output_length}", file=sys.stderr)
                 reads_skipped += 1
                 continue
             
-            # Write remapped record
-            outfile.write(header)
-            outfile.write(new_seq + '\n')
-            outfile.write(plus)
-            outfile.write(new_qual + '\n')
+            # IMPROVEMENT 7: Append to output buffers
+            r1_buffer.append(r1_header)
+            r1_buffer.append(new_r1_seq + '\n')
+            r1_buffer.append(r1_plus)
+            r1_buffer.append(new_r1_qual + '\n')
+            
+            if r2_record:
+                r2_buffer.append(r2_record[0])
+                r2_buffer.append(r2_record[1])
+                r2_buffer.append(r2_record[2])
+                r2_buffer.append(r2_record[3])
             
             reads_remapped += 1
             
+            # IMPROVEMENT 7: Flush buffers when batch size reached
+            if len(r1_buffer) >= batch_size * 4:
+                r1_out.write(''.join(r1_buffer))
+                r1_buffer.clear()
+                if r2_out:
+                    r2_out.write(''.join(r2_buffer))
+                    r2_buffer.clear()
+            
+            # Progress logging
             if reads_processed % 100000 == 0:
                 print(f"Processed {reads_processed} reads, remapped {reads_remapped}", file=sys.stderr)
+        
+        # Flush remaining buffered data
+        if r1_buffer:
+            r1_out.write(''.join(r1_buffer))
+        if r2_buffer and r2_out:
+            r2_out.write(''.join(r2_buffer))
     
     finally:
-        infile.close()
-        outfile.close()
+        r1_in.close()
+        r1_out.close()
+        if r2_in:
+            r2_in.close()
+        if r2_out:
+            r2_out.close()
     
     print(f"\nFinal stats:", file=sys.stderr)
     print(f"  Total reads: {reads_processed}", file=sys.stderr)
     print(f"  Remapped: {reads_remapped}", file=sys.stderr)
     print(f"  Skipped: {reads_skipped}", file=sys.stderr)
+    print(f"  Barcodes from QUIK header: {reads_header_extracted}", file=sys.stderr)
+    print(f"  Barcodes from sequence: {reads_seq_extracted}", file=sys.stderr)
     print(f"  Unmapped barcodes: {len(unmapped_barcodes)}", file=sys.stderr)
     print(f"  Output read length: {expected_output_length}bp", file=sys.stderr)
     
     if reads_remapped == 0:
         raise RuntimeError("No reads were successfully remapped!")
+    
+    # IMPROVEMENT 2: R2 is already processed, no need to return passing indices
+    if r2_output:
+        print(f"  R2 reads written: {reads_remapped}", file=sys.stderr)
+
+
+# IMPROVEMENT 2: filter_r2_fastq() function removed - R2 filtering now integrated
+# into remap_fastq() for simultaneous processing, eliminating the need for
+# a separate pass and the memory-intensive passing_indices set.
 
 
 def main():
@@ -238,16 +456,32 @@ def main():
     )
     
     parser.add_argument('--whitelist', required=True, help='Input whitelist file (original barcodes)')
-    parser.add_argument('--fastq', required=True, help='Input FASTQ file with original barcodes')
-    parser.add_argument('--output-fastq', required=True, help='Output FASTQ file with synthetic barcodes (.gz)')
+    parser.add_argument('--fastq', required=True, help='Input R1 FASTQ file with original barcodes')
+    parser.add_argument('--fastq-r2', required=False, help='Input R2 FASTQ file (optional, will be filtered to match R1)')
+    parser.add_argument('--coords', required=False, help='Input barcode coordinates CSV (optional, for generating synthetic coords)')
+    parser.add_argument('--output-fastq', required=True, help='Output R1 FASTQ file with synthetic barcodes (.gz)')
+    parser.add_argument('--output-fastq-r2', required=False, help='Output R2 FASTQ file (.gz, required if --fastq-r2 provided)')
     parser.add_argument('--output-whitelist', required=True, help='Output whitelist with synthetic barcodes')
     parser.add_argument('--output-mapping', required=True, help='Output TSV mapping file')
+    parser.add_argument('--output-coords', required=False, help='Output coordinates CSV with synthetic barcodes (required if --coords provided)')
     parser.add_argument('--barcode-start', type=int, default=0, help='0-based barcode start position (default: 0)')
     parser.add_argument('--barcode-length', type=int, default=36, help='Original barcode length (default: 36)')
     parser.add_argument('--umi-length', type=int, default=10, help='UMI length (default: 10)')
     parser.add_argument('--synthetic-length', type=int, default=25, help='Synthetic barcode length (default: 25, max: 31)')
     
     args = parser.parse_args()
+    
+    # Validate R2 arguments
+    if args.fastq_r2 and not args.output_fastq_r2:
+        parser.error("--output-fastq-r2 is required when --fastq-r2 is provided")
+    if args.output_fastq_r2 and not args.fastq_r2:
+        parser.error("--fastq-r2 is required when --output-fastq-r2 is provided")
+    
+    # Validate coordinates arguments
+    if args.coords and not args.output_coords:
+        parser.error("--output-coords is required when --coords is provided")
+    if args.output_coords and not args.coords:
+        parser.error("--coords is required when --output-coords is provided")
     
     # Validate
     if args.synthetic_length > 31:
@@ -274,9 +508,28 @@ def main():
     print("Step 3: Writing synthetic whitelist...", file=sys.stderr)
     write_synthetic_whitelist(mapping, args.output_whitelist)
     
-    # Step 4: Remap FASTQ
-    print("Step 4: Remapping FASTQ reads...", file=sys.stderr)
-    remap_fastq(args.fastq, args.output_fastq, mapping, args.barcode_start, args.barcode_length, args.umi_length)
+    # Step 3.5: Create synthetic coordinates if provided
+    if args.coords:
+        print("Step 3.5: Creating synthetic coordinates...", file=sys.stderr)
+        create_synthetic_coordinates(mapping, args.coords, args.output_coords)
+    
+    # Step 4: Remap FASTQ (R1 and optionally R2 simultaneously)
+    if args.fastq_r2:
+        print("Step 4: Remapping R1 and R2 FASTQ reads simultaneously...", file=sys.stderr)
+    else:
+        print("Step 4: Remapping R1 FASTQ reads...", file=sys.stderr)
+    
+    # IMPROVEMENT 2: Pass R2 files to remap_fastq for simultaneous processing
+    remap_fastq(
+        args.fastq, 
+        args.output_fastq, 
+        mapping, 
+        args.barcode_start, 
+        args.barcode_length, 
+        args.umi_length,
+        r2_input=args.fastq_r2,
+        r2_output=args.output_fastq_r2
+    )
     
     print("\n=== Remapping complete! ===", file=sys.stderr)
 

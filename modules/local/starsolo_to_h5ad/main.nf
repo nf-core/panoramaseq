@@ -1,6 +1,6 @@
 process STARSOLO_TO_H5AD {
     tag "${meta.id}"
-    label 'process_medium'
+    label 'process_high'
     conda "${moduleDir}/environment.yml"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'oras://community.wave.seqera.io/library/anndata:0.10.9--d13580e4b297da7c' :

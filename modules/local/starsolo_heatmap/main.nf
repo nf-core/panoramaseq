@@ -1,6 +1,6 @@
 process STARSOLO_HEATMAP {
     tag "$meta.id"
-    label 'process_low'
+    label 'process_high'
 
     conda "${moduleDir}/environment.yml"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
@@ -30,6 +30,8 @@ process STARSOLO_HEATMAP {
     def percentile = task.ext.percentile ?: 99.5
     def spot_size = task.ext.spot_size ?: ''
     def save_h5ad = task.ext.save_h5ad ? '--output-h5ad' : ''
+    // Only include mapping if it's not a placeholder/empty file
+    def mapping_arg = mapping.name != 'NO_FILE' ? "--mapping ${mapping}" : ""
     
     """
     # Find the matrix files using symlink-following find
@@ -43,7 +45,7 @@ process STARSOLO_HEATMAP {
     fi
     
     # Generate heatmaps for bin sizes: 1 (unbinned), 10, and 50
-    for BIN_SIZE in 1 10 50; do
+    for BIN_SIZE in 1; do
         OUTPUT_BASE="${prefix}_heatmap_bin\${BIN_SIZE}_${metric}_${colormap}"
         
         echo "=== Generating heatmap with bin size \${BIN_SIZE} ==="
@@ -52,7 +54,7 @@ process STARSOLO_HEATMAP {
             --matrix \$MATRIX \\
             --barcodes \$BARCODES \\
             --features \$FEATURES \\
-            --mapping ${mapping} \\
+            ${mapping_arg} \\
             --coords ${coords} \\
             --output-png \${OUTPUT_BASE}.png \\
             --output-data \${OUTPUT_BASE}_data.tsv \\

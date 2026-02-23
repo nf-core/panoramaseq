@@ -3,8 +3,8 @@ process QUIK_BARCODE_CALLING {
     label 'use_gpu'
     conda "${moduleDir}/environment.yml"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'oras://quay.io/francoaps/quik-cuda:prebuilt-36bp-v2' :
-        'quay.io/francoaps/quik-cuda:prebuilt-36bp-v2' }"
+        'file://' + projectDir + '/containers/quik_runtime_compile.sif' :
+        'file://' + projectDir + '/containers/quik_runtime_compile.sif' }"
 
     input:
     tuple val(meta), path(reads)
@@ -22,35 +22,47 @@ process QUIK_BARCODE_CALLING {
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}"
 
-    // Extract parameters from params (pipeline-level configuration)
-    // Note: barcode_length and rejection_threshold are now FIXED in the pre-built binary (36bp, threshold=8)
-    // Only runtime parameters can be varied
-    def barcode_start = params.barcode_start
-    def barcode_length = 36  // FIXED in pre-built binary
+    // Derive barcode/UMI parameters from STARsolo config and read_structure
+    def barcode_length = params.starsolo_cb_len
+    def umi_length = params.starsolo_umi_len
+    def read_structure = params.read_structure
+    
+    // Calculate barcode start position based on read structure (0-indexed for QUIK)
+    def barcode_start = (read_structure == 'BC_UMI') ? 0 : umi_length
+    
+    // QUIK-specific parameters
     def strategy = params.strategy
     def distance_measure = params.distance_measure
-    def rejection_threshold = 8  // FIXED in pre-built binary
+    def rejection_threshold = params.rejection_threshold ?: (barcode_length * 0.25).toInteger()
 
     """
-    # Using pre-built QUIK binary - no build step required!
-    echo "=== Using Pre-built QUIK Binary ==="
-    echo "Binary location: \$(which quik)"
-    echo "Configured for: SEQUENCE_LENGTH=36, REJECTION_THRESHOLD=8"
-    echo "Runtime parameters: barcode_start=${barcode_start}, strategy=${strategy}, distance=${distance_measure}"
+    # Using runtime-compiled QUIK for flexible barcode lengths
+    echo "=== QUIK Runtime Compilation ==="
+    echo "Building QUIK executable..."
+    echo "Parameters: barcode_length=${barcode_length}, rejection_threshold=${rejection_threshold}"
+    echo "Strategy: ${strategy}, Distance: ${distance_measure}, Barcode start: ${barcode_start}"
     echo "===================================="
+    
+    # Step 1: Compile QUIK (in writable /tmp directory)
+    mkdir -p /tmp/quik_build_${prefix} && cd /tmp/quik_build_${prefix}
+    cmake /opt/quik
+    make -j${task.cpus}
+    QUIK_EXEC=\$(pwd)/single_strategy_benchmark_fastq_paired
+    cd -
+    
+    echo "QUIK compiled successfully: \${QUIK_EXEC}"
 
-    # Decompress input FASTQ files (QUIK requires uncompressed input)
+    # Step 2: Decompress input FASTQ files
     echo "Decompressing input FASTQ files..."
     gunzip -c ${reads[0]} > input_R1.fastq
     gunzip -c ${reads[1]} > input_R2.fastq
 
-    # Extract just the barcode sequences from the CSV file (skip header, take first column)
+    # Step 3: Extract just the barcode sequences from the CSV file
     echo "Extracting barcode sequences..."
     tail -n +2 ${barcode_file} | cut -d',' -f1 > barcodes_only.txt
 
-    # Run QUIK barcode calling using the pre-built executable
-    # The binary is already compiled and optimized - execution starts immediately!
-    quik \\
+    # Step 4: Run QUIK barcode calling with flexible parameters
+    \${QUIK_EXEC} \\
         barcodes_only.txt \\
         input_R1.fastq \\
         input_R2.fastq \\
@@ -63,22 +75,25 @@ process QUIK_BARCODE_CALLING {
         ${prefix}_R2_filtered.fastq \\
         > ${prefix}_barcode_calling_stats.txt 2>&1
 
-    # Clean up decompressed input files to save space
+    # Step 5: Clean up
     rm input_R1.fastq input_R2.fastq barcodes_only.txt
+    rm -rf /tmp/quik_build_${prefix}
 
-    # Compress output FASTQ files to match pipeline expectations
+    # Step 6: Compress output FASTQ files
     gzip ${prefix}_R1_filtered.fastq
     gzip ${prefix}_R2_filtered.fastq
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        quik: \$(echo "2.0-prebuilt-36bp")
+        quik: \$(echo "2.0-runtime-flex")
         cuda: \$(nvcc --version 2>/dev/null | grep release | cut -d' ' -f6 | cut -d',' -f1 || echo "12.6.0")
+        barcode_length: \$(echo "${barcode_length}")
     END_VERSIONS
     """
 
     stub:
     def prefix = task.ext.prefix ?: "${meta.id}"
+    def barcode_length = params.starsolo_cb_len
     """
     touch ${prefix}_R1_filtered.fastq.gz
     touch ${prefix}_R2_filtered.fastq.gz
@@ -86,7 +101,8 @@ process QUIK_BARCODE_CALLING {
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        quik_clean: \$(echo "1.0.0")
+        quik: \$(echo "2.0-runtime-flex")
+        barcode_length: \$(echo "${barcode_length}")
     END_VERSIONS
     """
 }

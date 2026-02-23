@@ -83,6 +83,92 @@ def reverse_map_barcodes(adata, mapping_path):
     
     return adata
 
+
+def add_spatial_coordinates_direct(adata, coords_path):
+    """
+    Add spatial coordinates to AnnData object using SYNTHETIC barcodes (no reverse mapping needed).
+    This is the optimized version that skips the expensive reverse mapping step.
+    
+    Args:
+        adata: AnnData object with synthetic barcodes as obs_names
+        coords_path: Path to barcode coordinates CSV with synthetic barcodes (cell, x, y)
+    
+    Returns:
+        AnnData with spatial coordinates in obsm['spatial'], expanded to include all spots
+    """
+    print(f"Adding spatial coordinates (direct synthetic barcode matching)...")
+    
+    coords = pd.read_csv(coords_path)
+    
+    # Handle different column names
+    if 'cell' in coords.columns:
+        barcode_col = 'cell'
+    elif 'barcode' in coords.columns:
+        barcode_col = 'barcode'
+    else:
+        # Assume first column is barcode
+        barcode_col = coords.columns[0]
+    
+    print(f"  Total spots in coordinate file: {len(coords)}")
+    
+    # Create a mapping from synthetic_barcode to counts
+    barcode_to_data = {}
+    for idx, row in adata.obs.iterrows():
+        synthetic_bc = idx  # obs_names are already synthetic barcodes
+        barcode_to_data[synthetic_bc] = {
+            'total_counts': row['total_counts'],
+            'n_genes_by_counts': row['n_genes_by_counts']
+        }
+    
+    # Create new obs dataframe with ALL spots from coordinates
+    new_obs = []
+    spatial_coords = []
+    
+    for _, row in coords.iterrows():
+        synthetic_bc = row[barcode_col]
+        spatial_coords.append([row['x'], row['y']])
+        
+        if synthetic_bc in barcode_to_data:
+            # Spot has UMI counts
+            new_obs.append({
+                'barcode': synthetic_bc,
+                'total_counts': barcode_to_data[synthetic_bc]['total_counts'],
+                'n_genes_by_counts': barcode_to_data[synthetic_bc]['n_genes_by_counts']
+            })
+        else:
+            # Empty spot - add with zero counts
+            new_obs.append({
+                'barcode': synthetic_bc,
+                'total_counts': 0,
+                'n_genes_by_counts': 0
+            })
+    
+    new_obs_df = pd.DataFrame(new_obs)
+    new_obs_df.index = new_obs_df['barcode']
+    
+    # Create new AnnData with all spots
+    # Initialize with zeros (we only care about obs metrics for heatmap)
+    new_X = np.zeros((len(new_obs_df), adata.n_vars))
+    
+    # Fill in counts for spots that have data
+    for i, barcode in enumerate(new_obs_df['barcode']):
+        if barcode in adata.obs_names:
+            # Find the row in original adata
+            row_idx = adata.obs_names.get_loc(barcode)
+            new_X[i, :] = adata.X[row_idx, :].toarray().flatten()
+    
+    # Create new AnnData
+    new_adata = ad.AnnData(X=new_X, obs=new_obs_df, var=adata.var)
+    new_adata.obsm['spatial'] = np.array(spatial_coords)
+    
+    spots_with_counts = (new_adata.obs['total_counts'] > 0).sum()
+    print(f"  Total spots plotted: {new_adata.n_obs}")
+    print(f"  Spots with UMI counts: {spots_with_counts}")
+    print(f"  Empty spots: {new_adata.n_obs - spots_with_counts}")
+    
+    return new_adata
+
+
 def add_spatial_coordinates(adata, coords_path):
     """
     Add spatial coordinates to AnnData object and expand to include ALL spots from coordinate file
@@ -194,7 +280,8 @@ def bin_spatial_data(adata, bin_size=1):
     x_min, x_max = x_coords.min(), x_coords.max()
     y_min, y_max = y_coords.min(), y_coords.max()
     
-    # Assign each spot to a bin
+    # Assign each spot to a bin using floor division
+    # This ensures each spot belongs to exactly ONE bin
     x_bin_idx = ((x_coords - x_min) // bin_size).astype(int)
     y_bin_idx = ((y_coords - y_min) // bin_size).astype(int)
     
@@ -217,9 +304,14 @@ def bin_spatial_data(adata, bin_size=1):
         summed_counts = bin_data.X.sum(axis=0)
         binned_matrices.append(summed_counts)
         
-        # Calculate bin center coordinates
-        bin_x = bin_data.obsm['spatial'][:, 0].mean()
-        bin_y = bin_data.obsm['spatial'][:, 1].mean()
+        # Use bin indices to calculate GRID-ALIGNED center coordinates
+        # This prevents overlapping by ensuring bins are on a regular grid
+        x_bin = bin_data.obs['x_bin'].iloc[0]
+        y_bin = bin_data.obs['y_bin'].iloc[0]
+        
+        # Calculate bin center: min_coord + (bin_index * bin_size) + (bin_size / 2)
+        bin_x = x_min + (x_bin * bin_size) + (bin_size / 2.0)
+        bin_y = y_min + (y_bin * bin_size) + (bin_size / 2.0)
         binned_spatial.append([bin_x, bin_y])
         
         # Store metadata
@@ -228,8 +320,10 @@ def bin_spatial_data(adata, bin_size=1):
             'total_counts': summed_counts.sum(),
             'n_genes_by_counts': (summed_counts > 0).sum(),
             'n_spots': mask.sum(),
-            'x_bin': bin_data.obs['x_bin'].iloc[0],
-            'y_bin': bin_data.obs['y_bin'].iloc[0]
+            'x_bin': x_bin,
+            'y_bin': y_bin,
+            'bin_x_center': bin_x,
+            'bin_y_center': bin_y
         })
     
     # Create new AnnData with binned data
@@ -242,7 +336,17 @@ def bin_spatial_data(adata, bin_size=1):
     adata_binned.uns['bin_size'] = bin_size
     adata_binned.uns['spots_per_bin'] = bin_size
     
+    # Validate no overlapping bins (each bin should have unique coordinates)
+    spatial_coords = adata_binned.obsm['spatial']
+    unique_coords = np.unique(spatial_coords, axis=0)
+    if len(unique_coords) < len(spatial_coords):
+        print(f"  WARNING: Found {len(spatial_coords) - len(unique_coords)} duplicate bin coordinates!")
+        print(f"  This may indicate overlapping bins in visualization.")
+    else:
+        print(f"  Validation: All {len(spatial_coords)} bins have unique coordinates ✓")
+    
     print(f"  Created {adata_binned.n_obs} bins from {adata.n_obs} spots")
+    print(f"  Bins are grid-aligned to prevent overlap")
     
     return adata_binned
 
@@ -286,7 +390,14 @@ def square_heatmap(
     if spot_size is None:
         # Auto-calculate based on bin size
         bin_size = adata.uns.get('bin_size', 1)
-        spot_size = max(2, int(bin_size * 2))  # 2 pixels per spot unit
+        # For binned data, use bin_size as the spot_size to fill the bin area
+        # For unbinned data, use a small fixed size
+        if bin_size > 1:
+            spot_size = int(bin_size)  # Each bin fills its allocated area
+        else:
+            spot_size = 2  # Small spots for unbinned data
+    
+    print(f"  Spot/bin size: {spot_size} pixels (bin_size={adata.uns.get('bin_size', 1)})")
     
     # Calculate image dimensions
     max_x, max_y = spatial.max(axis=0)
@@ -411,7 +522,7 @@ def main():
     parser.add_argument('--matrix', required=True, help='Path to matrix.mtx.gz')
     parser.add_argument('--barcodes', required=True, help='Path to barcodes.tsv.gz')
     parser.add_argument('--features', required=True, help='Path to features.tsv.gz')
-    parser.add_argument('--mapping', required=True, help='Path to barcode_mapping.tsv')
+    parser.add_argument('--mapping', required=False, help='Path to barcode_mapping.tsv (optional if coords has synthetic barcodes)')
     parser.add_argument('--coords', required=True, help='Path to spatial coordinates CSV')
     parser.add_argument('--output-png', required=True, help='Output PNG heatmap')
     parser.add_argument('--output-h5ad', help='Optional: save AnnData object')
@@ -437,16 +548,22 @@ def main():
     print(f"Bin size: {args.bin_size}")
     print(f"Metric: {args.metric}")
     print(f"Colormap: {args.colormap}")
+    print(f"Mode: {'Direct synthetic coords' if not args.mapping else 'With reverse mapping'}")
     print(f"==========================================")
     
     # 1. Load STARsolo data into AnnData
     adata = load_starsolo_to_anndata(args.matrix, args.barcodes, args.features)
     
-    # 2. Reverse-map synthetic → original barcodes
-    adata = reverse_map_barcodes(adata, args.mapping)
-    
-    # 3. Add spatial coordinates
-    adata = add_spatial_coordinates(adata, args.coords)
+    # 2. Add spatial coordinates
+    if args.mapping:
+        # OLD MODE: Reverse-map synthetic → original barcodes, then match with coords
+        print("Using legacy mode: reverse mapping synthetic barcodes...")
+        adata = reverse_map_barcodes(adata, args.mapping)
+        adata = add_spatial_coordinates(adata, args.coords)
+    else:
+        # NEW MODE: Direct matching with synthetic coords (MUCH FASTER)
+        print("Using optimized mode: direct synthetic barcode matching...")
+        adata = add_spatial_coordinates_direct(adata, args.coords)
     
     # 4. Spatial binning (if requested)
     if args.bin_size > 1:
