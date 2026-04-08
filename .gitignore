@@ -10,4 +10,8 @@ null/
 .nf-test.log
 .nf-test/
 /tests/
-nextflow_withgpus.config.txt
+extras/
+.venv/
+venv/
+__pycache__/
+lint_output*.txt
