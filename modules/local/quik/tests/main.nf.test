@@ -1,0 +1,97 @@
+nextflow_process {
+
+    name "Test Process QUIK_BARCODE_CALLING"
+    script "../main.nf"
+    process "QUIK_BARCODE_CALLING"
+    tag "modules"
+    tag "modules_local"
+    tag "quik"
+    tag "quik_barcode_calling"
+    tag "gpu"
+
+    test("panoramaseq - paired-end FASTQ with barcodes") {
+
+        when {
+            params {
+                outdir = "$outputDir"
+            }
+            process {
+                """
+                input[0] = [
+                    [ id: 'test_quik', single_end: false ],
+                    [
+                        file(params.pipelines_testdata_base_path + 'panoramaseq/testdata/rawfastq/S09_UHRR_R1.fastq.gz', checkIfExists: true),
+                        file(params.pipelines_testdata_base_path + 'panoramaseq/testdata/rawfastq/S09_UHRR_R2.fastq.gz', checkIfExists: true)
+                    ]
+                ]
+                input[1] = file(params.pipelines_testdata_base_path + 'panoramaseq/testdata/barcodes_coords.csv', checkIfExists: true)
+                """
+            }
+        }
+
+        then {
+            assertAll (
+                { assert process.success },
+
+                // Check output reads exist
+                { assert process.out.reads != null },
+                { assert process.out.reads.get(0).get(1).size() == 2 }, // Should have R1 and R2
+                { assert process.out.reads.get(0).get(1).get(0) ==~ ".*_R1_filtered.fastq.gz" },
+                { assert process.out.reads.get(0).get(1).get(1) ==~ ".*_R2_filtered.fastq.gz" },
+
+                // Check stats file exists
+                { assert process.out.stats != null },
+                { assert process.out.stats.get(0).get(1) ==~ ".*_barcode_calling_stats.txt" },
+
+                // Check versions
+                { assert process.out.versions != null },
+                { assert snapshot(process.out.versions).match("versions") },
+
+                // Snapshot the first line of output to verify barcodes are appended
+                { assert snapshot(
+                    path(process.out.reads.get(0).get(1).get(0)).linesGzip[0]
+                ).match("first_read_header") }
+            )
+        }
+    }
+
+    test("panoramaseq - stub test") {
+
+        options "-stub"
+
+        when {
+            params {
+                outdir = "$outputDir"
+                barcode_start = 9
+                barcode_length = 36
+                strategy = "4_7_mer_gpu_v1"
+                distance_measure = "SEQUENCE_LEVENSHTEIN"
+                rejection_threshold = 7
+            }
+            process {
+                """
+                input[0] = [
+                    [ id: 'test_quik_stub', single_end: false ],
+                    [
+                        file(params.pipelines_testdata_base_path + 'panoramaseq/testdata/rawfastq/S09_UHRR_R1.fastq.gz', checkIfExists: true),
+                        file(params.pipelines_testdata_base_path + 'panoramaseq/testdata/rawfastq/S09_UHRR_R2.fastq.gz', checkIfExists: true)
+                    ]
+                ]
+                input[1] = file(params.pipelines_testdata_base_path + 'panoramaseq/testdata/barcodes_coords.csv', checkIfExists: true)
+                """
+            }
+        }
+
+        then {
+            assertAll (
+                { assert process.success },
+                { assert process.out.reads != null },
+                { assert process.out.stats != null },
+                { assert process.out.reads.get(0).get(1).get(0) ==~ ".*_R1_filtered.fastq.gz" },
+                { assert process.out.reads.get(0).get(1).get(1) ==~ ".*_R2_filtered.fastq.gz" },
+                { assert process.out.stats.get(0).get(1) ==~ ".*_barcode_calling_stats.txt" },
+                { assert snapshot(process.out.versions).match("versions_stub") }
+            )
+        }
+    }
+}

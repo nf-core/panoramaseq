@@ -6,7 +6,19 @@ This document describes the output produced by the pipeline. Most of the plots a
 
 The directories listed below will be created in the results directory after the pipeline has finished. All paths are relative to the top-level results directory.
 
-<!-- TODO nf-core: Write this documentation describing your workflow's output -->
+## Output Directory Structure
+
+The pipeline generates the following main output directories:
+
+- `fastqc/`: FastQC quality control reports for raw sequencing reads
+- `multiqc/`: Aggregated MultiQC report summarizing QC metrics across all samples
+- `pipeline_info/`: Execution reports, trace files, and software versions used in the run
+
+For spatial transcriptomics workflows, additional outputs may include:
+
+- Aligned BAM files (when using STAR aligner)
+- Gene count matrices (TSV or H5AD format)
+- Quality control metrics specific to spatial data processing
 
 ## Pipeline overview
 

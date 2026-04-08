@@ -1,0 +1,99 @@
+nextflow_process {
+
+    name "Test Process CUTADAPT_ADV_PIPE"
+    script "../main.nf"
+    process "CUTADAPT_ADV_PIPE"
+    tag "modules"
+    tag "modules_local"
+    tag "cutadapt_adv_pipe"
+
+    test("sarscov2 Illumina paired-end [fastq] - R2 only processing") {
+
+        when {
+            params {
+                outdir = "$outputDir"
+            }
+            process {
+                """
+                input[0] = [
+                    [ id: 'test', single_end:false ],
+                    [
+                        file(params.modules_testdata_base_path + 'genomics/sarscov2/illumina/fastq/test_1.fastq.gz', checkIfExists: true),
+                        file(params.modules_testdata_base_path + 'genomics/sarscov2/illumina/fastq/test_2.fastq.gz', checkIfExists: true)
+                    ]
+                ]
+                """
+            }
+        }
+
+        then {
+            assertAll (
+                { assert process.success },
+                { assert process.out.reads != null },
+                { assert process.out.reads.get(0).get(1) ==~ ".*\\.trim2\\.R2\\.fastq\\.gz" },
+                { assert snapshot(process.out.versions).match("versions_paired_end") },
+                { assert snapshot(path(process.out.reads.get(0).get(1)).linesGzip[0]).match() }
+            )
+        }
+    }
+
+    test("sarscov2 cutadapt_adv_pipe different sample") {
+
+        when {
+            params {
+                outdir = "$outputDir"
+            }
+            process {
+                """
+                input[0] = [
+                    [ id: 'test2', single_end:false ],
+                    [
+                        file(params.modules_testdata_base_path + 'genomics/sarscov2/illumina/fastq/test_1.fastq.gz', checkIfExists: true),
+                        file(params.modules_testdata_base_path + 'genomics/sarscov2/illumina/fastq/test_2.fastq.gz', checkIfExists: true)
+                    ]
+                ]
+                """
+            }
+        }
+
+        then {
+            assertAll (
+                { assert process.success },
+                { assert process.out.reads != null },
+                { assert process.out.reads.get(0).get(1) ==~ ".*\\.trim2\\.R2\\.fastq\\.gz" },
+                { assert snapshot(process.out.versions).match("versions_different_sample") }
+            )
+        }
+    }
+
+    test("cutadapt_adv_pipe stub test") {
+
+        options "-stub"
+
+        when {
+            params {
+                outdir = "$outputDir"
+            }
+            process {
+                """
+                input[0] = [
+                    [ id: 'test_stub', single_end:false ],
+                    [
+                        file(params.modules_testdata_base_path + 'genomics/sarscov2/illumina/fastq/test_1.fastq.gz', checkIfExists: true),
+                        file(params.modules_testdata_base_path + 'genomics/sarscov2/illumina/fastq/test_2.fastq.gz', checkIfExists: true)
+                    ]
+                ]
+                """
+            }
+        }
+
+        then {
+            assertAll (
+                { assert process.success },
+                { assert process.out.reads != null },
+                { assert process.out.reads.get(0).get(1) ==~ ".*\\.trim2\\.R2\\.fastq\\.gz" },
+                { assert snapshot(process.out.versions).match("versions_stub") }
+            )
+        }
+    }
+}

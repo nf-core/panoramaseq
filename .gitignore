@@ -7,3 +7,10 @@ testing/
 testing*
 *.pyc
 null/
+.nf-test.log
+.nf-test/
+extras/
+.venv/
+venv/
+__pycache__/
+lint_output*.txt

@@ -1,0 +1,59 @@
+{
+    "S09_sample": {
+        "content": [
+            [
+                "S09_h5ad_validation.log:md5,2bd975734e34d0a1127a4b17711a5f2d"
+            ],
+            [
+                "versions.yml:md5,ed8dd472e098b57dabf74adbb457a370"
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "25.04.8"
+        },
+        "timestamp": "2025-11-04T13:44:30.064835089"
+    },
+    "multiple_samples": {
+        "content": [
+            [
+                "multi_sample_h5ad_validation.log:md5,f96dd489aa5d8898058f9aaff0c4d596"
+            ],
+            [
+                "versions.yml:md5,ed8dd472e098b57dabf74adbb457a370"
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "25.04.8"
+        },
+        "timestamp": "2025-11-04T13:44:50.524290751"
+    },
+    "ANNDATA_CHECKH5AD - stub": {
+        "content": [
+            [
+                "versions.yml:md5,ed8dd472e098b57dabf74adbb457a370"
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "25.04.8"
+        },
+        "timestamp": "2025-11-04T13:49:17.605797698"
+    },
+    "S10_sample": {
+        "content": [
+            [
+                "S10_h5ad_validation.log:md5,ce9a57ee35c46136f6d7984a90120c98"
+            ],
+            [
+                "versions.yml:md5,ed8dd472e098b57dabf74adbb457a370"
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "25.04.8"
+        },
+        "timestamp": "2025-11-04T13:44:40.19439214"
+    }
+}

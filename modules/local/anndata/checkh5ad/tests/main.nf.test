@@ -1,0 +1,182 @@
+nextflow_process {
+
+    name "Test Process ANNDATA_CHECKH5AD"
+    script "../main.nf"
+    process "ANNDATA_CHECKH5AD"
+    tag "modules"
+    tag "modules_local"
+    tag "anndata_checkh5ad"
+    tag "anndata"
+
+    test("ANNDATA_CHECKH5AD - stub") {
+
+        options "-stub"
+
+        when {
+            params {
+                outdir = "$outputDir"
+            }
+            process {
+                """
+                input[0] = [
+                    [ id: 'test_check' ],
+                    file(params.pipelines_testdata_base_path + 'panoramaseq/testdata/h5ad/merged_counts.h5ad', checkIfExists: true)
+                ]
+                """
+            }
+        }
+
+        then {
+            assertAll (
+                { assert process.success },
+                { assert process.out.h5ad != null },
+                { assert process.out.h5ad.get(0).get(1) ==~ ".*\\.h5ad" },
+                { assert process.out.log != null },
+                { assert process.out.log.get(0) ==~ ".*_h5ad_validation\\.log" },
+                { assert process.out.versions != null },
+                { assert snapshot(process.out.versions).match() }
+            )
+        }
+    }
+
+    test("ANNDATA_CHECKH5AD - S09 sample") {
+
+        setup {
+            run("ANNDATA_MAKEH5AD_SINGLE") {
+                script "../../makeh5adsingle/main.nf"
+                process {
+                    """
+                    input[0] = [
+                        [ id: 'S09' ],
+                        file(params.pipelines_testdata_base_path + 'panoramaseq/testdata/counts/S09_counts.tsv.gz', checkIfExists: true),
+                        file(params.pipelines_testdata_base_path + 'panoramaseq/testdata/barcodes_coords.csv', checkIfExists: true)
+                    ]
+                    """
+                }
+            }
+        }
+
+        when {
+            params {
+                outdir = "$outputDir"
+            }
+            process {
+                """
+                input[0] = ANNDATA_MAKEH5AD_SINGLE.out.h5ad
+                """
+            }
+        }
+
+        then {
+            assertAll (
+                { assert process.success },
+                { assert process.out.h5ad != null },
+                { assert process.out.h5ad.get(0).get(0).id == "S09" },
+                { assert process.out.h5ad.get(0).get(1) ==~ ".*\\.h5ad" },
+                { assert file(process.out.h5ad.get(0).get(1)).exists() },
+                { assert process.out.log != null },
+                { assert file(process.out.log.get(0)).exists() },
+                { assert process.out.versions != null },
+                { assert snapshot(
+                    process.out.log,
+                    process.out.versions
+                ).match("S09_sample") }
+            )
+        }
+    }
+
+    test("ANNDATA_CHECKH5AD - S10 sample") {
+
+        setup {
+            run("ANNDATA_MAKEH5AD_SINGLE") {
+                script "../../makeh5adsingle/main.nf"
+                process {
+                    """
+                    input[0] = [
+                        [ id: 'S10' ],
+                        file(params.pipelines_testdata_base_path + 'panoramaseq/testdata/counts/S10_counts.tsv.gz', checkIfExists: true),
+                        file(params.pipelines_testdata_base_path + 'panoramaseq/testdata/barcodes_coords.csv', checkIfExists: true)
+                    ]
+                    """
+                }
+            }
+        }
+
+        when {
+            params {
+                outdir = "$outputDir"
+            }
+            process {
+                """
+                input[0] = ANNDATA_MAKEH5AD_SINGLE.out.h5ad
+                """
+            }
+        }
+
+        then {
+            assertAll (
+                { assert process.success },
+                { assert process.out.h5ad != null },
+                { assert process.out.h5ad.get(0).get(0).id == "S10" },
+                { assert process.out.h5ad.get(0).get(1) ==~ ".*\\.h5ad" },
+                { assert file(process.out.h5ad.get(0).get(1)).exists() },
+                { assert process.out.log != null },
+                { assert file(process.out.log.get(0)).exists() },
+                { assert process.out.versions != null },
+                { assert snapshot(
+                    process.out.log,
+                    process.out.versions
+                ).match("S10_sample") }
+            )
+        }
+    }
+
+    test("ANNDATA_CHECKH5AD - multiple samples") {
+
+        setup {
+            run("ANNDATA_MAKEH5AD") {
+                script "../../makeh5ad/main.nf"
+                process {
+                    """
+                    input[0] = [
+                        [ id: 'multi_sample' ],
+                        [
+                            file(params.pipelines_testdata_base_path + 'panoramaseq/testdata/counts/S09_counts.tsv.gz', checkIfExists: true),
+                            file(params.pipelines_testdata_base_path + 'panoramaseq/testdata/counts/S10_counts.tsv.gz', checkIfExists: true)
+                        ],
+                        file(params.pipelines_testdata_base_path + 'panoramaseq/testdata/barcodes_coords.csv', checkIfExists: true)
+                    ]
+                    """
+                }
+            }
+        }
+
+        when {
+            params {
+                outdir = "$outputDir"
+            }
+            process {
+                """
+                input[0] = ANNDATA_MAKEH5AD.out.h5ad
+                """
+            }
+        }
+
+        then {
+            assertAll (
+                { assert process.success },
+                { assert process.out.h5ad != null },
+                { assert process.out.h5ad.get(0).get(0).id == "multi_sample" },
+                { assert process.out.h5ad.get(0).get(1) ==~ ".*\\.h5ad" },
+                { assert file(process.out.h5ad.get(0).get(1)).exists() },
+                { assert process.out.log != null },
+                { assert file(process.out.log.get(0)).exists() },
+                { assert process.out.versions != null },
+                { assert snapshot(
+                    process.out.log,
+                    process.out.versions
+                ).match("multiple_samples") }
+            )
+        }
+    }
+}

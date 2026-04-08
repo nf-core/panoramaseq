@@ -1,0 +1,48 @@
+{
+    "sarscov2 Illumina paired-end [fastq] - R2 only processing": {
+        "content": [
+            "@ERR5069949.2151832 NS500628:121:HK3MMAFX2:2:21208:10793:15304/2"
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.2"
+        },
+        "timestamp": "2025-06-24T10:38:51.976187824"
+    },
+    "versions_different_sample": {
+        "content": [
+            [
+                "versions.yml:md5,fe291a6e9607e8456d7d0298f6d79db9"
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.2"
+        },
+        "timestamp": "2025-06-24T10:38:58.419350743"
+    },
+    "versions_stub": {
+        "content": [
+            [
+                "versions.yml:md5,60a82904b7a19ced9224341e4b496cc1"
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.2"
+        },
+        "timestamp": "2025-08-12T17:12:32.573888833"
+    },
+    "versions_paired_end": {
+        "content": [
+            [
+                "versions.yml:md5,fe291a6e9607e8456d7d0298f6d79db9"
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.2"
+        },
+        "timestamp": "2025-06-24T10:38:51.955928044"
+    }
+}

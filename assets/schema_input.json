@@ -26,8 +26,20 @@
                 "exists": true,
                 "pattern": "^\\S+\\.f(ast)?q\\.gz$",
                 "errorMessage": "FastQ file for reads 2 cannot contain spaces and must have extension '.fq.gz' or '.fastq.gz'"
+            },
+            "N_barcodes": {
+                "type": "integer",
+                "description": "Number of barcodes for this sample",
+                "meta": ["N_barcodes"]
+            },
+            "barcode_file": {
+                "type": "string",
+                "format": "file-path",
+                "exists": true,
+                "description": "Path to barcode file for this sample",
+                "meta": ["barcode_file"]
             }
         },
-        "required": ["sample", "fastq_1"]
+        "required": ["sample", "fastq_1", "N_barcodes", "barcode_file"]
     }
 }

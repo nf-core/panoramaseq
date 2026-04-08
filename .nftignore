@@ -1,0 +1,74 @@
+# nf-test ignore patterns
+# Files and directories to ignore during snapshot comparisons
+
+# Large data files
+*.bam
+*.bai
+*.sam
+*.cram
+*.crai
+*.bed.gz
+*.bed.gz.tbi
+*.vcf.gz
+*.vcf.gz.tbi
+*.bcf
+*.bcf.csi
+*.bigWig
+*.bw
+*.bigBed
+*.bb
+
+# FastQ files (usually too large for snapshots)
+*.fastq.gz
+*.fq.gz
+*.fastq
+*.fq
+
+# Log files and temporary outputs
+*.log
+*.txt
+pipeline_info/**
+work/**
+.nextflow/**
+.nextflow.log*
+timeline.html
+report.html
+trace.txt
+dag.html
+
+# MultiQC outputs (HTML reports are large and contain timestamps)
+**/multiqc_report.html
+**/multiqc_data/**
+multiqc_report.html
+multiqc_data/**
+
+# Conda environments
+envs/**
+conda-env/**
+
+# Software versions (can change frequently)
+software_versions.yml
+software_versions_mqc.yml
+
+# H5AD files (can be large)
+*.h5ad
+
+# Compressed archives
+*.tar.gz
+*.zip
+
+# Temporary directories
+tmp/**
+temp/**
+
+# OS specific files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/**
+.idea/**
+
+# Docker/Singularity images
+*.sif
+*.img

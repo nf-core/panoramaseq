@@ -1,73 +1,99 @@
 #!/usr/bin/env nextflow
-/*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    nf-core/panoramaseq
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Github : https://github.com/nf-core/panoramaseq
-    Website: https://nf-co.re/panoramaseq
-    Slack  : https://nfcore.slack.com/channels/panoramaseq
-----------------------------------------------------------------------------------------
-*/
+nextflow.enable.dsl=2
 
-/*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    IMPORT FUNCTIONS / MODULES / SUBWORKFLOWS / WORKFLOWS
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*/
+// ==========================================================================
+// 0) Import the CHECK_FASTQS process from your fixed module
+// ==========================================================================
 
-include { PANORAMASEQ  } from './workflows/panoramaseq'
-include { PIPELINE_INITIALISATION } from './subworkflows/local/utils_nfcore_panoramaseq_pipeline'
-include { PIPELINE_COMPLETION     } from './subworkflows/local/utils_nfcore_panoramaseq_pipeline'
-include { getGenomeAttribute      } from './subworkflows/local/utils_nfcore_panoramaseq_pipeline'
+include { PANORAMASEQ } from './workflows/panoramaseq'
+include { PREPARE_GENOME } from './subworkflows/local/prepare_genome/main'
+include { STAR_GENOMEGENERATE } from './modules/nf-core/star/genomegenerate/main'
+include { PIPELINE_INITIALISATION } from './subworkflows/local/utils_nfcore_panoramaseq_pipeline/main'
+include { PANORAMASEQ_COMPLETION } from './subworkflows/local/utils_nfcore_panoramaseq_completion/main'
 
-/*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    GENOME PARAMETER VALUES
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*/
 
-// TODO nf-core: Remove this line if you don't need a FASTA file
-//   This is an example of how to use getGenomeAttribute() to fetch parameters
-//   from igenomes.config using `--genome`
-params.fasta = getGenomeAttribute('fasta')
+// ==========================================================================
+// 1) Read the sample sheet and build “data” as a flat 3‐element tuple
+//    ( meta_map, R1_path, R2_path )
+// ==========================================================================
 
-/*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    NAMED WORKFLOWS FOR PIPELINE
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*/
 
-//
-// WORKFLOW: Run main analysis pipeline depending on type of input
-//
 workflow NFCORE_PANORAMASEQ {
 
     take:
-    samplesheet // channel: samplesheet read in from --input
+    valid_data
 
     main:
+    ch_versions = Channel.empty()
 
     //
-    // WORKFLOW: Run pipeline
+    // SUBWORKFLOW: Prepare genome files and generate STAR index
     //
-    PANORAMASEQ (
-        samplesheet
-    )
+    // Use params.fasta and params.star_gtf if provided to build STAR index
+    // Otherwise, rely on params.star_genome_dir (backward compatibility)
+    //
+    if (params.fasta && params.star_gtf && !params.star_genome_dir && params.additional_fasta) {
+        // Generate STAR index with additional FASTA (e.g., spike-in sequences)
+        fasta_file = file(params.fasta, checkIfExists: true)
+        gtf_file = file(params.star_gtf, checkIfExists: true)
+        ch_additional_fasta = file(params.additional_fasta, checkIfExists: true)
+
+        PREPARE_GENOME(
+            fasta_file,
+            gtf_file,
+            ch_additional_fasta
+        )
+        ch_versions = ch_versions.mix(PREPARE_GENOME.out.versions)
+
+        // Use the generated STAR index
+        ch_star_index = PREPARE_GENOME.out.index
+        ch_gtf_file = PREPARE_GENOME.out.gtf
+
+    } else if (params.fasta && params.star_gtf && !params.star_genome_dir) {
+        // Generate STAR index from FASTA and GTF only (no additional fasta)
+        fasta_file = file(params.fasta, checkIfExists: true)
+        gtf_file = file(params.star_gtf, checkIfExists: true)
+
+        PREPARE_GENOME(
+            fasta_file,
+            gtf_file,
+            null  // no additional fasta
+        )
+        ch_versions = ch_versions.mix(PREPARE_GENOME.out.versions)
+
+        // Use the generated STAR index
+        ch_star_index = PREPARE_GENOME.out.index
+        ch_gtf_file = PREPARE_GENOME.out.gtf
+
+    } else if (params.star_genome_dir && params.star_gtf) {
+        // Use pre-built STAR index (backward compatibility)
+        ch_star_index = Channel.value(file(params.star_genome_dir, checkIfExists: true))
+        ch_gtf_file = Channel.value(file(params.star_gtf, checkIfExists: true))
+
+    } else {
+        error "ERROR: Either provide --fasta and --star_gtf to build STAR index, or --star_genome_dir and --star_gtf to use existing index"
+    }
+
+    // Run main PANORAMASEQ workflow
+    // This will handle all the steps defined in the PANORAMASEQ process including quality control, alignment, counting, etc.
+    // The PANORAMASEQ process is defined in the workflows/main.nf file
+    PANORAMASEQ(
+        valid_data,
+        ch_star_index,
+        ch_gtf_file
+    ) // Pass the samples and genome references
+
     emit:
-    multiqc_report = PANORAMASEQ.out.multiqc_report // channel: /path/to/multiqc_report.html
+    multiqc_report = PANORAMASEQ.out.multiqc_report // channel: /path/to/multi
+    versions       = ch_versions.mix(PANORAMASEQ.out.versions)
 }
-/*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    RUN MAIN WORKFLOW
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*/
+
+
+
 
 workflow {
-
     main:
-    //
-    // SUBWORKFLOW: Run initialisation tasks
-    //
+
     PIPELINE_INITIALISATION (
         params.version,
         params.validate_params,
@@ -77,16 +103,15 @@ workflow {
         params.input
     )
 
-    //
-    // WORKFLOW: Run main workflow
-    //
+    // Print the output of PIPELINE_INITIALISATION.out.samplesheet
+    PIPELINE_INITIALISATION.out.samplesheet.view { "PIPELINE_INITIALISATION.out.samplesheet: $it" }
+
+    // main PANORAMASEQ workflow
     NFCORE_PANORAMASEQ (
         PIPELINE_INITIALISATION.out.samplesheet
     )
-    //
-    // SUBWORKFLOW: Run completion tasks
-    //
-    PIPELINE_COMPLETION (
+    // SUBWORKFLOW: Pipeline completion tasks
+    PANORAMASEQ_COMPLETION (
         params.email,
         params.email_on_fail,
         params.plaintext_email,
@@ -95,10 +120,7 @@ workflow {
         params.hook_url,
         NFCORE_PANORAMASEQ.out.multiqc_report
     )
-}
 
-/*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    THE END
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*/
+
+}
+// ==========================================================================
