@@ -15,6 +15,7 @@ The pipeline generates the following main output directories:
 - `pipeline_info/`: Execution reports, trace files, and software versions used in the run
 
 For spatial transcriptomics workflows, additional outputs may include:
+
 - Aligned BAM files (when using STAR aligner)
 - Gene count matrices (TSV or H5AD format)
 - Quality control metrics specific to spatial data processing
