@@ -1,3 +1,15 @@
+# Enforce LF line endings in repository
+* text=auto eol=lf
+
+# Specific file types
+*.md text eol=lf
+*.json text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.config text eol=lf
+*.nf text eol=lf
+
+# Linguist overrides
 *.config linguist-language=nextflow
 *.nf.test linguist-language=nextflow
 modules/nf-core/** linguist-generated
