@@ -1,20 +1,25 @@
 process QUIK_STARSOLO {
     tag "${meta.id}"
     label 'use_gpu'
-    conda "${moduleDir}/environment.yml"
+    // NOTE: Docker is NOT supported. The container is a Singularity .sif image
+    // pushed via the ORAS protocol (singularity push oras://...) and cannot be
+    // pulled or executed by Docker. Use -profile singularity or -profile apptainer.
+    conda null
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'file://' + projectDir + '/containers/quik_runtime_compile.sif' :
-        'file://' + projectDir + '/containers/quik_runtime_compile.sif' }"
+        'oras://quay.io/francoaps/quik-runtime-compile:runtime-compile-v1' :
+        error('QUIK_STARSOLO requires Singularity or Apptainer. The container is a native .sif image stored as an OCI artifact (oras://) and cannot be used with Docker. Please run with -profile singularity or -profile apptainer.') }"
     
     input:
     tuple val(meta), path(reads)
     path barcode_file
     
     output:
-    tuple val(meta), path("*_R1_filtered.fastq.gz"), emit: r1
-    tuple val(meta), path("*_R2_filtered.fastq.gz"), emit: r2
-    tuple val(meta), path("*_whitelist.txt"), emit: whitelist
-    tuple val(meta), path("*_barcode_calling_stats.txt"), emit: stats
+    tuple val(meta), path("*_R1_filtered.fastq.gz"),                          emit: r1
+    tuple val(meta), path("*_R2_filtered.fastq.gz"),                          emit: r2
+    tuple val(meta), path("*_whitelist.txt"),                                  emit: whitelist
+    tuple val(meta), path("*_barcode_calling_stats.txt"),                      emit: stats
+    tuple val(meta), path("*_R1_rejected.fastq.gz"), optional: true,           emit: r1_rejected
+    tuple val(meta), path("*_R2_rejected.fastq.gz"), optional: true,           emit: r2_rejected
     path "versions.yml", emit: versions
     
     when:
@@ -89,13 +94,73 @@ process QUIK_STARSOLO {
     whitelist_count=\$(wc -l < ${prefix}_whitelist.txt)
     echo "Whitelist contains \${whitelist_count} reference barcodes"
     
-    # Step 7: Clean up
-    rm input_R1.fastq input_R2.fastq barcodes_only.txt
-    rm -rf /tmp/quik_build_${prefix}
-    
-    # Step 8: Compress output FASTQ files
+    # Step 7: Compress output FASTQ files
     gzip ${prefix}_R1_filtered.fastq
     gzip ${prefix}_R2_filtered.fastq
+
+    # Step 8: Extract rejected reads (optional, for Columba barcode rescue)
+    if [ "${params.enable_columba_rescue}" = "true" ]; then
+        echo "Extracting rejected reads for Columba barcode rescue..."
+        
+        # Extract read IDs from filtered FASTQ files (every 4th line starting from line 1)
+        # QUIK appends _calledidx_<idx>_<barcode> to read IDs, so we extract only the original read ID
+        echo "Extracting filtered read IDs..."
+        zcat ${prefix}_R1_filtered.fastq.gz | awk 'NR % 4 == 1 {
+            read_id = substr(\$1, 2)
+            split(read_id, parts, "_calledidx_")
+            print parts[1]
+        }' > filtered_ids.txt
+        
+        filtered_count=\$(wc -l < filtered_ids.txt)
+        echo "Filtered read count: \${filtered_count}"
+        
+        # Extract rejected reads: find reads NOT in the filtered IDs list
+        # Using FNR % 4 logic to properly parse FASTQ records without duplicates
+        echo "Extracting rejected R1 reads..."
+        awk 'NR==FNR{ids[\$1]=1; next} 
+             FNR % 4 == 1 {
+                 hdr = \$0
+                 read_id = substr(\$1, 2)
+                 split(read_id, parts, " ")
+                 id = parts[1]
+             }
+             FNR % 4 == 2 {seq = \$0}
+             FNR % 4 == 3 {plus = \$0}
+             FNR % 4 == 0 {
+                 qual = \$0
+                 if (!(id in ids)) {
+                     print hdr"\\n"seq"\\n"plus"\\n"qual
+                 }
+             }' filtered_ids.txt input_R1.fastq | gzip > ${prefix}_R1_rejected.fastq.gz
+        
+        echo "Extracting rejected R2 reads..."
+        awk 'NR==FNR{ids[\$1]=1; next} 
+             FNR % 4 == 1 {
+                 hdr = \$0
+                 read_id = substr(\$1, 2)
+                 split(read_id, parts, " ")
+                 id = parts[1]
+             }
+             FNR % 4 == 2 {seq = \$0}
+             FNR % 4 == 3 {plus = \$0}
+             FNR % 4 == 0 {
+                 qual = \$0
+                 if (!(id in ids)) {
+                     print hdr"\\n"seq"\\n"plus"\\n"qual
+                 }
+             }' filtered_ids.txt input_R2.fastq | gzip > ${prefix}_R2_rejected.fastq.gz
+        
+        rejected_count=\$(zcat ${prefix}_R1_rejected.fastq.gz | wc -l)
+        rejected_reads=\$((rejected_count / 4))
+        echo "Rejected R1 reads: \${rejected_reads}"
+        
+        # Clean up
+        rm filtered_ids.txt
+    fi
+
+    # Step 9: Clean up
+    rm input_R1.fastq input_R2.fastq barcodes_only.txt
+    rm -rf /tmp/quik_build_${prefix}
     
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
@@ -113,6 +178,8 @@ process QUIK_STARSOLO {
     touch ${prefix}_R2_filtered.fastq.gz
     touch ${prefix}_whitelist.txt
     touch ${prefix}_barcode_calling_stats.txt
+    touch ${prefix}_R1_rejected.fastq.gz
+    touch ${prefix}_R2_rejected.fastq.gz
     
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

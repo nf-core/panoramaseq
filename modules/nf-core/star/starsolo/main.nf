@@ -13,17 +13,18 @@ process STARSOLO {
     tuple val(meta2), path(index)
 
     output:
-    tuple val(meta),  path('*.Solo.out')         , emit: counts
-    tuple val(meta),  path('*Log.final.out')     , emit: log_final
-    tuple val(meta),  path('*Log.out')           , emit: log_out
-    tuple val(meta),  path('*Log.progress.out')  , emit: log_progress
-    tuple val(meta),  path('*/Gene/Summary.csv') , emit: summary
-    path "versions.yml"                          , emit: versions
+    tuple val(meta),  path('*.Solo.out')                      , emit: counts
+    tuple val(meta),  path('*Log.final.out')                  , emit: log_final
+    tuple val(meta),  path('*Log.out')                        , emit: log_out
+    tuple val(meta),  path('*Log.progress.out')               , emit: log_progress
+    tuple val(meta),  path('*/Gene/Summary.csv')              , emit: summary
+    tuple val(meta),  path('*.Aligned.sortedByCoord.out.bam') , emit: bam, optional: true
+    path "versions.yml"                                       , emit: versions
     when:
     task.ext.when == null || task.ext.when
 
     script:
-    def args = task.ext.args ?: ''
+    def args = task.ext.args ? (task.ext.args instanceof Closure ? task.ext.args.call(meta) : task.ext.args) : ''
     def prefix = task.ext.prefix ?: "${meta.id}"
     def (forward, reverse) = reads.collate(2).transpose()
     def zcat = reads[0].getExtension() == "gz" ? "--readFilesCommand zcat": ""

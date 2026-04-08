@@ -1,0 +1,39 @@
+nextflow_process {
+
+    name "Test Process BARCODE_TO_FASTA"
+    script "../main.nf"
+    process "BARCODE_TO_FASTA"
+    tag "modules"
+    tag "modules_local"
+    tag "columba"
+    tag "barcode_to_fasta"
+
+    test("BARCODE_TO_FASTA - stub") {
+
+        options "-stub"
+
+        when {
+            params {
+                outdir = "$outputDir"
+            }
+            process {
+                """
+                input[0] = [
+                    [ id: 'test' ],
+                    file(params.pipelines_testdata_base_path + 'panoramaseq/testdata/barcodes_coords.csv', checkIfExists: true)
+                ]
+                """
+            }
+        }
+
+        then {
+            assertAll (
+                { assert process.success },
+                { assert process.out.fasta != null },
+                { assert process.out.fasta.get(0).get(1) ==~ ".*_barcodes.fasta" },
+                { assert process.out.versions != null },
+                { assert snapshot(process.out.versions).match() }
+            )
+        }
+    }
+}

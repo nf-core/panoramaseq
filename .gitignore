@@ -10,4 +10,4 @@ null/
 .nf-test.log
 .nf-test/
 /tests/
-nextflow_withgpus.config.txt
+extras/

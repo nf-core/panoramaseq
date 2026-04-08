@@ -1,0 +1,35 @@
+nextflow_process {
+
+    name "Test Process COLUMBA_BUILD"
+    script "../main.nf"
+    process "COLUMBA_BUILD"
+    tag "modules"
+    tag "modules_local"
+    tag "columba"
+    tag "columba_build"
+
+    test("COLUMBA_BUILD - stub") {
+
+        options "-stub"
+
+        when {
+            params {
+                outdir = "$outputDir"
+            }
+            process {
+                """
+                input[0] = null
+                """
+            }
+        }
+
+        then {
+            assertAll (
+                { assert process.success },
+                { assert process.out.binaries != null },
+                { assert process.out.versions != null },
+                { assert snapshot(process.out.versions).match() }
+            )
+        }
+    }
+}

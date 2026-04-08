@@ -8,10 +8,16 @@ keywords:
   - cuda
 tools:
   - quik:
-      description: Quick UMI and barcode detection from FASTQ (GPU-accelerated)
+      description: |
+        GPU-accelerated barcode calling tool. Requires an NVIDIA CUDA-capable GPU
+        and must be run with Singularity or Apptainer (-profile singularity /
+        -profile apptainer). The container is a native Singularity .sif image
+        stored as an OCI artifact via the ORAS protocol and is not compatible
+        with Docker.
       homepage: https://github.com/francoaps/quik
       documentation: https://github.com/francoaps/quik
       licence: ["MIT"]
+      identifier: oras://quay.io/francoaps/quik-runtime-compile
 input:
   - - meta:
         type: map

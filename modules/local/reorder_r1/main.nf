@@ -48,24 +48,25 @@ with gzip.open('${r1}', 'rt') as infile, \\
         
         records_processed += 1
         
-        # Validate read length (should be at least 46bp: 10bp UMI + 36bp BC)
-        if len(seq) < 46:
-            print(f"Warning: Read {records_processed} length {len(seq)} < 46bp, skipping", file=sys.stderr)
+        # Validate read length: need at least 10bp to extract the UMI.
+        # Barcode deletions can shorten R1 below 46bp; the barcode is in the
+        # QUIK header so only the UMI (first 10bp) is required from the sequence.
+        if len(seq) < 10:
+            print(f"Warning: Read {records_processed} length {len(seq)} < 10bp, skipping", file=sys.stderr)
             continue
         
-        # Extract UMI (first 10bp) and Barcode (next 36bp)
+        # Extract UMI (first 10bp) and Barcode (remaining chars, variable length
+        # when barcode deletions are present).
         umi = seq[:10]
-        barcode = seq[10:46]
-        rest = seq[46:]  # Any remaining sequence (usually empty)
+        barcode = seq[10:]   # may be shorter than 36bp due to barcode indels
         
-        # Reorder: Barcode first (36bp), then UMI (10bp), then rest
-        new_seq = barcode + umi + rest
+        # Reorder: Barcode first (variable), then UMI (10bp)
+        new_seq = barcode + umi
         
         # Quality scores follow same order
         umi_qual = qual[:10]
-        bc_qual = qual[10:46]
-        rest_qual = qual[46:]
-        new_qual = bc_qual + umi_qual + rest_qual
+        bc_qual = qual[10:]
+        new_qual = bc_qual + umi_qual
         
         # Write reordered record
         outfile.write(header)

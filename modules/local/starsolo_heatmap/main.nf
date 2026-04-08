@@ -35,12 +35,20 @@ process STARSOLO_HEATMAP {
     
     """
     # Find the matrix files using symlink-following find
-    MATRIX=\$(find -L ${star_dir} -name "matrix.mtx.gz" -path "*/Gene/raw/*" | head -n 1)
-    BARCODES=\$(find -L ${star_dir} -name "barcodes.tsv.gz" -path "*/Gene/raw/*" | head -n 1)
-    FEATURES=\$(find -L ${star_dir} -name "features.tsv.gz" -path "*/Gene/raw/*" | head -n 1)
-    
+    # Prefer GeneFull (pre-mRNA) which captures both exonic and intronic reads;
+    # fall back to Gene (exon-only) if GeneFull is absent.
+    MATRIX=\$(find -L ${star_dir} -name "matrix.mtx.gz" -path "*/GeneFull/raw/*" | head -n 1)
+    BARCODES=\$(find -L ${star_dir} -name "barcodes.tsv.gz" -path "*/GeneFull/raw/*" | head -n 1)
+    FEATURES=\$(find -L ${star_dir} -name "features.tsv.gz" -path "*/GeneFull/raw/*" | head -n 1)
+
+    if [ -z "\$MATRIX" ]; then
+        MATRIX=\$(find -L ${star_dir} -name "matrix.mtx.gz" -path "*/Gene/raw/*" | head -n 1)
+        BARCODES=\$(find -L ${star_dir} -name "barcodes.tsv.gz" -path "*/Gene/raw/*" | head -n 1)
+        FEATURES=\$(find -L ${star_dir} -name "features.tsv.gz" -path "*/Gene/raw/*" | head -n 1)
+    fi
+
     if [ -z "\$MATRIX" ] || [ -z "\$BARCODES" ] || [ -z "\$FEATURES" ]; then
-        echo "ERROR: Could not find STARsolo output files in ${star_dir}/Gene/raw/"
+        echo "ERROR: Could not find STARsolo output files in ${star_dir}/GeneFull/raw/ or Gene/raw/"
         exit 1
     fi
     

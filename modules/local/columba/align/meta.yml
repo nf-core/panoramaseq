@@ -1,0 +1,61 @@
+name: columba_align
+description: Align reads to barcode reference using Columba to rescue QUIK-discarded reads
+keywords:
+  - columba
+  - align
+  - barcode
+  - rescue
+tools:
+  - columba:
+      description: "Columba: fast and accurate barcode alignment tool"
+      homepage: https://github.com/ad3002/Columba
+      documentation: https://github.com/ad3002/Columba
+      licence: ["MIT"]
+input:
+  - - meta:
+        type: map
+        description: |
+          Groovy Map containing sample information
+          e.g. [ id:'test', single_end:false ]
+    - reads:
+        type: file
+        description: FASTQ file(s) of discarded reads (R1 or R1+R2)
+        pattern: "*.fastq.gz"
+    - index_files:
+        type: file
+        description: Columba index files from COLUMBA_INDEX process
+        pattern: "*_index*"
+  - - columba_binaries:
+        type: file
+        description: Columba binary files from COLUMBA_BUILD process
+        pattern: "columba*"
+output:
+  - sam:
+      - meta:
+          type: map
+          description: |
+            Groovy Map containing sample information
+            e.g. [ id:'test', single_end:false ]
+      - "*_alignment.sam":
+          type: file
+          description: SAM file with barcode alignments
+          pattern: "*_alignment.sam"
+  - stats:
+      - meta:
+          type: map
+          description: |
+            Groovy Map containing sample information
+            e.g. [ id:'test', single_end:false ]
+      - "*_columba_stats.txt":
+          type: file
+          description: Columba alignment statistics
+          pattern: "*_columba_stats.txt"
+  - versions:
+      - versions.yml:
+          type: file
+          description: File containing software versions
+          pattern: "versions.yml"
+authors:
+  - "@francoaps"
+maintainers:
+  - "@francoaps"

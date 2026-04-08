@@ -1,0 +1,43 @@
+name: barcode_to_fasta
+description: Convert barcode coordinates CSV to FASTA format for Columba indexing
+keywords:
+  - barcode
+  - fasta
+  - columba
+  - conversion
+tools:
+  - python:
+      description: Python scripting for format conversion
+      homepage: https://www.python.org/
+      documentation: https://www.python.org/
+      licence: ["PSF-2.0"]
+input:
+  - - meta:
+        type: map
+        description: |
+          Groovy Map containing sample information
+          e.g. [ id:'test', single_end:false ]
+    - barcode_coords_csv:
+        type: file
+        description: CSV file containing barcode sequences and coordinates
+        pattern: "*.csv"
+output:
+  - fasta:
+      - meta:
+          type: map
+          description: |
+            Groovy Map containing sample information
+            e.g. [ id:'test', single_end:false ]
+      - "*.fasta":
+          type: file
+          description: FASTA file with all barcode sequences
+          pattern: "*.fasta"
+  - versions:
+      - versions.yml:
+          type: file
+          description: File containing software versions
+          pattern: "versions.yml"
+authors:
+  - "@francoaps"
+maintainers:
+  - "@francoaps"

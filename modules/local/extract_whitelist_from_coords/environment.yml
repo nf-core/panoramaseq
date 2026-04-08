@@ -1,0 +1,7 @@
+name: extract_whitelist_from_coords
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - python=3.11

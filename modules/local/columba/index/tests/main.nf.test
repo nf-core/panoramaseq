@@ -1,0 +1,39 @@
+nextflow_process {
+
+    name "Test Process COLUMBA_INDEX"
+    script "../main.nf"
+    process "COLUMBA_INDEX"
+    tag "modules"
+    tag "modules_local"
+    tag "columba"
+    tag "columba_index"
+
+    test("COLUMBA_INDEX - stub") {
+
+        options "-stub"
+
+        when {
+            params {
+                outdir = "$outputDir"
+            }
+            process {
+                """
+                input[0] = [
+                    [ id: 'test' ],
+                    file(params.pipelines_testdata_base_path + 'panoramaseq/testdata/barcodes_coords.csv', checkIfExists: true)
+                ]
+                input[1] = []
+                """
+            }
+        }
+
+        then {
+            assertAll (
+                { assert process.success },
+                { assert process.out.index != null },
+                { assert process.out.versions != null },
+                { assert snapshot(process.out.versions).match() }
+            )
+        }
+    }
+}

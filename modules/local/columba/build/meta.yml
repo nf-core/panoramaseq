@@ -1,0 +1,33 @@
+name: columba_build
+description: Build Columba binaries from source or use pre-built container binaries
+keywords:
+  - columba
+  - build
+  - barcode
+  - alignment
+tools:
+  - columba:
+      description: "Columba: fast and accurate barcode alignment tool"
+      homepage: https://github.com/ad3002/Columba
+      documentation: https://github.com/ad3002/Columba
+      licence: ["MIT"]
+input:
+  - - columba_repo:
+        type: directory
+        description: Path to local Columba repository for building from source
+        pattern: "*"
+output:
+  - binaries:
+      - "build_Vanilla/columba*":
+          type: file
+          description: Compiled Columba binaries
+          pattern: "build_Vanilla/columba*"
+  - versions:
+      - versions.yml:
+          type: file
+          description: File containing software versions
+          pattern: "versions.yml"
+authors:
+  - "@francoaps"
+maintainers:
+  - "@francoaps"

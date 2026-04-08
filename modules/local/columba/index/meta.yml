@@ -1,0 +1,47 @@
+name: columba_index
+description: Build Columba index from FASTA file of barcodes
+keywords:
+  - columba
+  - index
+  - barcode
+  - fasta
+tools:
+  - columba:
+      description: "Columba: fast and accurate barcode alignment tool"
+      homepage: https://github.com/ad3002/Columba
+      documentation: https://github.com/ad3002/Columba
+      licence: ["MIT"]
+input:
+  - - meta:
+        type: map
+        description: |
+          Groovy Map containing sample information
+          e.g. [ id:'test', single_end:false ]
+    - barcode_fasta:
+        type: file
+        description: FASTA file containing barcode sequences
+        pattern: "*.fasta"
+  - - columba_binaries:
+        type: file
+        description: Columba binary files from COLUMBA_BUILD process
+        pattern: "columba*"
+output:
+  - index:
+      - meta:
+          type: map
+          description: |
+            Groovy Map containing sample information
+            e.g. [ id:'test', single_end:false ]
+      - "*_index*":
+          type: file
+          description: Columba index files
+          pattern: "*_index*"
+  - versions:
+      - versions.yml:
+          type: file
+          description: File containing software versions
+          pattern: "versions.yml"
+authors:
+  - "@francoaps"
+maintainers:
+  - "@francoaps"

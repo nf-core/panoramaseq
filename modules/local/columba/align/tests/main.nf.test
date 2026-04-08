@@ -1,0 +1,44 @@
+nextflow_process {
+
+    name "Test Process COLUMBA_ALIGN"
+    script "../main.nf"
+    process "COLUMBA_ALIGN"
+    tag "modules"
+    tag "modules_local"
+    tag "columba"
+    tag "columba_align"
+
+    test("COLUMBA_ALIGN - stub") {
+
+        options "-stub"
+
+        when {
+            params {
+                outdir = "$outputDir"
+                columba_identity_threshold = 83
+            }
+            process {
+                """
+                input[0] = [
+                    [ id: 'test' ],
+                    file(params.pipelines_testdata_base_path + 'panoramaseq/testdata/rawfastq/S09_UHRR_R1.fastq.gz', checkIfExists: true),
+                    []
+                ]
+                input[1] = []
+                """
+            }
+        }
+
+        then {
+            assertAll (
+                { assert process.success },
+                { assert process.out.sam != null },
+                { assert process.out.sam.get(0).get(1) ==~ ".*_alignment.sam" },
+                { assert process.out.stats != null },
+                { assert process.out.stats.get(0).get(1) ==~ ".*_columba_stats.txt" },
+                { assert process.out.versions != null },
+                { assert snapshot(process.out.versions).match() }
+            )
+        }
+    }
+}

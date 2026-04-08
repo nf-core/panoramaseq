@@ -329,8 +329,10 @@ def remap_fastq(input_fastq, output_fastq, mapping, barcode_start, barcode_lengt
             
             reads_processed += 1
             
-            # Check minimum read length
-            if len(r1_seq) < barcode_start + barcode_length + umi_length:
+            # Check minimum read length: need at least umi_length characters to extract UMI.
+            # Barcode indels can shorten R1 below (barcode_length + umi_length); the barcode
+            # is always taken from the QUIK header, so only the UMI tail is required in seq.
+            if len(r1_seq) < barcode_start + umi_length:
                 if reads_processed <= 10:
                     print(f"Warning: Read {reads_processed} too short ({len(r1_seq)}bp), skipping", file=sys.stderr)
                 reads_skipped += 1
@@ -365,9 +367,12 @@ def remap_fastq(input_fastq, output_fastq, mapping, barcode_start, barcode_lengt
             
             synthetic_barcode = mapping[original_barcode]
             
-            # Extract UMI from original read
-            umi = r1_seq[barcode_start + barcode_length:barcode_start + barcode_length + umi_length]
-            umi_qual = r1_qual[barcode_start + barcode_length:barcode_start + barcode_length + umi_length]
+            # Extract UMI from the tail of the read.
+            # When the barcode contains deletions the actual mutated sequence is shorter than
+            # barcode_length, so the UMI starts before position barcode_length.  Taking the
+            # last umi_length characters is always correct because R1 = mutated_BC + UMI.
+            umi = r1_seq[-umi_length:]
+            umi_qual = r1_qual[-umi_length:]
             
             # Build new R1 sequence and quality
             new_r1_seq = synthetic_barcode + umi
