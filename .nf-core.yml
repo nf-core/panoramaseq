@@ -1,14 +1,15 @@
 repository_type: pipeline
-
 nf_core_version: 3.5.2
-
-lint: {}
-
+lint:
+  files_exist:
+    - .github/workflows/linting_comment.yml
+  files_unchanged:
+    - .github/workflows/branch.yml
+    - .github/workflows/linting.yml
 template:
   org: nf-core
   name: panoramaseq
-  description: a pipeline to process sequencing based spatial transccriptomics data
-    from in-situ arrays
+  description: a pipeline to process sequencing based spatial transccriptomics data from in-situ arrays
   author: Poma-Soto Franco
   version: 1.0.0dev
   force: true
